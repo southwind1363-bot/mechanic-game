@@ -93,7 +93,7 @@
   /* ===== 入庫シーン（症状に応じたイラスト） ===== */
   .scene{position:relative;border-radius:10px;overflow:hidden;margin-bottom:14px;background:#15171a;border:1px solid var(--line);}
   .scene svg{display:block;width:100%;height:auto;}
-  #sceneImg{display:none;width:100%;height:auto;vertical-align:bottom;}
+  #sceneImg{display:none;width:100%;aspect-ratio:3/2;object-fit:cover;vertical-align:bottom;background:#15171a;}
   .scene-cap{position:absolute;top:8px;left:10px;font-size:.7rem;font-weight:800;color:var(--orange);letter-spacing:.12em;text-shadow:0 1px 3px #000;}
   .scene-car.in{animation:driveIn .7s cubic-bezier(.2,.8,.3,1);}
   @keyframes driveIn{from{transform:translateX(-160px);opacity:0;}to{transform:translateX(0);opacity:1;}}
@@ -320,7 +320,7 @@
   <!-- Game screen -->
   <div class="card hidden" id="gameScreen">
     <div id="scene" class="scene">
-      <img id="sceneImg" alt="入庫した車" />
+      <img id="sceneImg" alt="" />
       <svg id="sceneSvg" viewBox="0 0 400 200" role="img" aria-label="入庫した車のイラスト">
         <defs>
           <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#30343b"/><stop offset="1" stop-color="#1b1d21"/></linearGradient>
@@ -591,7 +591,7 @@ const cases = [
       result_wrong:"コンプレッサー不動の原因はガス不足による保護停止が最多。まず圧力を確認する。"},
     {question:"ガスが不足。漏れの疑いがある。どう進めますか？",choices:[
       {text:"蛍光剤を入れ加圧して漏れ箇所を特定し修理する",correct:true},
-      {text:"漏れを直さず不足分だけ補充して納車する",correct:false},
+      {text:"漏れを直さず不足分だけ補充して組み付ける",correct:false},
       {text:"コンプレッサーオイルを規定量追加する",correct:false},
       {text:"ガスを全量回収してそのまま入れ直す",correct:false}],
       result_correct:"蛍光剤を入れ加圧後、ブラックライトでコンデンサー接続部の漏れを確認。",
@@ -885,9 +885,9 @@ const cases = [
   {id:17,tier:"中級",symptom:"エンジンはかかるが数秒で止まる（アイドリングが保てない）",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"ISCとスロットルボディの汚れを点検する",correct:true},
-      {text:"燃料ポンプの吐出圧を測定して交換する",correct:false},
-      {text:"タイミングベルトの張りを点検し交換する",correct:false},
-      {text:"バッテリーを新品に載せ替えて再始動する",correct:false}],
+      {text:"燃料ポンプの吐出圧を測定する",correct:false},
+      {text:"燃料フィルターの詰まりを点検する",correct:false},
+      {text:"点火時期とスパークを点検する",correct:false}],
       result_correct:"スロットルボディとISCにカーボン堆積。アイドル空気量を絞っていた。",
       result_wrong:"始動後すぐ停止はアイドル制御系の汚れ・不調が多い。まずそこを点検。"},
     {question:"ISC・スロットルが汚れていた。同時に確認すべきは？",choices:[
@@ -899,9 +899,9 @@ const cases = [
       result_wrong:"アイドル不調は汚れ＋二次エア漏れの複合が多い。負圧漏れも併せて確認。"},
     {question:"どう仕上げますか？",choices:[
       {text:"清掃・漏れ修理後にアイドル学習を行う",correct:true},
-      {text:"クリーナーを吹くだけで組み付ける",correct:false},
-      {text:"アイドル回転を高めに固定して納車する",correct:false},
-      {text:"学習はせず警告灯だけ消す",correct:false}],
+      {text:"清掃せず学習だけ実施して組み付ける",correct:false},
+      {text:"アイドル回転を高めに固定して組み付ける",correct:false},
+      {text:"二次エア漏れを直さず学習を行う",correct:false}],
       result_correct:"清掃・漏れ修理後にアイドル学習。回転が安定し再始動も良好。",
       result_wrong:"清掃と漏れ修理後はアイドル学習が必要。回転固定や学習省略は不適切。"}],
     explanation:"始動後すぐ停止はアイドル制御の汚れ＋二次エア漏れが多い。清掃・修理後のアイドル学習まで行う。"},
@@ -922,9 +922,9 @@ const cases = [
       result_wrong:"加速時の青煙はオイル上がり。減速時ならバルブステムシール（オイル下がり）。"},
     {question:"リング摩耗の可能性が高い。どう進めますか？",choices:[
       {text:"圧縮・リークダウンを測定し損耗度を評価する",correct:true},
-      {text:"粘度の高い添加剤で煙を抑えて納車する",correct:false},
-      {text:"ただちにエンジンを載せ替える",correct:false},
-      {text:"オイルを継ぎ足しながら様子を見てもらう",correct:false}],
+      {text:"バルブステムシールの状態を点検する",correct:false},
+      {text:"粘度の高いオイルに変えて消費を抑える",correct:false},
+      {text:"高粘度の添加剤を入れて煙を抑える",correct:false}],
       result_correct:"圧縮測定で損耗度を数値化し、修理費とオーバーホールの要否を判断。",
       result_wrong:"まず圧縮・リークダウンで損耗を評価。添加剤での誤魔化しや即載せ替えは早計。"}],
     explanation:"加速時の青煙＋オイル減はオイル上がり（リング摩耗）。圧縮測定で損耗を評価してから方針を決める。"},
@@ -945,9 +945,9 @@ const cases = [
       result_wrong:"ポンピングで戻るのはエア噛みの特徴。まず空気混入を疑う。"},
     {question:"エア噛みが原因。どう対処しますか？",choices:[
       {text:"漏れを直し、遠い輪から順にエア抜きする",correct:true},
-      {text:"フルードを足してペダルを数回踏むだけ",correct:false},
-      {text:"近い輪から適当にエア抜きする",correct:false},
-      {text:"エア抜きせずペダル調整で済ませる",correct:false}],
+      {text:"漏れを直さずフルードを補充して組み付ける",correct:false},
+      {text:"マスターに近い輪から先にエア抜きする",correct:false},
+      {text:"自然落下のみでエア抜きを済ませる",correct:false}],
       result_correct:"漏れ修理後、マスターから遠い輪→近い輪の順でエア抜き。ペダル復活。",
       result_wrong:"エア抜きはマスターから遠い輪が先。漏れを直さず補充だけでは再発する。"}],
     explanation:"ペダルが床まではエア噛み・漏れが主因。漏れ修理後、遠い輪から順にエア抜きする。"},
@@ -968,9 +968,9 @@ const cases = [
       result_wrong:"リンクのガタが出る車はブッシュ類も劣化しがち。周辺も併せて点検。"},
     {question:"安全面の判断として正しいのは？",choices:[
       {text:"走行は可能と説明しつつ早期交換を勧める",correct:true},
-      {text:"脱落の恐れがあり即レッカー手配する",correct:false},
-      {text:"異音は仕様として様子見を勧める",correct:false},
-      {text:"増し締めだけで完了とする",correct:false}],
+      {text:"脱落の危険があるとして即時走行不可と伝える",correct:false},
+      {text:"異音は問題ないとして経過観察を勧める",correct:false},
+      {text:"リンクを増し締めし交換は不要と伝える",correct:false}],
       result_correct:"スタビリンクは即危険ではないが放置で悪化。早期交換を案内。",
       result_wrong:"スタビリンクは即危険ではない（ボールジョイント等とは別）。ただし放置せず早期交換。"}],
     explanation:"段差のゴトゴトはスタビリンク・ブッシュのガタが定番。即危険ではないが早期交換を勧める。"},
@@ -991,9 +991,9 @@ const cases = [
       result_wrong:"負荷時に揺れが増えるかでマウントを確認。いきなり全交換は無駄が出る。"},
     {question:"マウント劣化が確定。どう対処しますか？",choices:[
       {text:"劣化したマウントを特定して交換する",correct:true},
-      {text:"アイドル回転を上げて振動を隠す",correct:false},
-      {text:"下回りに防振材を貼って対処する",correct:false},
-      {text:"エンジン制御を書き換えて隠す",correct:false}],
+      {text:"劣化していないマウントまで一括交換する",correct:false},
+      {text:"締結ボルトの増し締めだけで対処する",correct:false},
+      {text:"防振材を貼って振動の伝わりを抑える",correct:false}],
       result_correct:"劣化マウントを交換し振動消失。アイドルも安定。",
       result_wrong:"原因のマウント交換が本筋。回転上げや防振材での誤魔化しは不適切。"}],
     explanation:"停車時の振動はエンジンマウント劣化が定番。負荷時の揺れ増加で確認し、該当マウントを交換。"},
@@ -1014,41 +1014,41 @@ const cases = [
       result_wrong:"水をかけて再現するのが手早い切り分け。湿気で悪化＝絶縁リーク。"},
     {question:"コードの絶縁劣化が原因。どう対処しますか？",choices:[
       {text:"劣化したコード／コイルを交換する",correct:true},
-      {text:"リーク部に絶縁テープを巻く",correct:false},
-      {text:"シリコングリスを塗って様子を見る",correct:false},
-      {text:"雨の日は乗らないよう案内する",correct:false}],
+      {text:"リーク部に絶縁テープを巻いて補修する",correct:false},
+      {text:"端子にシリコングリスを塗って絶縁する",correct:false},
+      {text:"防水カバーを追加して湿気を防ぐ",correct:false}],
       result_correct:"劣化コード（またはコイル）を交換しリーク解消。雨天でも安定。",
       result_wrong:"絶縁劣化は部品交換が本筋。テープやグリスでの応急は再発する。"}],
     explanation:"雨・湿気で悪化する失火は点火リーク。水をかけて再現確認し、劣化したコード/コイルを交換。"},
   {id:23,tier:"中級",symptom:"MT車。加速時に回転だけ上がり速度が乗らない",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"クラッチの滑り（ミート位置の高さ）を点検する",correct:true},
-      {text:"タイヤの空気圧を点検する",correct:false},
-      {text:"ブレーキの引きずりを点検する",correct:false},
-      {text:"燃料噴射量を点検する",correct:false}],
+      {text:"クラッチワイヤー・レリーズの遊びを点検する",correct:false},
+      {text:"ミッションオイルの量と状態を点検する",correct:false},
+      {text:"ドライブシャフトのガタを点検する",correct:false}],
       result_correct:"高ギアで急加速すると回転だけ吹け上がる。クラッチ滑りの典型。",
       result_wrong:"回転だけ上がり速度が乗らないのはクラッチ滑りの典型。まずそこを確認。"},
     {question:"クラッチ滑りが疑わしい。どう確認しますか？",choices:[
       {text:"サイドを引き高ギアでエンストするか試す",correct:true},
-      {text:"アイドリング回転数を測定する",correct:false},
-      {text:"エンジンオイルの量を点検する",correct:false},
-      {text:"スパークプラグの状態を点検する",correct:false}],
+      {text:"クラッチペダルの遊びと切れを点検する",correct:false},
+      {text:"加速時の回転と速度の比を確認する",correct:false},
+      {text:"ミート位置の高さの変化を点検する",correct:false}],
       result_correct:"サイド＋高ギアでエンストせず吹け上がる＝滑り確定。",
       result_wrong:"サイドを引いて高ギア発進し、エンストしなければ滑り確定の定番テスト。"},
     {question:"クラッチ滑りが確定。どう対処しますか？",choices:[
       {text:"クラッチディスク等を点検し摩耗品を交換する",correct:true},
-      {text:"レリーズの遊び調整だけで済ませる",correct:false},
-      {text:"滑り止め添加剤を入れる",correct:false},
-      {text:"回転を抑えて運転するよう案内する",correct:false}],
+      {text:"レリーズベアリングだけ交換して組み付ける",correct:false},
+      {text:"フライホイールを点検せずディスクのみ替える",correct:false},
+      {text:"クラッチ滑り止め添加剤を注入する",correct:false}],
       result_correct:"ディスク摩耗を確認しクラッチ一式を交換。駆動が正常化。",
       result_wrong:"摩耗が原因なら交換が本筋。調整や添加剤では滑りは止まらない。"}],
     explanation:"回転だけ上がるのはクラッチ滑り。サイド＋高ギアのテストで確定し、摩耗ディスクを交換。"},
   {id:24,tier:"中級",symptom:"ハンドルが重い（パワーステアリングが効きにくい）",steps:[
     {question:"最初に何を確認しますか？",choices:[
       {text:"電動／油圧のどちらの方式かをまず確認する",correct:true},
-      {text:"タイヤを太いものに替える",correct:false},
-      {text:"アライメントを調整する",correct:false},
-      {text:"ステアリングギアボックスを交換する",correct:false}],
+      {text:"パワステフルードの量と漏れを点検する",correct:false},
+      {text:"駆動ベルトの張りを点検する",correct:false},
+      {text:"ステアリングギアの渋さを点検する",correct:false}],
       result_correct:"車両は電動パワステ（EPS）。油圧とは点検手順が異なると確認。",
       result_wrong:"パワステ不調はまず電動か油圧かで分岐。方式により点検が全く違う。"},
     {question:"電動パワステ（EPS）だった。何を疑いますか？",choices:[
@@ -1062,7 +1062,7 @@ const cases = [
       {text:"コードに沿って電源・センサーを点検する",correct:true},
       {text:"パワステフルードを規定量まで補充する",correct:false},
       {text:"駆動ベルトの張りを点検して交換する",correct:false},
-      {text:"ハンドルを軽い社外品に交換する",correct:false}],
+      {text:"アシストモーターを点検せず交換する",correct:false}],
       result_correct:"故障コードに沿ってトルクセンサー／電源系を点検し修理。操舵力が回復。",
       result_wrong:"EPSはフルード・ベルト無関係。コードに沿った電気系の点検・修理が正解。"}],
     explanation:"パワステ不調はまず電動/油圧の判別。EPSは警告灯・コード・電源電圧から。油圧と手順を混同しない。"},
@@ -1440,9 +1440,9 @@ const cases = [
   {id:41,tier:"中級",symptom:"加速時に「カリカリ」と異音（ノッキング）がする",steps:[
     {question:"最初に何を確認しますか？",choices:[
       {text:"燃料の質・カーボン堆積・点火時期を確認する",correct:true},
-      {text:"ただちにエンジンを載せ替える",correct:false},
-      {text:"タイヤの空気圧を点検する",correct:false},
-      {text:"ブレーキの引きずりを点検する",correct:false}],
+      {text:"使用燃料のオクタン価を確認する",correct:false},
+      {text:"ノックセンサーの作動を点検する",correct:false},
+      {text:"冷却水温が過熱気味か点検する",correct:false}],
       result_correct:"燃焼室にカーボン堆積。ノッキングを誘発していた。",
       result_wrong:"加速時カリカリはノッキング。燃料/カーボン/点火時期から確認する。"},
     {question:"原因の切り分けで有効なのは？",choices:[
@@ -1454,18 +1454,18 @@ const cases = [
       result_wrong:"まずノックセンサー作動と点火時期を点検。分解や当て交換は後。"},
     {question:"カーボン堆積が主因。どう対処しますか？",choices:[
       {text:"燃焼室・吸気のカーボン除去（清浄）を行う",correct:true},
-      {text:"オクタン価の低い燃料に変える",correct:false},
-      {text:"点火時期を大幅に遅らせて隠す",correct:false},
-      {text:"ノッキングは仕様として説明する",correct:false}],
+      {text:"より低いオクタン価の燃料に入れ替える",correct:false},
+      {text:"点火時期を大きく遅らせて出力を落とす",correct:false},
+      {text:"清浄はせず添加剤だけを入れる",correct:false}],
       result_correct:"カーボン除去後にノッキング解消。指定燃料の使用も案内。",
       result_wrong:"カーボン除去が本筋。点火を遅らせ過ぎ・低品質燃料はかえって悪化。"}],
     explanation:"加速時ノッキングは燃料/カーボン/点火時期から。ノックセンサー確認後、カーボン除去で解消。"},
   {id:42,tier:"中級",symptom:"始動後に黒煙、加速が重い（燃調が濃い）",steps:[
     {question:"最初に何を確認しますか？",choices:[
       {text:"エアフロ(MAF)・吸気系と空燃比を確認する",correct:true},
-      {text:"ただちにエンジンを載せ替える",correct:false},
-      {text:"ブレーキを点検する",correct:false},
-      {text:"タイヤを新品に交換する",correct:false}],
+      {text:"水温センサーの値を点検する",correct:false},
+      {text:"O2センサーの波形を点検する",correct:false},
+      {text:"燃料圧力を測定する",correct:false}],
       result_correct:"MAFの値が異常。混合気が濃くなり黒煙が出ていた。",
       result_wrong:"黒煙＝濃い混合気。まずMAF・吸気と空燃比データを確認する。"},
     {question:"MAFが疑わしい。どうしますか？",choices:[
@@ -1477,32 +1477,32 @@ const cases = [
       result_wrong:"MAFはまず清掃で直ることが多い。即交換や当て交換は割高。"},
     {question:"清掃後の確認は？",choices:[
       {text:"空燃比・燃料補正値が正常範囲か確認する",correct:true},
-      {text:"見た目で問題なければ完了とする",correct:false},
-      {text:"黒煙が減れば数値は見ない",correct:false},
-      {text:"そのまま納車する",correct:false}],
+      {text:"補正値は見ず黒煙の有無だけ確認する",correct:false},
+      {text:"走行せず机上で完了と判断する",correct:false},
+      {text:"補正値をリセットして組み付ける",correct:false}],
       result_correct:"燃料補正が正常範囲に復帰。黒煙も消え加速も回復。",
       result_wrong:"清掃後は空燃比・補正値の数値確認まで。見た目だけでは不十分。"}],
     explanation:"黒煙＋加速不良は濃い混合気。MAF/吸気と空燃比を確認、MAFは清掃で直ることが多い。"},
   {id:43,tier:"中級",symptom:"足元が濡れ、甘い臭い。窓が内側から曇る",steps:[
     {question:"最初に何を疑いますか？",choices:[
       {text:"冷却水の減りとヒーターコアからの漏れを疑う",correct:true},
-      {text:"ボディの雨漏りを点検する",correct:false},
-      {text:"エアコンガスを補充する",correct:false},
-      {text:"フロアマットを乾かして様子を見る",correct:false}],
+      {text:"エアコンのドレン詰まりによる水漏れを疑う",correct:false},
+      {text:"ボディやサンルーフの雨漏りを疑う",correct:false},
+      {text:"単なる結露によるガラスの曇りと判断する",correct:false}],
       result_correct:"冷却水が減少し甘い臭い。ヒーターコア漏れの典型症状。",
       result_wrong:"甘い臭い＋足元濡れ＋窓の油膜状曇りはヒーターコア漏れの定番。"},
     {question:"ヒーターコア漏れが疑わしい。どう確認しますか？",choices:[
       {text:"冷却系を加圧して漏れと減り方を点検する",correct:true},
-      {text:"エアコンガスを回収する",correct:false},
-      {text:"ラジエーターを交換する",correct:false},
-      {text:"サーモスタットを交換する",correct:false}],
+      {text:"ヒーターホース接続部の漏れを点検する",correct:false},
+      {text:"室内側コア周辺のにじみを点検する",correct:false},
+      {text:"ラジエーターキャップの保持圧を点検する",correct:false}],
       result_correct:"加圧テストで室内側への漏れを確認。ヒーターコア不良と確定。",
       result_wrong:"冷却系の加圧テストで漏れを特定するのが確実。ガス系とは別。"},
     {question:"どう対処・説明しますか？",choices:[
       {text:"コア交換（内装脱着）の費用とリスクを説明する",correct:true},
-      {text:"漏れ止め剤を入れて済ませる",correct:false},
-      {text:"冷却水を継ぎ足しながら乗ってもらう",correct:false},
-      {text:"窓を開けて乗るよう案内する",correct:false}],
+      {text:"応急で漏れ止め剤を入れて延命を図る",correct:false},
+      {text:"ヒーターホースを直結しコアを迂回する",correct:false},
+      {text:"冷却水を継ぎ足しながら使い続ける",correct:false}],
       result_correct:"ヒーターコア交換は内装脱着で工賃大。費用とリスクを正直に説明。",
       result_wrong:"漏れ止め剤や継ぎ足しは一時しのぎ。コア交換が本筋（工賃を要説明）。"}],
     explanation:"足元濡れ＋甘い臭い＋窓曇りはヒーターコア漏れ。加圧テストで確定。交換は工賃大で要説明。"},
@@ -1516,16 +1516,16 @@ const cases = [
       result_wrong:"制動時のみ振れるのはローター歪みが定番。常時の振れとは切り分ける。"},
     {question:"ローターの振れが原因。どう判断しますか？",choices:[
       {text:"厚み差を測定し研磨か交換かを判断する",correct:true},
-      {text:"とりあえずパッドだけ交換する",correct:false},
-      {text:"増し締めだけで様子を見る",correct:false},
-      {text:"そのまま納車する",correct:false}],
+      {text:"パッドのみ交換しローターは点検しない",correct:false},
+      {text:"ローターの振れを測らず組み付ける",correct:false},
+      {text:"増し締めして再発確認せず仕上げる",correct:false}],
       result_correct:"厚み差を測定。基準超のため研磨または交換が必要と判断。",
       result_wrong:"ローターは厚み差を測定して研磨/交換を判断。パッドだけでは直らない。"},
     {question:"研磨・交換後に行うことは？",choices:[
       {text:"パッドとセットで当たりを出し制動を確認する",correct:true},
-      {text:"すぐ高速で強くブレーキする",correct:false},
-      {text:"増し締めだけで完了とする",correct:false},
-      {text:"試運転は省略して納車する",correct:false}],
+      {text:"当たり出しをせず強い制動から始める",correct:false},
+      {text:"試運転をせずに仕上げる",correct:false},
+      {text:"ローターのみ替えパッドは点検しない",correct:false}],
       result_correct:"当たり出し後にジャダー消失を確認。パッドもセットで点検。",
       result_wrong:"研磨/交換後は当たり出しと試運転まで。パッドもセットで確認する。"}],
     explanation:"制動時の振れはローター歪み。厚み差を測定し研磨/交換、当たり出しまで行う。"},
@@ -1546,48 +1546,48 @@ const cases = [
       result_wrong:"バランス後も残る震えはタイヤ変形・ホイール歪みを点検する。"},
     {question:"原因が特定できたら？",choices:[
       {text:"該当タイヤ/ホイールを交換し再バランスする",correct:true},
-      {text:"ウェイトを大量に貼って隠す",correct:false},
-      {text:"空気圧を上げて震えを隠す",correct:false},
-      {text:"震えは仕様として説明する",correct:false}],
+      {text:"ウェイトを大量に追加して振れを抑える",correct:false},
+      {text:"変形は直さずバランスのみ取り直す",correct:false},
+      {text:"空気圧を高めにして振動を和らげる",correct:false}],
       result_correct:"変形タイヤを交換し再バランス。高速でも震えが消えた。",
       result_wrong:"変形は交換が本筋。ウェイト多用や空気圧での誤魔化しは不可。"}],
     explanation:"高速域の震えはホイールバランス→タイヤ/ホイール変形の順。原因部品を交換し再バランス。"},
   {id:46,tier:"中級",symptom:"暖房（ヒーター）が効かない・温風が出ない",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"冷却水量とサーモスタットの開閉を点検する",correct:true},
-      {text:"エアコンガスを補充する",correct:false},
-      {text:"ブロアモーターを交換する",correct:false},
-      {text:"ヒーターコアを交換する",correct:false}],
+      {text:"水温計で水温が上がるかを確認する",correct:false},
+      {text:"ヒーターコアの入口/出口温度を点検する",correct:false},
+      {text:"ブロアモーターの送風を点検する",correct:false}],
       result_correct:"冷却水不足ぎみで水温が上がりにくい。まず量とサーモを確認。",
       result_wrong:"暖房不良はまず冷却水量・サーモ（水温が上がるか）から。ガスは冷房側。"},
     {question:"水温は正常。温風が出ない。次は？",choices:[
       {text:"コア詰まりとミックスダンパーを点検する",correct:true},
-      {text:"ラジエーターを交換する",correct:false},
-      {text:"サーモを再度交換する",correct:false},
-      {text:"コンプレッサーを点検する",correct:false}],
+      {text:"ヒーターホースの通水と詰まりを点検する",correct:false},
+      {text:"エアミックスのアクチュエータを点検する",correct:false},
+      {text:"ブロアの風量と吹出し切替を点検する",correct:false}],
       result_correct:"ヒーターコアに目詰まり。温水が通らず温風が出ていなかった。",
       result_wrong:"水温正常で温風なしはコア詰まり/ダンパー不良。冷房系とは別系統。"},
     {question:"コア詰まりが原因。どう対処しますか？",choices:[
       {text:"コアの洗浄（フラッシング）または交換を行う",correct:true},
-      {text:"冷却水を抜いて水道水で薄める",correct:false},
-      {text:"暖房は使わないよう案内する",correct:false},
-      {text:"サーモを外して常時開にする",correct:false}],
+      {text:"ヒーターホースを直結しコアを迂回する",correct:false},
+      {text:"冷却水を水道水で薄めて流す",correct:false},
+      {text:"サーモを外して常時開のまま使う",correct:false}],
       result_correct:"コア洗浄で通水改善、温風が回復。冷却系の点検も併せて実施。",
       result_wrong:"コア詰まりは洗浄/交換が本筋。サーモ撤去や水道水希釈は不適切。"}],
     explanation:"暖房不良は冷却水量/サーモ→ヒーターコア詰まり/ダンパーの順。冷房系（ガス）とは別。"},
   {id:47,tier:"中級",symptom:"セルは元気に回るのにエンジンがかからない",steps:[
     {question:"最初に何をしますか？",choices:[
       {text:"燃料と火花のどちらが欠けているか切り分ける",correct:true},
-      {text:"バッテリーを新品に交換する",correct:false},
-      {text:"セルモーターを交換する",correct:false},
-      {text:"エンジンオイルを交換する",correct:false}],
+      {text:"燃料ポンプをいきなり新品に交換する",correct:false},
+      {text:"イグニッションコイルを全数交換する",correct:false},
+      {text:"燃料を補給して再始動を試す",correct:false}],
       result_correct:"セルが回る＝電源系はOK。燃料か点火の欠落を切り分ける。",
       result_wrong:"セルが回るなら電源系は正常。次は燃料系と点火系の切り分け。"},
     {question:"切り分けの具体手順は？",choices:[
       {text:"燃圧の有無とスパークの飛びを点検する",correct:true},
-      {text:"タイヤの空気圧を点検する",correct:false},
-      {text:"エアコンの作動を点検する",correct:false},
-      {text:"ライトの点灯を点検する",correct:false}],
+      {text:"各気筒の圧縮圧力を点検する",correct:false},
+      {text:"燃料噴射のパルスを点検する",correct:false},
+      {text:"点火コイルの一次電圧を点検する",correct:false}],
       result_correct:"燃圧は正常だがスパークが飛ばない。点火系の欠落と判明。",
       result_wrong:"燃圧測定＋スパーク確認で燃料/点火を切り分けるのが定石。"},
     {question:"点火が来ていない。次に疑うのは？",choices:[
@@ -1601,32 +1601,32 @@ const cases = [
   {id:48,tier:"中級",symptom:"最近、急に燃費が悪くなった",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"空気圧・引きずり・エアクリの汚れを点検する",correct:true},
-      {text:"ただちにエンジンを載せ替える",correct:false},
-      {text:"ATをリビルトする",correct:false},
-      {text:"触媒を新品に交換する",correct:false}],
+      {text:"O2センサーをいきなり新品交換する",correct:false},
+      {text:"点火プラグを全数交換する",correct:false},
+      {text:"燃料補正値のデータだけを確認する",correct:false}],
       result_correct:"空気圧低下とエアクリ詰まりを確認。燃費悪化の基本要因。",
       result_wrong:"急な燃費悪化はまず空気圧・引きずり・エアクリ等の基本から。"},
     {question:"基本点検は問題なし。次に何を見ますか？",choices:[
       {text:"O2センサーと燃料補正値を確認する",correct:true},
-      {text:"タイヤを4本とも交換する",correct:false},
-      {text:"オイルを高級品に替える",correct:false},
-      {text:"マフラーを社外品に替える",correct:false}],
+      {text:"点火系（プラグ・コイル）を点検する",correct:false},
+      {text:"吸気系の汚れ・詰まりを点検する",correct:false},
+      {text:"燃料噴射量の補正履歴を確認する",correct:false}],
       result_correct:"O2センサーの応答が鈍く補正が乱れていた。燃費悪化の一因。",
       result_wrong:"基本がOKなら空燃比制御（O2/補正値）を確認するのが順序。"},
     {question:"O2センサー劣化が濃厚。どうしますか？",choices:[
       {text:"劣化を確認しO2を交換、補正を再確認する",correct:true},
-      {text:"燃費改善の添加剤で誤魔化す",correct:false},
-      {text:"燃料を高いものに替える",correct:false},
-      {text:"燃費は運転のせいと説明する",correct:false}],
+      {text:"O2は交換せず添加剤で対処する",correct:false},
+      {text:"燃料補正をリセットするだけにする",correct:false},
+      {text:"上流を点検せずO2だけ交換する",correct:false}],
       result_correct:"O2交換後、燃料補正が安定し燃費が回復。基本整備も併せて実施。",
       result_wrong:"劣化が確認できれば交換が本筋。添加剤や高級燃料の誤魔化しは不可。"}],
     explanation:"急な燃費悪化は空気圧/引きずり/エアクリ等の基本→空燃比制御(O2/補正)の順で確認する。"},
   {id:49,tier:"中級",symptom:"ATの変速がもたつき、たまにショックがある",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"ATフルードの量と色・臭いを点検する",correct:true},
-      {text:"ただちにATをリビルトする",correct:false},
-      {text:"エンジンマウントを交換する",correct:false},
-      {text:"タイヤを新品に交換する",correct:false}],
+      {text:"変速時の油圧データを確認する",correct:false},
+      {text:"シフトリンケージの作動を点検する",correct:false},
+      {text:"故障コードをスキャンで読み取る",correct:false}],
       result_correct:"ATFがやや不足し色も劣化ぎみ。まず量と状態を確認。",
       result_wrong:"AT不調の第一歩はATFの量・状態。いきなりリビルトは早計。"},
     {question:"ATFがやや劣化。健全な範囲ならどうする？",choices:[
@@ -1638,32 +1638,32 @@ const cases = [
       result_wrong:"健全範囲なら量・規定油への調整が先。激しい劣化の全量洗浄は別判断。"},
     {question:"調整後も改善が薄い場合は？",choices:[
       {text:"故障コードと油圧・電子制御系を点検する",correct:true},
-      {text:"そのまま納車して様子を見る",correct:false},
-      {text:"もう一度ATFを継ぎ足す",correct:false},
-      {text:"エンジンを載せ替える",correct:false}],
+      {text:"ソレノイドバルブの作動を点検する",correct:false},
+      {text:"ATFをさらに継ぎ足して再確認する",correct:false},
+      {text:"バルブボディの汚れを点検する",correct:false}],
       result_correct:"スキャンで変速制御系のコードを確認。電子制御側の点検へ進む。",
       result_wrong:"ATF調整で直らなければコード・油圧・制御系へ。闇雲な継ぎ足しは不可。"}],
     explanation:"AT変速不調はまずATF量・状態。健全なら規定量/油へ調整。改善なければコード・制御系を点検。"},
   {id:50,tier:"中級",symptom:"発進やハンドル操作時にキュルキュル音、焦げ臭い",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"駆動ベルトの張り・劣化・鳴きを点検する",correct:true},
-      {text:"クラッチを交換する",correct:false},
-      {text:"タイヤを新品に交換する",correct:false},
-      {text:"エアコンガスを補充する",correct:false}],
+      {text:"各補機プーリーの回転を点検する",correct:false},
+      {text:"オートテンショナーの張力を点検する",correct:false},
+      {text:"ウォーターポンプの軸の振れを点検する",correct:false}],
       result_correct:"駆動ベルトが緩み劣化。負荷時に滑って鳴いていた。",
       result_wrong:"キュルキュル＋焦げ臭はベルト滑りが定番。まずベルトを点検。"},
     {question:"ベルトが鳴いている。原因をどう絞りますか？",choices:[
       {text:"テンショナーの張力と各プーリーの回りを点検する",correct:true},
-      {text:"ベルトに滑り止めスプレーを吹く",correct:false},
-      {text:"アイドルを上げて鳴きを隠す",correct:false},
-      {text:"ベルトを限界まで強く張る",correct:false}],
+      {text:"ベルトに滑り止めスプレーを吹いて抑える",correct:false},
+      {text:"テンショナーは見ずベルトだけ交換する",correct:false},
+      {text:"ベルトを限界まで強く張って止める",correct:false}],
       result_correct:"オートテンショナーの張力低下を確認。ベルト滑りの根本原因。",
       result_wrong:"鳴きはテンショナー張力やプーリー固着を点検。スプレーは一時的。"},
     {question:"どう対処しますか？",choices:[
       {text:"ベルトとテンショナーを交換する",correct:true},
-      {text:"鳴き止めスプレーで済ませる",correct:false},
-      {text:"ベルトだけを限界まで張る",correct:false},
-      {text:"鳴きは仕様として説明する",correct:false}],
+      {text:"ベルトのみ交換しテンショナーは流用する",correct:false},
+      {text:"鳴き止めスプレーで応急処置する",correct:false},
+      {text:"ベルトを強く張って鳴きを止める",correct:false}],
       result_correct:"ベルト＋テンショナー交換で鳴き解消。張り過ぎの弊害も説明。",
       result_wrong:"ベルトとテンショナーはセットで交換が本筋。スプレーや過張は再発の元。"}],
     explanation:"キュルキュル＋焦げ臭はベルト滑り。テンショナー張力/プーリーを点検し、ベルトとセットで交換。"},
@@ -2368,9 +2368,9 @@ function setSceneImage(id){
   const img=$("sceneImg"), svg=$("sceneSvg");
   if(!img||!svg) return;
   const exts=["png","jpg","jpeg","webp"]; let i=0;
-  img.style.display="none"; svg.style.display="";   // 既定はSVG
+  svg.style.display="none"; img.style.display="block";   // SVGは出さず、読み込み中は前画像/暗背景のまま
   function tryNext(){
-    if(i>=exts.length){ img.style.display="none"; svg.style.display=""; return; }
+    if(i>=exts.length){ img.style.display="none"; svg.style.display="block"; return; } // 全滅時のみSVG
     img.onload=()=>{ img.style.display="block"; svg.style.display="none"; };
     img.onerror=()=>{ i++; tryNext(); };
     img.src = "img/"+id+"."+exts[i];
