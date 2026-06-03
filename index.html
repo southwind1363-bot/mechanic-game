@@ -1,0 +1,2669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>整備士育成シミュレーター</title>
+<style>
+  :root{
+    --bg:#1a1c1f;
+    --panel:#26292e;
+    --panel-light:#30343a;
+    --orange:#ff7a18;
+    --orange-dark:#e85d04;
+    --steel:#9aa3ad;
+    --text:#e9ecef;
+    --green:#23c552;
+    --red:#e63946;
+    --line:#3a3f46;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
+    background:
+      radial-gradient(circle at 20% 0%, #2a2d33 0%, transparent 40%),
+      repeating-linear-gradient(45deg,#1a1c1f 0 22px,#1d1f23 22px 44px);
+    color:var(--text);
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+    padding:14px;
+    line-height:1.6;
+  }
+  .app{width:100%;max-width:680px;display:flex;flex-direction:column;gap:14px;}
+
+  /* ===== Header ===== */
+  header{
+    background:linear-gradient(180deg,#2c2f35,#222428);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+  }
+  .title{
+    display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;letter-spacing:.02em;
+  }
+  .title .gear{color:var(--orange);font-size:1.5rem;animation:spin 6s linear infinite;display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .title small{font-weight:500;color:var(--steel);font-size:.7rem;margin-left:auto;}
+
+  .hud{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;
+  }
+  .hud .cell{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:8px 6px;text-align:center;
+  }
+  .hud .label{font-size:.62rem;color:var(--steel);letter-spacing:.08em;}
+  .hud .val{font-size:1.1rem;font-weight:800;margin-top:2px;}
+  .hud .val.timer{color:var(--orange);}
+  .hud .val.timer.danger{color:var(--red);animation:pulse .6s infinite;}
+  @keyframes pulse{50%{opacity:.4;}}
+
+  .progress{
+    height:8px;background:#15171a;border-radius:6px;overflow:hidden;margin-top:12px;border:1px solid var(--line);
+  }
+  .progress > i{
+    display:block;height:100%;width:0;
+    background:linear-gradient(90deg,var(--orange),var(--orange-dark));
+    transition:width .4s ease;
+  }
+
+  /* ===== Card ===== */
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 16px;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+  }
+
+  .symptom-box{
+    background:linear-gradient(180deg,#33261b,#2a221b);
+    border:1px solid var(--orange-dark);
+    border-left:5px solid var(--orange);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:16px;
+  }
+  .symptom-box .cap{font-size:.66rem;color:var(--orange);letter-spacing:.1em;font-weight:700;}
+  .symptom-box .txt{font-size:1.05rem;font-weight:700;margin-top:4px;}
+
+  /* ===== 入庫シーン（症状に応じたイラスト） ===== */
+  .scene{position:relative;border-radius:10px;overflow:hidden;margin-bottom:14px;background:#15171a;border:1px solid var(--line);}
+  .scene svg{display:block;width:100%;height:auto;}
+  #sceneImg{display:none;width:100%;height:auto;vertical-align:bottom;}
+  .scene-cap{position:absolute;top:8px;left:10px;font-size:.7rem;font-weight:800;color:var(--orange);letter-spacing:.12em;text-shadow:0 1px 3px #000;}
+  .scene-car.in{animation:driveIn .7s cubic-bezier(.2,.8,.3,1);}
+  @keyframes driveIn{from{transform:translateX(-160px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  #carBody.shake{animation:vib .12s linear infinite;transform-box:fill-box;transform-origin:center;}
+  @keyframes vib{0%,100%{transform:translate(0,0)}25%{transform:translate(-1.3px,.6px)}75%{transform:translate(1.3px,-.6px)}}
+  .puff{transform-box:fill-box;transform-origin:center;}
+  #fxSmoke .puff{animation:puff 2.2s ease-out infinite;}
+  #fxSmoke .puff:nth-child(2){animation-delay:.7s;}
+  #fxSmoke .puff:nth-child(3){animation-delay:1.4s;}
+  @keyframes puff{0%{transform:translate(0,0) scale(.5);opacity:0;}15%{opacity:.75;}100%{transform:translate(-24px,-42px) scale(1.7);opacity:0;}}
+  #fxSteam .puff{animation:steam 1.8s ease-out infinite;}
+  #fxSteam .puff:nth-child(2){animation-delay:.6s;}
+  #fxSteam .puff:nth-child(3){animation-delay:1.2s;}
+  @keyframes steam{0%{transform:translate(0,0) scale(.5);opacity:0;}15%{opacity:.85;}100%{transform:translate(10px,-48px) scale(1.9);opacity:0;}}
+  #fxRain line{animation:rain .8s linear infinite;}
+  #fxRain line:nth-child(even){animation-delay:.4s;}
+  @keyframes rain{from{transform:translateY(-16px);opacity:0;}20%{opacity:.6;}to{transform:translateY(72px);opacity:0;}}
+  #fxSpark{animation:spark .4s steps(2,end) infinite;}
+  @keyframes spark{0%,100%{opacity:0;}50%{opacity:1;}}
+  .wave{transform-box:fill-box;transform-origin:center;animation:wave 1.6s ease-out infinite;}
+  .wave:nth-child(2){animation-delay:.5s;}
+  .wave:nth-child(3){animation-delay:1s;}
+  @keyframes wave{0%{opacity:0;transform:scale(.4);}40%{opacity:.85;}100%{opacity:0;transform:scale(1.5);}}
+  #fxHeat{transform-box:fill-box;transform-origin:center;animation:heat 2.4s ease-in-out infinite;}
+  @keyframes heat{0%,100%{opacity:.8;}50%{opacity:1;transform:scale(1.07);}}
+  #fxLamp{animation:lampBlink 1s ease-in-out infinite;}
+  @keyframes lampBlink{0%,100%{opacity:1;}50%{opacity:.3;}}
+  @media (prefers-reduced-motion: reduce){
+    .scene-car.in,#carBody.shake,.puff,#fxRain line,#fxSpark,.wave,#fxHeat,#fxLamp{animation:none!important;}
+  }
+
+  .step-meta{font-size:.7rem;color:var(--steel);margin-bottom:6px;letter-spacing:.05em;}
+  .question{font-size:1.08rem;font-weight:700;margin-bottom:14px;}
+
+  .choices{display:flex;flex-direction:column;gap:10px;}
+  .choice{
+    text-align:left;
+    background:var(--panel-light);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:13px 14px;
+    font-size:.95rem;
+    font-family:inherit;
+    cursor:pointer;
+    display:flex;align-items:flex-start;gap:10px;
+    transition:transform .08s, border-color .15s, background .15s;
+  }
+  .choice .bullet{
+    flex:0 0 auto;width:24px;height:24px;border-radius:6px;
+    background:#15171a;border:1px solid var(--line);color:var(--steel);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;
+  }
+  .choice:hover:not(:disabled){border-color:var(--orange);background:#383d44;}
+  .choice:active:not(:disabled){transform:scale(.99);}
+  .choice:disabled{cursor:default;opacity:.95;}
+  .choice.correct{border-color:var(--green);background:rgba(35,197,82,.14);}
+  .choice.correct .bullet{background:var(--green);color:#fff;border-color:var(--green);}
+  .choice.wrong{border-color:var(--red);background:rgba(230,57,70,.14);}
+  .choice.wrong .bullet{background:var(--red);color:#fff;border-color:var(--red);}
+
+  /* ===== Result panel ===== */
+  .result{margin-top:14px;border-radius:10px;padding:13px 14px;border:1px solid var(--line);display:none;}
+  .result.show{display:block;animation:slideIn .3s ease;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .result.ok{background:rgba(35,197,82,.10);border-color:var(--green);}
+  .result.ng{background:rgba(230,57,70,.10);border-color:var(--red);}
+  .result .head{font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+  .result.ok .head{color:var(--green);}
+  .result.ng .head{color:var(--red);}
+  .result .body{font-size:.92rem;}
+  .result .body .lead{color:var(--steel);font-size:.82rem;display:block;margin-top:6px;}
+  .result .body .lead b{color:var(--text);}
+
+  .next-btn{
+    margin-top:14px;width:100%;
+    background:linear-gradient(180deg,var(--orange),var(--orange-dark));
+    color:#fff;border:none;border-radius:10px;padding:14px;
+    font-size:1rem;font-weight:800;font-family:inherit;cursor:pointer;
+    box-shadow:0 4px 14px rgba(255,122,24,.3);
+    transition:transform .08s,filter .15s;display:none;
+  }
+  .next-btn.show{display:block;animation:slideIn .3s ease;}
+  .next-btn:hover{filter:brightness(1.08);}
+  .next-btn:active{transform:scale(.99);}
+
+  /* ===== Flash overlay ===== */
+  #flash{
+    position:fixed;inset:0;pointer-events:none;z-index:50;opacity:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #flash.on{animation:flash .9s ease;}
+  #flash.green{background:radial-gradient(circle,rgba(35,197,82,.55),rgba(35,197,82,.1));}
+  #flash.red{background:radial-gradient(circle,rgba(230,57,70,.55),rgba(230,57,70,.1));}
+  #flash .word{font-size:2.6rem;font-weight:900;text-shadow:0 4px 16px rgba(0,0,0,.5);transform:scale(.6);}
+  #flash.on .word{animation:pop .9s ease;}
+  @keyframes flash{0%{opacity:0;}15%{opacity:1;}100%{opacity:0;}}
+  @keyframes pop{0%{transform:scale(.6);}30%{transform:scale(1.1);}100%{transform:scale(1);}}
+
+  /* ===== Start / End screens ===== */
+  .center-screen{text-align:center;padding:8px 4px;}
+  .center-screen h1{font-size:1.5rem;margin-bottom:6px;}
+  .center-screen .gear{color:var(--orange);}
+  .center-screen p{color:var(--steel);font-size:.92rem;margin:10px 0;}
+  .rules{
+    text-align:left;background:var(--panel-light);border:1px solid var(--line);
+    border-radius:10px;padding:14px;margin:16px 0;font-size:.88rem;
+  }
+  .rules li{margin:6px 0 6px 18px;}
+  .big-btn{
+    width:100%;background:linear-gradient(180deg,var(--orange),var(--orange-dark));
+    color:#fff;border:none;border-radius:10px;padding:16px;
+    font-size:1.1rem;font-weight:800;font-family:inherit;cursor:pointer;
+    box-shadow:0 4px 14px rgba(255,122,24,.3);transition:transform .08s,filter .15s;
+  }
+  .big-btn:hover{filter:brightness(1.08);}
+  .big-btn:active{transform:scale(.99);}
+  .ghost-btn{
+    width:100%;background:transparent;color:var(--steel);
+    border:1px solid var(--line);border-radius:10px;padding:12px;
+    font-size:.9rem;font-weight:600;font-family:inherit;cursor:pointer;margin-top:10px;
+  }
+  .ghost-btn:hover{color:var(--text);border-color:var(--steel);}
+
+  .hi-row{
+    display:flex;justify-content:center;gap:8px;align-items:center;
+    color:var(--steel);font-size:.85rem;margin-top:4px;flex-wrap:wrap;
+  }
+  .hi-row b{color:var(--orange);font-size:1rem;}
+
+  /* ===== Final score ===== */
+  .score-ring{
+    width:150px;height:150px;border-radius:50%;margin:10px auto;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    background:conic-gradient(var(--orange) var(--deg,0deg), #15171a 0deg);
+    position:relative;transition:background .1s linear;
+  }
+  .score-ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--panel);}
+  .score-ring .inner{position:relative;z-index:1;text-align:center;}
+  .score-ring .num{font-size:2.4rem;font-weight:900;line-height:1;}
+  .score-ring .unit{font-size:.8rem;color:var(--steel);}
+  .rank{font-size:1.4rem;font-weight:900;margin:8px 0;}
+  .rank.s{color:#ffd60a;}
+  .rank.a{color:var(--green);}
+  .rank.b{color:var(--orange);}
+  .rank.c{color:var(--steel);}
+  .review-list{text-align:left;margin:14px 0;}
+  .review-item{
+    display:flex;gap:10px;align-items:center;background:var(--panel-light);
+    border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:.82rem;
+  }
+  .review-item .mark{flex:0 0 auto;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;}
+  .review-item .mark.o{background:var(--green);color:#fff;}
+  .review-item .mark.x{background:var(--red);color:#fff;}
+  .review-item .sym{flex:1;color:var(--steel);}
+  .val.lives{color:var(--red);letter-spacing:1px;}
+  .val.lives.low{animation:pulse .6s infinite;}
+  .promote-badge{
+    width:84px;height:84px;border-radius:50%;margin:6px auto 4px;
+    display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#1a1c1f;
+    background:radial-gradient(circle at 35% 30%,#ffe27a,#ffb300);
+    box-shadow:0 0 22px rgba(255,179,0,.5);animation:pop .6s ease;
+  }
+  .over-mark{
+    width:84px;height:84px;border-radius:50%;margin:6px auto 4px;
+    display:flex;align-items:center;justify-content:center;font-size:2.6rem;color:#fff;font-weight:900;
+    background:radial-gradient(circle at 35% 30%,#ff6b6b,#b00020);
+    box-shadow:0 0 22px rgba(230,57,70,.5);
+  }
+  .tier-badges{display:flex;justify-content:center;gap:8px;margin:10px 0;flex-wrap:wrap;}
+  .tier-badges span{font-size:.78rem;padding:4px 10px;border-radius:20px;border:1px solid var(--line);color:var(--steel);}
+  .tier-badges span.done{background:rgba(35,197,82,.15);border-color:var(--green);color:var(--green);}
+  .tier-badges span.now{background:rgba(255,122,24,.15);border-color:var(--orange);color:var(--orange);}
+  /* ===== 親方（誤答で怒る／正解で褒める） ===== */
+  #oyakata{position:fixed;left:12px;bottom:16px;z-index:60;display:flex;align-items:flex-end;gap:8px;opacity:0;transform:translateY(24px) scale(.85);pointer-events:none;}
+  #oyakata.show{animation:oyaIn .34s cubic-bezier(.2,1.3,.4,1) forwards;}
+  @keyframes oyaIn{to{opacity:1;transform:translateY(0) scale(1);}}
+  #oyakata .oya-face{width:66px;height:66px;flex:0 0 auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55));}
+  #oyakata.angry.show .oya-face{animation:oyaShake .12s linear 6;}
+  @keyframes oyaShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-2px,0) rotate(-4deg)}75%{transform:translate(2px,0) rotate(4deg)}}
+  #oyakata .oya-bubble{position:relative;max-width:210px;background:#fff;color:#1a1c1f;border-radius:10px;padding:7px 11px;font-size:.82rem;font-weight:800;line-height:1.4;box-shadow:0 3px 8px rgba(0,0,0,.45);}
+  #oyakata .oya-bubble::after{content:"";position:absolute;left:-7px;bottom:14px;border:7px solid transparent;border-right-color:#fff;}
+  #oyakata.angry .oya-bubble{color:#b00020;border:2px solid #e63946;}
+  #oyakata.angry .oya-bubble::after{border-right-color:#e63946;}
+  #oyakata .angryOnly,#oyakata .happyOnly{display:none;}
+  #oyakata.angry .angryOnly{display:inline;}
+  #oyakata.happy .happyOnly{display:inline;}
+  @media (prefers-reduced-motion: reduce){#oyakata.show{animation:none;opacity:1;transform:none;}#oyakata.angry.show .oya-face{animation:none;}}
+  #overScreen .big-btn{margin-bottom:8px;}
+  .hidden{display:none !important;}
+  footer{text-align:center;color:#5b626b;font-size:.68rem;padding:4px 0 8px;}
+</style>
+</head>
+<body>
+<div id="flash"><div class="word"></div></div>
+
+<div class="app">
+  <header>
+    <div class="title"><span class="gear">⚙</span>整備士育成シミュレーター<small>診断思考トレーニング</small></div>
+    <div class="hud">
+      <div class="cell"><div class="label">級・症例</div><div class="val" id="hudCase">- / 10</div></div>
+      <div class="cell"><div class="label">残り時間</div><div class="val timer" id="hudTimer">60</div></div>
+      <div class="cell"><div class="label">ライフ</div><div class="val lives" id="hudLives">❤❤❤</div></div>
+    </div>
+    <div class="progress"><i id="progBar"></i></div>
+  </header>
+
+  <!-- Start screen -->
+  <div class="card center-screen" id="startScreen">
+    <h1><span class="gear">⚙</span> 整備士育成シミュレーター</h1>
+    <p>症状から原因を段階的に特定する、実務型の診断トレーニング。<br>初心者からプロまで、本物の整備士の思考を体験しよう。</p>
+    <ul class="rules">
+      <li><b>初級→中級→上級→ウルトラ級</b>の順に昇級。各級<b>10症例</b></li>
+      <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
+      <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
+      <li>ライフが尽きると<b>ゲームオーバー</b></li>
+      <li>実務シミュレーション。最善手を選び続けろ</li>
+    </ul>
+    <div class="hi-row">🏆 ハイスコア：<b id="hiScore">0</b> / 40 症例</div>
+    <button class="big-btn" id="startBtn" style="margin-top:16px;">診断を開始する</button>
+    <button class="ghost-btn" id="resetHiBtn">ハイスコアをリセット</button>
+  </div>
+
+  <!-- Game screen -->
+  <div class="card hidden" id="gameScreen">
+    <div id="scene" class="scene">
+      <img id="sceneImg" alt="入庫した車" />
+      <svg id="sceneSvg" viewBox="0 0 400 200" role="img" aria-label="入庫した車のイラスト">
+        <defs>
+          <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#30343b"/><stop offset="1" stop-color="#1b1d21"/></linearGradient>
+          <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f46"/><stop offset="1" stop-color="#202327"/></linearGradient>
+          <linearGradient id="bodyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc673"/><stop offset=".45" stop-color="#f47a1c"/><stop offset="1" stop-color="#a23c06"/></linearGradient>
+          <linearGradient id="glossG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+          <linearGradient id="glassG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf6ff"/><stop offset="1" stop-color="#4d6678"/></linearGradient>
+          <linearGradient id="rimG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f4f7"/><stop offset=".5" stop-color="#aab2bb"/><stop offset="1" stop-color="#596069"/></linearGradient>
+          <linearGradient id="steelG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#454a52"/><stop offset=".5" stop-color="#6b7079"/><stop offset="1" stop-color="#363a41"/></linearGradient>
+          <radialGradient id="shadowG" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+          <radialGradient id="lightG" cx="50%" cy="0%" r="85%"><stop offset="0" stop-color="#ffe7b0" stop-opacity=".2"/><stop offset="1" stop-color="#ffe7b0" stop-opacity="0"/></radialGradient>
+          <radialGradient id="headGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff7d6" stop-opacity=".9"/><stop offset="1" stop-color="#fff7d6" stop-opacity="0"/></radialGradient>
+          <filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.2"/></filter>
+        </defs>
+
+        <!-- garage backdrop -->
+        <rect x="0" y="0" width="400" height="200" fill="url(#wallG)"/>
+        <polygon points="170,0 230,0 300,150 100,150" fill="url(#lightG)"/>
+        <rect x="186" y="0" width="28" height="7" rx="2" fill="#5b626b"/>
+        <g stroke="#262a30" stroke-width="1"><line x1="0" y1="54" x2="400" y2="54"/><line x1="0" y1="100" x2="400" y2="100"/></g>
+        <!-- 2-post lift -->
+        <rect x="50" y="34" width="300" height="9" rx="2" fill="url(#steelG)"/>
+        <rect x="52" y="40" width="13" height="126" rx="2" fill="url(#steelG)"/>
+        <rect x="336" y="40" width="13" height="126" rx="2" fill="url(#steelG)"/>
+        <rect x="45" y="162" width="27" height="6" rx="2" fill="#2a2d33"/>
+        <rect x="329" y="162" width="27" height="6" rx="2" fill="#2a2d33"/>
+        <!-- tool chest -->
+        <rect x="4" y="118" width="40" height="50" rx="4" fill="#c0392b" stroke="#7a2417"/>
+        <g stroke="#7a2417" stroke-width="1" fill="#a52f22"><rect x="8" y="124" width="32" height="9" rx="2"/><rect x="8" y="136" width="32" height="9" rx="2"/><rect x="8" y="148" width="32" height="14" rx="2"/></g>
+        <!-- floor -->
+        <rect x="0" y="150" width="400" height="50" fill="url(#floorG)"/>
+        <g stroke="#15171a" stroke-width="1" opacity=".45"><line x1="0" y1="150" x2="400" y2="150"/><line x1="120" y1="200" x2="170" y2="151"/><line x1="300" y1="200" x2="250" y2="151"/></g>
+        <!-- PIT sign -->
+        <rect x="312" y="12" width="60" height="20" rx="3" fill="#15171a" stroke="#ff7a18"/>
+        <text x="342" y="26" text-anchor="middle" font-size="12" font-weight="800" fill="#ff7a18">PIT-1</text>
+
+        <g id="fxRain" style="display:none" stroke="#9cc4ff" stroke-width="2" stroke-linecap="round">
+          <line x1="40" y1="16" x2="34" y2="30"/><line x1="90" y1="10" x2="84" y2="24"/><line x1="140" y1="20" x2="134" y2="34"/><line x1="190" y1="12" x2="184" y2="26"/><line x1="240" y1="18" x2="234" y2="32"/><line x1="290" y1="10" x2="284" y2="24"/><line x1="340" y1="20" x2="334" y2="34"/><line x1="65" y1="34" x2="59" y2="48"/><line x1="165" y1="34" x2="159" y2="48"/><line x1="265" y1="34" x2="259" y2="48"/><line x1="315" y1="34" x2="309" y2="48"/><line x1="115" y1="34" x2="109" y2="48"/>
+        </g>
+
+        <ellipse id="fxPuddle" cx="205" cy="176" rx="86" ry="7" fill="#23c552" opacity=".5" style="display:none"/>
+
+        <g id="car" class="scene-car">
+          <ellipse cx="212" cy="170" rx="142" ry="12" fill="url(#shadowG)"/>
+          <circle cx="138" cy="148" r="26" fill="#0c0d0f"/>
+          <circle cx="286" cy="148" r="26" fill="#0c0d0f"/>
+          <g id="carBody">
+            <path d="M84,150 L84,140 Q84,131 95,129 L150,123 L250,123 L300,126 L330,130 Q341,131 341,141 L341,150 Z" fill="url(#bodyG)" stroke="#8f3505" stroke-width="1"/>
+            <path d="M150,123 L178,92 Q182,88 190,88 L248,88 Q258,88 264,96 L286,123 Z" fill="url(#bodyG)" stroke="#8f3505" stroke-width="1"/>
+            <path d="M160,121 L182,95 L210,95 L210,121 Z" fill="url(#glassG)"/>
+            <path d="M218,121 L218,95 L246,95 Q253,95 258,101 L272,121 Z" fill="url(#glassG)"/>
+            <polygon points="166,119 196,97 206,97 176,119" fill="#ffffff" opacity=".18"/>
+            <path d="M95,129 L150,123 L300,126 L330,130 L330,133 L150,127 L96,133 Z" fill="url(#glossG)"/>
+            <path d="M88,139 L150,134 L300,136 L336,139" fill="none" stroke="#5e2403" stroke-width="1.2" opacity=".5"/>
+            <path d="M92,150 L92,146 L334,146 L334,150 Z" fill="#5e2403" opacity=".7"/>
+            <path d="M262,96 l11,-3 l-1,6 z" fill="#8f3505"/>
+            <rect x="228" y="116" width="12" height="3" rx="1.5" fill="#5e2403"/>
+            <ellipse cx="332" cy="133" rx="13" ry="9" fill="url(#headGlow)"/>
+            <polygon points="322,127 341,131 341,137 324,138" fill="#ffe27a" opacity=".5"/>
+            <ellipse id="headL" cx="333" cy="133" rx="6" ry="4" fill="#fff7cf"/>
+            <rect x="83" y="129" width="7" height="9" rx="2" fill="#ff3b3b"/>
+            <ellipse cx="86" cy="133" rx="8" ry="6" fill="#ff3b3b" opacity=".35"/>
+            <rect x="74" y="149" width="12" height="5" rx="2.5" fill="#2a2d33" stroke="#15171a"/>
+          </g>
+          <g transform="translate(138,148)">
+            <circle r="22" fill="#111317" stroke="#000" stroke-width="2"/>
+            <circle r="22" fill="none" stroke="#26292e" stroke-width="3"/>
+            <circle r="13.5" fill="url(#rimG)" stroke="#7d858f"/>
+            <g stroke="#cfd5db" stroke-width="3" stroke-linecap="round"><line y2="-12"/><line x2="11.4" y2="-3.7"/><line x2="7" y2="9.7"/><line x2="-7" y2="9.7"/><line x2="-11.4" y2="-3.7"/></g>
+            <circle r="3.4" fill="#3a3f46" stroke="#1a1c1f"/>
+          </g>
+          <g transform="translate(286,148)">
+            <circle r="22" fill="#111317" stroke="#000" stroke-width="2"/>
+            <circle r="22" fill="none" stroke="#26292e" stroke-width="3"/>
+            <circle r="13.5" fill="url(#rimG)" stroke="#7d858f"/>
+            <g stroke="#cfd5db" stroke-width="3" stroke-linecap="round"><line y2="-12"/><line x2="11.4" y2="-3.7"/><line x2="7" y2="9.7"/><line x2="-7" y2="9.7"/><line x2="-11.4" y2="-3.7"/></g>
+            <circle r="3.4" fill="#3a3f46" stroke="#1a1c1f"/>
+          </g>
+          <g id="fxFlat" style="display:none">
+            <path d="M116,150 Q116,135 138,134 Q160,135 160,150 L160,156 Q138,162 116,156 Z" fill="#111317" stroke="#000"/>
+            <circle cx="138" cy="147" r="11" fill="url(#rimG)" stroke="#7d858f"/>
+            <circle cx="138" cy="147" r="3" fill="#3a3f46"/>
+            <path d="M120,160 L156,160" stroke="#e63946" stroke-width="2" stroke-linecap="round"/>
+          </g>
+        </g>
+
+        <g id="fxSmoke" style="display:none" filter="url(#soft)" transform="translate(72,150)">
+          <circle class="puff" cx="0" cy="0" r="7" fill="#9aa3ad"/><circle class="puff" cx="-4" cy="-2" r="6" fill="#9aa3ad"/><circle class="puff" cx="-8" cy="0" r="8" fill="#9aa3ad"/>
+        </g>
+        <g id="fxSteam" style="display:none" filter="url(#soft)" transform="translate(318,126)">
+          <circle class="puff" cx="0" cy="0" r="7" fill="#e8eef2"/><circle class="puff" cx="6" cy="-2" r="6" fill="#e8eef2"/><circle class="puff" cx="-3" cy="-1" r="8" fill="#e8eef2"/>
+        </g>
+        <g id="fxSpark" style="display:none" stroke="#ffd60a" stroke-width="2" fill="none">
+          <polyline points="304,108 310,114 304,118 312,124"/><circle cx="316" cy="110" r="1.8" fill="#ffd60a" stroke="none"/>
+        </g>
+        <g id="fxSound" style="display:none" fill="none" stroke="#ffd60a" stroke-width="2">
+          <path class="wave" d="M312,138 a14,14 0 0 1 0,20"/><path class="wave" d="M318,133 a20,20 0 0 1 0,30"/><path class="wave" d="M324,128 a26,26 0 0 1 0,40"/>
+        </g>
+        <g id="fxHeat" style="display:none">
+          <circle cx="56" cy="60" r="12" fill="#ffd60a"/>
+          <g stroke="#ffd60a" stroke-width="2" stroke-linecap="round"><line x1="56" y1="40" x2="56" y2="33"/><line x1="56" y1="80" x2="56" y2="87"/><line x1="36" y1="60" x2="29" y2="60"/><line x1="76" y1="60" x2="83" y2="60"/><line x1="41" y1="45" x2="36" y2="40"/><line x1="71" y1="75" x2="76" y2="80"/><line x1="71" y1="45" x2="76" y2="40"/><line x1="41" y1="75" x2="36" y2="80"/></g>
+        </g>
+        <g id="fxLamp" style="display:none">
+          <rect x="176" y="40" width="48" height="32" rx="7" fill="#15171a" stroke="#ff7a18" stroke-width="2"/>
+          <text id="lampGlyph" x="200" y="62" text-anchor="middle" font-size="18" fill="#fff">⚠️</text>
+        </g>
+      </svg>
+      <div class="scene-cap">🔧 入庫</div>
+    </div>
+    <div class="symptom-box">
+      <div class="cap">▼ 症状</div>
+      <div class="txt" id="symptomText"></div>
+    </div>
+    <div class="step-meta" id="stepMeta"></div>
+    <div class="question" id="questionText"></div>
+    <div class="choices" id="choices"></div>
+    <div class="result" id="resultBox">
+      <div class="head" id="resultHead"></div>
+      <div class="body" id="resultBody"></div>
+    </div>
+    <button class="next-btn" id="nextBtn">次へ ▶</button>
+    <div id="oyakata">
+      <svg class="oya-face" viewBox="0 0 64 64" aria-hidden="true">
+        <g class="angryOnly">
+          <ellipse cx="32" cy="40" rx="20" ry="19" fill="#f0c49a" stroke="#c98f63"/>
+          <path d="M8,24 Q32,12 56,24 L54,30 Q32,20 10,30 Z" fill="#d94f2a"/>
+          <path d="M52,22 l8,-3 -2,7 z" fill="#d94f2a"/>
+          <path d="M15,31 L27,35" stroke="#3a2a1a" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M49,31 L37,35" stroke="#3a2a1a" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="23" cy="39" r="2.2" fill="#2a2018"/><circle cx="41" cy="39" r="2.2" fill="#2a2018"/>
+          <path d="M22,47 Q32,51 42,47 Q32,54 22,47 Z" fill="#2a2018"/>
+          <ellipse cx="32" cy="55" rx="5" ry="3.2" fill="#7a1a1a"/>
+          <g stroke="#e63946" stroke-width="2" stroke-linecap="round"><path d="M50,11 l5,5"/><path d="M55,11 l-5,5"/><path d="M58,18 l0,6"/></g>
+        </g>
+        <g class="happyOnly">
+          <ellipse cx="32" cy="40" rx="20" ry="19" fill="#f0c49a" stroke="#c98f63"/>
+          <path d="M8,24 Q32,12 56,24 L54,30 Q32,20 10,30 Z" fill="#2e8b57"/>
+          <path d="M52,22 l8,-3 -2,7 z" fill="#2e8b57"/>
+          <path d="M17,33 Q22,30 27,33" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M37,33 Q42,30 47,33" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <circle cx="23" cy="39" r="2.2" fill="#2a2018"/><circle cx="41" cy="39" r="2.2" fill="#2a2018"/>
+          <path d="M22,47 Q32,51 42,47 Q32,54 22,47 Z" fill="#2a2018"/>
+          <path d="M25,52 Q32,58 39,52" stroke="#7a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M53,13 l1.5,3.2 3.2,1.5 -3.2,1.5 -1.5,3.2 -1.5,-3.2 -3.2,-1.5 3.2,-1.5 z" fill="#ffd60a"/>
+        </g>
+      </svg>
+      <div class="oya-bubble" id="oyaBubble"></div>
+    </div>
+  </div>
+
+  <!-- Promote (昇級) screen -->
+  <div class="card center-screen hidden" id="tierScreen">
+    <div class="promote-badge" id="promoteBadge">★</div>
+    <h1 id="promoteTitle">初級クリア！</h1>
+    <p id="promoteDesc"></p>
+    <div class="hi-row" id="promoteStat"></div>
+    <button class="big-btn" id="tierNextBtn">次の級へ挑む ▶</button>
+  </div>
+
+  <!-- Game over screen -->
+  <div class="card center-screen hidden" id="overScreen">
+    <div class="over-mark">✖</div>
+    <h1 style="color:var(--red)">ゲームオーバー</h1>
+    <p id="overMsg" style="font-weight:700;color:var(--text)">あなたはスキルが足りません。</p>
+    <p id="overDetail"></p>
+    <div class="hi-row">到達 <b id="overReach">-</b> ・ 合格 <b id="overPassed">0</b> 症例 ・ 🏆 <b id="overHi">0</b></div>
+    <button class="big-btn" id="overTierBtn">この級からやり直す ▶</button>
+    <button class="ghost-btn" id="overRestartBtn">最初(初級)からやり直す</button>
+  </div>
+
+  <!-- End screen (全級クリア) -->
+  <div class="card center-screen hidden" id="endScreen">
+    <h1>🎉 全級クリア！</h1>
+    <div class="score-ring" id="scoreRing">
+      <div class="inner">
+        <div class="num" id="finalNum">0</div>
+        <div class="unit">点</div>
+      </div>
+    </div>
+    <div class="rank" id="rankText"></div>
+    <p id="rankDesc"></p>
+    <div class="hi-row">合格症例 <b id="finalScore">0</b> / 40 ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
+    <div class="review-list" id="reviewList"></div>
+    <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
+  </div>
+
+  <footer>整備士育成シミュレーター ・ 完全オフライン動作 ・ 記録はこの端末にのみ保存されます</footer>
+</div>
+
+<script>
+const cases = [
+  {id:1,symptom:"エンジンがかからない（セルモーターも回らない）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"テスターでバッテリー電圧を測定する",correct:true},
+      {text:"メインヒューズの断線を点検する",correct:false},
+      {text:"セルモーターを軽く叩いて再始動する",correct:false},
+      {text:"イグニッションスイッチの接点を点検する",correct:false}],
+      result_correct:"バッテリー電圧が11V以下。完全放電の可能性が高い。",
+      result_wrong:"セル不動はまず電源の大元＝バッテリー電圧から。個別部品の点検は順序が後。"},
+    {question:"バッテリーが弱っている。次に何をしますか？",choices:[
+      {text:"ターミナルの腐食・緩みを点検する",correct:true},
+      {text:"新品バッテリーに載せ替えて始動する",correct:false},
+      {text:"オルタネーターのB端子電圧を測定する",correct:false},
+      {text:"アース線を増設して接地を強化する",correct:false}],
+      result_correct:"ターミナルに白い粉状の腐食あり。接触不良が原因と判明。",
+      result_wrong:"交換や発電系の点検より先に、ターミナルの腐食・緩みを確認するのが安価で確実。"},
+    {question:"ターミナルの腐食が原因だった。どう修理しますか？",choices:[
+      {text:"ターミナルを清掃・増し締めして再始動を確認する",correct:true},
+      {text:"端子はそのままバッテリーを新品に交換する",correct:false},
+      {text:"ターミナルに防錆グリスを塗って組み付ける",correct:false},
+      {text:"オルタネーターの充電電圧を測定して判断する",correct:false}],
+      result_correct:"清掃・増し締め後にエンジン始動確認。完治。",
+      result_wrong:"腐食除去→増し締め→始動確認が正しい順序。グリスだけ・救援始動だけでは導通も根本も解決しない。"}],
+    explanation:"セル不動の第一確認はバッテリー。ただし即交換でなく、ターミナル腐食・緩みを先に確認することでコストを抑えられる。"},
+  {id:2,symptom:"走行中にエンジン警告灯が点灯。アイドリングが不安定",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"OBD2スキャナーで故障コードを読み取る",correct:true},
+      {text:"プラグを全数外して状態を目視点検する",correct:false},
+      {text:"イグニッションコイルを順に入れ替えて点検する",correct:false},
+      {text:"エアフィルターの詰まりを点検して交換する",correct:false}],
+      result_correct:"P0300（ランダム失火）のコードが検出された。",
+      result_wrong:"警告灯が点いたらまず故障コードを読むのが現代整備の基本。分解点検はその後。"},
+    {question:"ランダム失火コードが出た。次に何を確認しますか？",choices:[
+      {text:"気筒別の失火回数を確認し点火系を点検する",correct:true},
+      {text:"燃料ポンプの吐出圧を測定して点検する",correct:false},
+      {text:"EGRバルブを取り外して内部を清掃する",correct:false},
+      {text:"インジェクターを洗浄して噴霧を点検する",correct:false}],
+      result_correct:"気筒別失火回数を確認後にプラグを点検。複数気筒で摩耗・カーボン付着を確認。",
+      result_wrong:"ランダム失火はまず気筒別データと点火系から。部品の当て交換は割高。"},
+    {question:"プラグが摩耗していた。どう対処しますか？",choices:[
+      {text:"全気筒のプラグを同時交換しコイルも点検する",correct:true},
+      {text:"失火した気筒のプラグを1本だけ交換する",correct:false},
+      {text:"プラグを清掃して再使用し経過を観察する",correct:false},
+      {text:"プラグは替えずコイルを全数同時交換する",correct:false}],
+      result_correct:"全気筒プラグ同時交換でアイドリング安定・警告灯消灯。コイルはswap法で問題なしを確認。",
+      result_wrong:"1本だけは他気筒もすぐ失火。摩耗は均等に進むため全交換。コイルは切り分けてから。"}],
+    explanation:"警告灯＋アイドリング不安定はOBD→フリーズフレームで気筒別確認。P0300はプラグが最頻原因だがコイルも約35%、swap法で切り分ける。プラグは全気筒同時交換。"},
+  {id:3,symptom:"ブレーキを踏むと「キーキー」と金属音がする",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ブレーキパッドの残量を目視で点検する",correct:true},
+      {text:"ブレーキフルードの量と汚れを点検する",correct:false},
+      {text:"ローターを新品に交換して鳴きを止める",correct:false},
+      {text:"キャリパーの固着をグリスアップで対処する",correct:false}],
+      result_correct:"ブレーキパッドが限界まで摩耗。ウェアインジケーターが当たって鳴いている。",
+      result_wrong:"金属音はパッドの摩耗インジケーターからの警告が最多。まず残量を目視するのが先。"},
+    {question:"パッドが摩耗している。次に何を点検しますか？",choices:[
+      {text:"ローターの傷・摩耗量も合わせて点検する",correct:true},
+      {text:"パッドのみ交換しローターは次回点検とする",correct:false},
+      {text:"ローターは光沢があれば測定せず再使用する",correct:false},
+      {text:"ローターは車検時にまとめて点検する",correct:false}],
+      result_correct:"ローターに深い溝あり。パッドと同時交換が必要と判断。",
+      result_wrong:"パッドが限界まで摩耗していた場合、ローターも損傷していることが多い。必ずセットで確認。"},
+    {question:"パッド＋ローター交換後、何を行いますか？",choices:[
+      {text:"当たり出し（慣らし）の方法をお客様へ説明する",correct:true},
+      {text:"制動を数回試し問題なければ引き渡す",correct:false},
+      {text:"ブレーキフルードも全量交換しておく",correct:false},
+      {text:"ホイールアライメントを点検しておく",correct:false}],
+      result_correct:"当たり出し手順をお客様に説明。最初の数回は強いブレーキを避けるよう案内。",
+      result_wrong:"新品パッド・ローターは当たりが出るまで制動力が安定しない。必ず慣らし手順を説明する。"}],
+    explanation:"ブレーキの金属音はパッド摩耗インジケーターの警告。パッドとローターはセットで確認・交換。交換後の慣らし説明まで整備の一部。"},
+  {id:4,symptom:"エアコンをつけると冷えない。コンプレッサーが動いていない",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ゲージマニホールドでガス圧力を測定する",correct:true},
+      {text:"コンプレッサーのマグネットクラッチを点検する",correct:false},
+      {text:"エアコンリレーとヒューズの導通を点検する",correct:false},
+      {text:"ブロアモーターとエアミックスを点検する",correct:false}],
+      result_correct:"低圧側が規定値以下。ガス不足の可能性が高い。",
+      result_wrong:"コンプレッサー不動の原因はガス不足による保護停止が最多。まず圧力を確認する。"},
+    {question:"ガスが不足。漏れの疑いがある。どう進めますか？",choices:[
+      {text:"蛍光剤を入れ加圧して漏れ箇所を特定し修理する",correct:true},
+      {text:"漏れを直さず不足分だけ補充して納車する",correct:false},
+      {text:"コンプレッサーオイルを規定量追加する",correct:false},
+      {text:"ガスを全量回収してそのまま入れ直す",correct:false}],
+      result_correct:"蛍光剤を入れ加圧後、ブラックライトでコンデンサー接続部の漏れを確認。",
+      result_wrong:"漏れは加圧しないと探せない。だが漏れを直さず継ぎ足しだけで納車するのが最大のNG。"},
+    {question:"漏れ箇所を修理した。次に何をしますか？",choices:[
+      {text:"真空引きで水分を抜いてから規定量を充填する",correct:true},
+      {text:"回収せずに不足分のガスだけを充填する",correct:false},
+      {text:"規定量の半分を入れて効きを見ながら足す",correct:false},
+      {text:"先にコンプレッサーオイルを多めに補給する",correct:false}],
+      result_correct:"真空引き15分→規定量補充→動作確認。冷却正常を確認して完治。",
+      result_wrong:"修理後は必ず真空引きで水分・空気を抜いてから規定量補充。これをしないと再故障の原因になる。"}],
+    explanation:"エアコン不良はガス圧力確認から。漏れ探索には蛍光剤＋加圧が必要だが、漏れを直さず継ぎ足しだけで終わらせないこと。圧力確認→蛍光剤＋加圧で漏れ特定→修理→真空引き→規定量充填の順。"},
+  {id:5,symptom:"冷却水温計が上昇。オーバーヒート気味",steps:[
+    {question:"お客様に今すぐどう指示しますか？",choices:[
+      {text:"安全な場所に停車しエンジンを止めるよう伝える",correct:true},
+      {text:"窓を開け暖房を最大にして来店するよう伝える",correct:false},
+      {text:"冷却水を補充しながら低速で来店するよう伝える",correct:false},
+      {text:"エアコンを切り回転を抑えて来店するよう伝える",correct:false}],
+      result_correct:"即停車指示。走り続けるとエンジン破損のリスクが高い。",
+      result_wrong:"オーバーヒートは走り続けると致命的なエンジン損傷につながる。即停車が最優先。"},
+    {question:"入庫後、エンジン冷却後に何を確認しますか？",choices:[
+      {text:"冷却水量・キャップ・ホース類を順に点検する",correct:true},
+      {text:"ラジエーター本体を交換して水温を確認する",correct:false},
+      {text:"サーモスタットを新品に交換して水温を確認する",correct:false},
+      {text:"ウォーターポンプを交換して水温を確認する",correct:false}],
+      result_correct:"リザーバータンクが空。ラジエーターホースに亀裂あり。漏れが原因と判明。",
+      result_wrong:"まず冷却水量・外部漏れ・キャップ・ホース類を順番に確認する。部品交換は原因特定後。"},
+    {question:"ホースから漏れが確認された。どう対処しますか？",choices:[
+      {text:"ホース交換→冷却水補充→エア抜き→試運転まで行う",correct:true},
+      {text:"ホースを交換し冷却水を補充して引き渡す",correct:false},
+      {text:"亀裂部に耐熱テープを巻き冷却水を補充する",correct:false},
+      {text:"サーモスタットを交換し冷却水を補充する",correct:false}],
+      result_correct:"ホース交換→LLC規定濃度で補充→エア抜き完了→試運転で水温安定確認。",
+      result_wrong:"ホース交換後のエア抜きを忘れるとオーバーヒートが再発する。試運転まで一連の作業。"}],
+    explanation:"オーバーヒートは即停車が最優先。入庫後は冷却系統を順番に確認。修理後のエア抜き・テスト走行まで完結させる。"},
+  {id:6,symptom:"ハンドルが左に取られる。直進安定性が悪い",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"タイヤの空気圧と摩耗状態を点検する",correct:true},
+      {text:"ホイールアライメントを測定して調整する",correct:false},
+      {text:"パワステフルードの量と漏れを点検する",correct:false},
+      {text:"ハブベアリングのガタを点検する",correct:false}],
+      result_correct:"左前タイヤの空気圧が1.2kPa（規定2.4kPa）。半分以下だった。",
+      result_wrong:"ハンドル流れの最初の確認は空気圧。よくある原因かつ短時間で確認できる。"},
+    {question:"空気圧を規定値に戻した。まだ左に流れる。次は？",choices:[
+      {text:"タイヤの片減りとホイールの振れを点検する",correct:true},
+      {text:"アライメントを測定して調整する",correct:false},
+      {text:"ステアリングギアボックスのガタを点検する",correct:false},
+      {text:"左右のタイヤを入れ替えて流れの変化を見る",correct:false}],
+      result_correct:"左前タイヤに片減りあり。ホイールにも軽微な振れを確認。",
+      result_wrong:"空気圧調整後も改善しない場合はタイヤ・ホイール自体の状態を確認してからアライメントへ。"},
+    {question:"タイヤ交換後もまだ流れがある。次に何をしますか？",choices:[
+      {text:"4輪アライメントを測定して調整する",correct:true},
+      {text:"ハブベアリングを交換して直進性を確認する",correct:false},
+      {text:"ショックアブソーバーを交換して直進性を確認する",correct:false},
+      {text:"タイロッドエンドを交換して直進性を確認する",correct:false}],
+      result_correct:"アライメント測定でトー・キャンバーが狂っていた。調整後に直進安定性回復。",
+      result_wrong:"タイヤ交換後も流れが残る場合はアライメント狂いが原因。測定してから調整。"}],
+    explanation:"ハンドル流れは空気圧→タイヤ状態→アライメントの順で確認。いきなりアライメント調整は順序が逆。"},
+  {id:7,symptom:"エンジンオイルの警告灯が点灯した",steps:[
+    {question:"最初に何をしますか？",choices:[
+      {text:"停車してエンジンを止め、オイル量を点検する",correct:true},
+      {text:"回転を抑えながら近くの整備工場まで走る",correct:false},
+      {text:"オイルを継ぎ足しながら走行を続ける",correct:false},
+      {text:"警告灯をリセットして数km様子を見る",correct:false}],
+      result_correct:"停車後にオイルレベルゲージを確認。MIN以下で油圧低下の危険あり。",
+      result_wrong:"オイル警告灯点灯中の走行はエンジン焼き付きのリスクが非常に高い。即停車が必須。"},
+    {question:"オイルが極端に少ない。どう進めますか？",choices:[
+      {text:"安全なレベルまで補給してから漏れを特定する",correct:true},
+      {text:"原因を調べず減るたびに継ぎ足しを続ける",correct:false},
+      {text:"オイルフィルターを交換して経過を観察する",correct:false},
+      {text:"エンジンを分解して内部の摩耗を点検する",correct:false}],
+      result_correct:"規定レベルまで補給後、オイルパンガスケットからのにじみを確認。外部漏れと特定。",
+      result_wrong:"補給はしてよい。原因を調べず継ぎ足しを繰り返すのがNG。補給した上で漏れを追う。"},
+    {question:"ガスケットからの漏れが原因。どう対処しますか？",choices:[
+      {text:"ガスケットを交換し、補充後に漏れ確認と試運転を行う",correct:true},
+      {text:"オイルを規定量まで補充して経過を観察する",correct:false},
+      {text:"合わせ面の外側から液体ガスケットを塗布する",correct:false},
+      {text:"オイル漏れ止め添加剤を入れて漏れを抑える",correct:false}],
+      result_correct:"ガスケット交換後にオイル補充、試運転で漏れゼロを確認して完治。",
+      result_wrong:"応急処置では再発する。ガスケット交換が根本解決。添加剤での漏れ止めは一時的効果のみ。"}],
+    explanation:"オイル警告灯は即停車→安全レベルまで補給→漏れ箇所特定→根本修理。継ぎ足しの繰り返しと添加剤での誤魔化しは禁物。ガスケット漏れは交換が根本解決。"},
+  {id:8,symptom:"バッテリーを交換したのにすぐ上がる",steps:[
+    {question:"バッテリーが繰り返し上がる場合、最初に何を疑いますか？",choices:[
+      {text:"オルタネーターの充電電圧を測定する",correct:true},
+      {text:"より大容量のバッテリーに載せ替える",correct:false},
+      {text:"バッテリー端子を磨いて増し締めする",correct:false},
+      {text:"アーシングを追加して電圧降下を抑える",correct:false}],
+      result_correct:"オルタネーター出力測定で13V以下。正常は13.5〜14.5V。充電不足が原因。",
+      result_wrong:"新品バッテリーがすぐ上がるのはオルタネーター不良が最多。まず充電電圧を測る。"},
+    {question:"オルタネーターの出力が低い。どう確認を深めますか？",choices:[
+      {text:"駆動ベルトの張りと滑り・亀裂を点検する",correct:true},
+      {text:"オルタネーター本体をリビルト品に交換する",correct:false},
+      {text:"ICレギュレーターのみを単体で交換する",correct:false},
+      {text:"アイドル回転数を上げて発電量を確保する",correct:false}],
+      result_correct:"オルタネーターベルトが伸び・亀裂あり。スリップして発電できていなかった。",
+      result_wrong:"オルタネーター本体より先にベルトを確認。ベルト交換だけで解決する場合が多い。"},
+    {question:"ベルト交換後、何を確認して完了にしますか？",choices:[
+      {text:"充電電圧が13.5〜14.5Vに入るか測定する",correct:true},
+      {text:"アイドリングで異音がなければ完了とする",correct:false},
+      {text:"バッテリーを満充電して数日様子を見る",correct:false},
+      {text:"充電警告灯が消灯していれば完了とする",correct:false}],
+      result_correct:"ベルト交換後の充電電圧14.2V確認。正常範囲内。バッテリーも満充電して納車。",
+      result_wrong:"ベルト交換後は必ず電圧計で充電を確認。警告灯消灯だけでは不十分。"}],
+    explanation:"新品バッテリーがすぐ上がる＝充電系統の問題。オルタネーターベルトの劣化が意外と多い原因。交換後は充電電圧の数値確認まで行う。"},
+  {id:9,symptom:"ハンドルを切って曲がるとき（特に発進・加速中）に「カチカチ」「コキコキ」と異音がする（直進では出にくい）",steps:[
+    {question:"この症状で最初に疑う部位はどこですか？",choices:[
+      {text:"ドライブシャフト外側のCVジョイント",correct:true},
+      {text:"エンジン／ミッションマウントのへたり",correct:false},
+      {text:"ミッション内部のギアやベアリング",correct:false},
+      {text:"タイヤのアンバランス・偏摩耗",correct:false}],
+      result_correct:"旋回時のカチカチ音で直進では出にくいのは外側CVジョイント摩耗の典型。",
+      result_wrong:"ハンドルを切ると顕著・直進で消えるのが外側CVジョイントの特徴。まずここを疑う。"},
+    {question:"ドライブシャフトを確認する方法は？",choices:[
+      {text:"ブーツの破れとグリス飛散の有無を目視点検する",correct:true},
+      {text:"ジャッキアップしジョイントのガタを手で確認する",correct:false},
+      {text:"ドライブシャフトを外してジョイントを分解点検する",correct:false},
+      {text:"タイヤを外しハブベアリングのガタも併せて点検する",correct:false}],
+      result_correct:"左ドライブシャフトの外側ブーツが破れ、グリスが飛散。CVジョイントに砂噛み込みあり。",
+      result_wrong:"まずブーツの状態を目視。破れてグリスが飛んでいればCVジョイントへのダメージが進んでいる。"},
+    {question:"ブーツ破れ・グリス飛散あり。どう修理しますか？",choices:[
+      {text:"ドライブシャフトAssy交換か分解洗浄を行う",correct:true},
+      {text:"ブーツのみ交換しグリスを充填して組み付ける",correct:false},
+      {text:"破れたブーツに分割ブーツを被せて応急対応する",correct:false},
+      {text:"ジョイント外側からグリスを補給して組み付ける",correct:false}],
+      result_correct:"砂噛み込みによるCVジョイントの摩耗が進んでいたためAssy交換。異音・振動消失。",
+      result_wrong:"砂が噛んでいる場合はブーツ交換だけでは不十分。CVジョイントの洗浄・グリスアップまたはAssy交換が必要。"}],
+    explanation:"曲がるときのカチカチ＝外側CVジョイントが最頻原因。直進で出にくいのが鑑別点（直進加速の振動なら内側ジョイントを疑う）。ブーツ破れを放置すると砂噛みで本体が損傷、早期発見が修理コストを抑える。"},
+  {id:10,symptom:"ATのシフトチェンジがショックが大きい・変速が遅い",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ATフルードの量・色・臭いを点検する",correct:true},
+      {text:"ミッションマウントの劣化とガタを点検する",correct:false},
+      {text:"アイドリング回転数とエンジン側の不調を点検する",correct:false},
+      {text:"シフトリンケージの調整状態を点検する",correct:false}],
+      result_correct:"ATフルードが黒く焦げた臭い。規定量より少なく、著しく劣化している。",
+      result_wrong:"AT不調の第一確認はATFの状態。色・臭い・量で多くの情報が得られる。"},
+    {question:"ATFが著しく劣化している。どう対処しますか？",choices:[
+      {text:"全量交換は避けドレン&フィルか現状維持を検討する",correct:true},
+      {text:"確実を期して全量フラッシュ交換を行う",correct:false},
+      {text:"ATFを抜いて専用洗浄剤で内部洗浄する",correct:false},
+      {text:"不足分のATFを追加補充して経過を見る",correct:false}],
+      result_correct:"激しく劣化したATFの全量フラッシュはスラッジが動きAT故障の恐れ。ドレン&フィルか現状維持を慎重に判断。",
+      result_wrong:"落とし穴。劣化が激しいATFの全量フラッシュ・洗浄はかえってATを壊す場合がある。"},
+    {question:"お客様にどう説明しますか？",choices:[
+      {text:"現状とリスク・費用を説明し、お客様に判断材料を示す",correct:true},
+      {text:"費用を抑える案としてATF交換だけを勧める",correct:false},
+      {text:"確実なリビルトAT載せ替えを第一に勧める",correct:false},
+      {text:"致命的でないと判断し問題なしとして引き渡す",correct:false}],
+      result_correct:"現状・リスク・費用を正直に説明。お客様が乗り換えを選択。信頼関係を維持。",
+      result_wrong:"整備士の仕事はリスクを正直に伝えること。黙って交換してATが壊れたら最悪。"}],
+    explanation:"AT不調はATF状態確認から。激しく劣化したATFの全量フラッシュは逆効果になる場合があり、ドレン&フィルか現状維持を検討。リスクの正直な説明と判断の提示が整備士の信頼につながる。"},
+  // ===== 初級 追加 =====
+  {id:11,tier:"初級",symptom:"タイヤ空気圧警告灯（TPMS）が点灯した",steps:[
+    {question:"最初に何をしますか？",choices:[
+      {text:"4輪すべての空気圧をゲージで測定する",correct:true},
+      {text:"警告灯をリセットして消灯するか確認する",correct:false},
+      {text:"各輪を手で押して硬さを目視で調べる",correct:false},
+      {text:"4輪に窒素を充填し圧の保持を確認する",correct:false}],
+      result_correct:"右後輪が1.4kPa（規定2.4kPa）。明らかに低下していた。",
+      result_wrong:"TPMS点灯はまず全輪の実圧を測るのが基本。リセットや補充は原因確認の後。"},
+    {question:"右後輪だけ低い。次にすることは？",choices:[
+      {text:"タイヤに釘や異物が刺さっていないか点検する",correct:true},
+      {text:"バルブのムシの緩みと漏れを点検する",correct:false},
+      {text:"ホイールのリムからの漏れを点検する",correct:false},
+      {text:"規定圧まで充填し再点灯するか確認する",correct:false}],
+      result_correct:"トレッドに釘が刺さり、石けん水で漏れを確認。スローパンクと判明。",
+      result_wrong:"低下した1輪はまず異物・漏れを探す。充填だけでは再発する。"},
+    {question:"釘によるパンク。どう修理しますか？",choices:[
+      {text:"タイヤを外し内面からパッチで本修理する",correct:true},
+      {text:"外面から差し込む簡易補修材で塞ぐ",correct:false},
+      {text:"ビードシーラーを塗って漏れを抑える",correct:false},
+      {text:"チューブを入れて空気保持を補う",correct:false}],
+      result_correct:"タイヤを外して内面パッチで本修理。空気圧も規定に調整。",
+      result_wrong:"外面だけの簡易補修は応急用。安全のためタイヤを外して内面修理が基本。"}],
+    explanation:"TPMS点灯はまず全輪の実圧測定→低下輪の異物・漏れ特定→内面修理が基本。リセットや充填だけでは再発する。"},
+  {id:12,tier:"初級",symptom:"ヘッドライトの片側（ロービーム）が点かない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"点灯しない側のバルブの球切れを点検する",correct:true},
+      {text:"ヘッドライトユニットごと交換する",correct:false},
+      {text:"バッテリー電圧が十分か測定する",correct:false},
+      {text:"両側のバルブを同時に新品へ交換する",correct:false}],
+      result_correct:"左ロービームのフィラメントが断線。バルブ切れと判明。",
+      result_wrong:"片側だけ不点灯はまずバルブの球切れを疑うのが定石。"},
+    {question:"バルブ切れだった。次に確認することは？",choices:[
+      {text:"新品バルブを仮付けして点灯を確認する",correct:true},
+      {text:"ヒューズとリレーをまとめて交換する",correct:false},
+      {text:"ヘッドライトの光軸を先に調整する",correct:false},
+      {text:"アースを増設してから点灯確認する",correct:false}],
+      result_correct:"新品バルブで正常点灯。配線・ヒューズは正常と確認。",
+      result_wrong:"球切れならまず新品で点灯確認。点けば配線系は正常と切り分けられる。"},
+    {question:"交換時に気をつけることは？",choices:[
+      {text:"ガラス面を素手で触らず規格の合うバルブを使う",correct:true},
+      {text:"より明るい高ワット品に交換する",correct:false},
+      {text:"左右で色温度の違う球を組み合わせる",correct:false},
+      {text:"取り付け後の光軸確認は省略する",correct:false}],
+      result_correct:"素手の油分は球切れの原因。規格適合品を使い、交換後に光軸も確認。",
+      result_wrong:"ガラスを素手で触ると寿命低下。高ワット化や光軸無確認は不適切。"}],
+    explanation:"片側不点灯はまずバルブ球切れを疑い、新品で点灯確認して配線系と切り分け。素手禁止・規格品・光軸確認まで。"},
+  {id:13,tier:"初級",symptom:"ワイパーが拭き取れずスジが残る・ビビる",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ブレードのゴムの劣化・切れを点検する",correct:true},
+      {text:"ワイパーモーターの動きを点検する",correct:false},
+      {text:"アームの拭き付け圧（バネ）を点検する",correct:false},
+      {text:"ガラス面の油膜の付着を点検する",correct:false}],
+      result_correct:"ゴムが硬化し縁が裂けていた。劣化が拭き残しの原因。",
+      result_wrong:"拭き残し・ビビりはまずブレードゴムの劣化を疑うのが基本。"},
+    {question:"ゴムが劣化していた。次にすることは？",choices:[
+      {text:"ガラス面の油膜・汚れも併せて確認する",correct:true},
+      {text:"アームのスプリング圧の強さを点検する",correct:false},
+      {text:"ブレードの拭きムラ・変形を点検する",correct:false},
+      {text:"ガラスの傷や撥水ムラを点検する",correct:false}],
+      result_correct:"ガラスに油膜あり。油膜もビビりの一因と確認。",
+      result_wrong:"ゴム劣化と同時にガラスの油膜も確認。両方がビビりの原因になる。"},
+    {question:"どう仕上げますか？",choices:[
+      {text:"ブレード（ゴム）を交換し油膜を除去する",correct:true},
+      {text:"ゴムにグリスを塗って柔軟性を補う",correct:false},
+      {text:"アームを曲げてガラスへの当たりを調整する",correct:false},
+      {text:"ブレードのみ清掃して再使用する",correct:false}],
+      result_correct:"ゴム交換＋油膜除去で拭き取り良好。ビビりも解消。",
+      result_wrong:"ゴム交換と油膜除去が基本。グリスやアーム曲げは不適切。"}],
+    explanation:"拭き残し・ビビりはブレードゴム劣化＋ガラス油膜が主因。ゴム交換と油膜除去で解決。"},
+  {id:14,tier:"初級",symptom:"ウォッシャー液が出ない（ワイパーは動く）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ウォッシャータンクの液量を確認する",correct:true},
+      {text:"ウォッシャーポンプの作動音を点検する",correct:false},
+      {text:"ノズルの詰まりを分解して点検する",correct:false},
+      {text:"ウォッシャー回路のヒューズを点検する",correct:false}],
+      result_correct:"タンクがほぼ空。まず液量不足を確認。",
+      result_wrong:"液が出ない時はまずタンクの液量から確認するのが基本。"},
+    {question:"液は十分入っている。次に何を確認しますか？",choices:[
+      {text:"ノズルの詰まりとポンプの作動音を確認する",correct:true},
+      {text:"タンクを取り外して洗浄する",correct:false},
+      {text:"配管をすべて新品に引き直す",correct:false},
+      {text:"ワイパーゴムを交換する",correct:false}],
+      result_correct:"ポンプは作動音あり。ノズルが詰まって噴射しないと判明。",
+      result_wrong:"液があるならポンプ作動音とノズル詰まりを切り分けるのが先。"},
+    {question:"ノズル詰まりが原因。どう対処しますか？",choices:[
+      {text:"ノズルを清掃・貫通させ噴射を確認する",correct:true},
+      {text:"配管の折れ・詰まりを点検する",correct:false},
+      {text:"ウォッシャーポンプを新品に交換する",correct:false},
+      {text:"ノズルを大口径品に交換する",correct:false}],
+      result_correct:"細針でノズルを貫通させ清掃。正常に噴射を確認。",
+      result_wrong:"詰まりはまず清掃・貫通で解決することが多い。部品交換は最後。"}],
+    explanation:"ウォッシャー不良は液量→ポンプ作動音→ノズル詰まりの順。詰まりは清掃で解決が多い。"},
+  {id:15,tier:"初級",symptom:"ホーン（クラクション）が鳴らない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ホーン用ヒューズの断線を点検する",correct:true},
+      {text:"ホーンリレーの作動を点検する",correct:false},
+      {text:"ホーン本体を新品に交換する",correct:false},
+      {text:"ステアリングのケーブルを交換する",correct:false}],
+      result_correct:"ホーン用ヒューズが断線。まずここが原因の定番。",
+      result_wrong:"鳴らない時はまずヒューズの断線を確認するのが基本で安価。"},
+    {question:"ヒューズは正常だった。次に確認することは？",choices:[
+      {text:"ホーン端子に12Vが来ているか測定する",correct:true},
+      {text:"ステアリングのスパイラルケーブルを交換する",correct:false},
+      {text:"ホーンを増設して音量を上げる",correct:false},
+      {text:"アースを増設して様子を見る",correct:false}],
+      result_correct:"ホーン端子に12V到達。ホーン本体側の不良と切り分け。",
+      result_wrong:"ヒューズ正常なら、まず端子の電圧を測り本体側か配線側か切り分ける。"},
+    {question:"端子に電圧は来るが鳴らない。原因は？",choices:[
+      {text:"ホーン本体の故障と判断し交換する",correct:true},
+      {text:"ホーンスイッチを交換する",correct:false},
+      {text:"リレーを交換する",correct:false},
+      {text:"配線を一から引き直す",correct:false}],
+      result_correct:"電圧到達でも鳴らない＝ホーン本体不良。交換で復旧。",
+      result_wrong:"端子まで電圧が来て鳴らないならホーン本体の不良。手前の部品ではない。"}],
+    explanation:"ホーン不良はヒューズ→端子電圧→本体の順で切り分け。電圧が来て鳴らなければ本体交換。"},
+  {id:16,tier:"初級",symptom:"ブレーキ警告灯（赤）が点灯している",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"パーキングブレーキの解除と液量を確認する",correct:true},
+      {text:"ABSユニットの故障コードを読む",correct:false},
+      {text:"ブレーキパッドをすぐ全数交換する",correct:false},
+      {text:"マスターシリンダーを交換する",correct:false}],
+      result_correct:"パーキングは解除済み。フルードがMIN以下と判明。",
+      result_wrong:"赤の警告灯はまずパーキング解除とフルード量という基本から確認。"},
+    {question:"フルードが規定以下。次に何を疑いますか？",choices:[
+      {text:"パッドの摩耗とフルード漏れの有無を確認する",correct:true},
+      {text:"配管・ホースの損傷や漏れを点検する",correct:false},
+      {text:"マスターシリンダーの内部漏れを点検する",correct:false},
+      {text:"リザーバーに補充し再点灯するか確認する",correct:false}],
+      result_correct:"パッドが摩耗しピストンが出てフルード低下。漏れはなしと確認。",
+      result_wrong:"フルード低下はパッド摩耗か漏れが主因。補充だけでは原因を見逃す。"},
+    {question:"パッド摩耗で液面が下がっていた。どうしますか？",choices:[
+      {text:"パッドを交換し液量を規定に調整する",correct:true},
+      {text:"フルードを満タンまで補充して組み付ける",correct:false},
+      {text:"ピストンを戻さずキャリパーを組み付ける",correct:false},
+      {text:"ローターも無条件で同時交換する",correct:false}],
+      result_correct:"パッド交換でピストンが戻り液面正常化。警告灯も消灯。",
+      result_wrong:"パッド摩耗が原因なら交換が本筋。補充だけ・消灯だけでは未解決。"}],
+    explanation:"赤いブレーキ警告灯はパーキング解除と液量から。液量低下はパッド摩耗か漏れ。原因を直せば消灯する。"},
+  // ===== 中級 追加 =====
+  {id:17,tier:"中級",symptom:"エンジンはかかるが数秒で止まる（アイドリングが保てない）",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ISCとスロットルボディの汚れを点検する",correct:true},
+      {text:"燃料ポンプの吐出圧を測定して交換する",correct:false},
+      {text:"タイミングベルトの張りを点検し交換する",correct:false},
+      {text:"バッテリーを新品に載せ替えて再始動する",correct:false}],
+      result_correct:"スロットルボディとISCにカーボン堆積。アイドル空気量を絞っていた。",
+      result_wrong:"始動後すぐ停止はアイドル制御系の汚れ・不調が多い。まずそこを点検。"},
+    {question:"ISC・スロットルが汚れていた。同時に確認すべきは？",choices:[
+      {text:"吸気系の二次エア（負圧漏れ）の有無を確認する",correct:true},
+      {text:"点火時期を大きくずらして調整する",correct:false},
+      {text:"インジェクターを全数交換する",correct:false},
+      {text:"圧縮圧力を測ってヘッドを開ける",correct:false}],
+      result_correct:"負圧ホースに緩みあり。二次エアも不安定の一因と確認。",
+      result_wrong:"アイドル不調は汚れ＋二次エア漏れの複合が多い。負圧漏れも併せて確認。"},
+    {question:"どう仕上げますか？",choices:[
+      {text:"清掃・漏れ修理後にアイドル学習を行う",correct:true},
+      {text:"クリーナーを吹くだけで組み付ける",correct:false},
+      {text:"アイドル回転を高めに固定して納車する",correct:false},
+      {text:"学習はせず警告灯だけ消す",correct:false}],
+      result_correct:"清掃・漏れ修理後にアイドル学習。回転が安定し再始動も良好。",
+      result_wrong:"清掃と漏れ修理後はアイドル学習が必要。回転固定や学習省略は不適切。"}],
+    explanation:"始動後すぐ停止はアイドル制御の汚れ＋二次エア漏れが多い。清掃・修理後のアイドル学習まで行う。"},
+  {id:18,tier:"中級",symptom:"加速時にマフラーから青白い煙、オイルが減る",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"エンジンオイルの量と減り方を確認する",correct:true},
+      {text:"冷却水の量と色を確認する",correct:false},
+      {text:"エアフィルターの汚れを確認する",correct:false},
+      {text:"排気漏れの箇所を確認する",correct:false}],
+      result_correct:"オイルが規定より大きく減少。青白い煙＝オイル燃焼を示す。",
+      result_wrong:"青白い煙はオイル燃焼の典型。まずオイルの減り具合を確認する。"},
+    {question:"オイルが減っている。加速時の青煙の原因は？",choices:[
+      {text:"ピストンリングの摩耗（オイル上がり）を疑う",correct:true},
+      {text:"燃料が濃すぎる状態を疑う",correct:false},
+      {text:"ヘッドガスケット抜けを疑う",correct:false},
+      {text:"触媒の詰まりを疑う",correct:false}],
+      result_correct:"加速時の青煙はオイル上がり（リング摩耗）の典型。圧縮も低下気味。",
+      result_wrong:"加速時の青煙はオイル上がり。減速時ならバルブステムシール（オイル下がり）。"},
+    {question:"リング摩耗の可能性が高い。どう進めますか？",choices:[
+      {text:"圧縮・リークダウンを測定し損耗度を評価する",correct:true},
+      {text:"粘度の高い添加剤で煙を抑えて納車する",correct:false},
+      {text:"ただちにエンジンを載せ替える",correct:false},
+      {text:"オイルを継ぎ足しながら様子を見てもらう",correct:false}],
+      result_correct:"圧縮測定で損耗度を数値化し、修理費とオーバーホールの要否を判断。",
+      result_wrong:"まず圧縮・リークダウンで損耗を評価。添加剤での誤魔化しや即載せ替えは早計。"}],
+    explanation:"加速時の青煙＋オイル減はオイル上がり（リング摩耗）。圧縮測定で損耗を評価してから方針を決める。"},
+  {id:19,tier:"中級",symptom:"ブレーキペダルが奥まで入り、効きが甘い",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"リザーバーのフルード量と漏れを確認する",correct:true},
+      {text:"ブレーキパッドをすぐ交換する",correct:false},
+      {text:"マスターシリンダーをすぐ交換する",correct:false},
+      {text:"ローターの厚みを測定する",correct:false}],
+      result_correct:"フルードがMIN以下。配管系に漏れかエア噛みの疑い。",
+      result_wrong:"ペダルが入る・甘いはまず液量と漏れを確認。部品交換はその後。"},
+    {question:"ペダルを数回踏むと一旦戻る。何を疑いますか？",choices:[
+      {text:"ブレーキ配管内のエア噛みを疑う",correct:true},
+      {text:"ブースターの故障を疑う",correct:false},
+      {text:"パッドの面取り不足を疑う",correct:false},
+      {text:"ABSの誤作動を疑う",correct:false}],
+      result_correct:"数回踏んで戻る＝エア噛みの典型。配管に空気が混入している。",
+      result_wrong:"ポンピングで戻るのはエア噛みの特徴。まず空気混入を疑う。"},
+    {question:"エア噛みが原因。どう対処しますか？",choices:[
+      {text:"漏れを直し、遠い輪から順にエア抜きする",correct:true},
+      {text:"フルードを足してペダルを数回踏むだけ",correct:false},
+      {text:"近い輪から適当にエア抜きする",correct:false},
+      {text:"エア抜きせずペダル調整で済ませる",correct:false}],
+      result_correct:"漏れ修理後、マスターから遠い輪→近い輪の順でエア抜き。ペダル復活。",
+      result_wrong:"エア抜きはマスターから遠い輪が先。漏れを直さず補充だけでは再発する。"}],
+    explanation:"ペダルが床まではエア噛み・漏れが主因。漏れ修理後、遠い輪から順にエア抜きする。"},
+  {id:20,tier:"中級",symptom:"段差でフロントから「ゴトゴト」と異音がする",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"スタビライザーリンクのガタを手で点検する",correct:true},
+      {text:"ショックアブソーバーをすぐ交換する",correct:false},
+      {text:"タイヤのバランスを取り直す",correct:false},
+      {text:"ロアアームボールジョイントをすぐ交換する",correct:false}],
+      result_correct:"スタビリンクを手で揺すると遊びあり。段差のゴトゴト音の定番原因。",
+      result_wrong:"段差のゴトゴトはスタビリンクのガタが最多。まず手で遊びを確認。"},
+    {question:"スタビリンクにガタあり。他に確認すべきは？",choices:[
+      {text:"周辺のスタビブッシュ類も併せて点検する",correct:true},
+      {text:"先にアライメントを測定して調整する",correct:false},
+      {text:"ハブベアリングのガタを点検する",correct:false},
+      {text:"ブレーキの引きずりを点検する",correct:false}],
+      result_correct:"スタビブッシュにもひび。リンクと併せて要交換と判断。",
+      result_wrong:"リンクのガタが出る車はブッシュ類も劣化しがち。周辺も併せて点検。"},
+    {question:"安全面の判断として正しいのは？",choices:[
+      {text:"走行は可能と説明しつつ早期交換を勧める",correct:true},
+      {text:"脱落の恐れがあり即レッカー手配する",correct:false},
+      {text:"異音は仕様として様子見を勧める",correct:false},
+      {text:"増し締めだけで完了とする",correct:false}],
+      result_correct:"スタビリンクは即危険ではないが放置で悪化。早期交換を案内。",
+      result_wrong:"スタビリンクは即危険ではない（ボールジョイント等とは別）。ただし放置せず早期交換。"}],
+    explanation:"段差のゴトゴトはスタビリンク・ブッシュのガタが定番。即危険ではないが早期交換を勧める。"},
+  {id:21,tier:"中級",symptom:"停車・アイドリング中に車体がブルブル振動する",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"エンジンマウントの劣化・切れを点検する",correct:true},
+      {text:"タイヤのバランスを点検する",correct:false},
+      {text:"ブレーキローターの歪みを点検する",correct:false},
+      {text:"ホイールナットの緩みを点検する",correct:false}],
+      result_correct:"エンジンマウントのゴムが切れ気味。アイドル振動が車体に伝わっていた。",
+      result_wrong:"停車時の振動はエンジンマウント劣化が定番。走行時の振動とは切り分ける。"},
+    {question:"マウントが疑わしい。どう確認しますか？",choices:[
+      {text:"D/Rレンジ等の負荷時に揺れが増えるか確認する",correct:true},
+      {text:"アイドル回転数を大きく上げて確認する",correct:false},
+      {text:"全マウントを無条件で交換する",correct:false},
+      {text:"プラグを外して確認する",correct:false}],
+      result_correct:"DレンジやAC ON時に揺れが増大。マウント劣化を裏付け。",
+      result_wrong:"負荷時に揺れが増えるかでマウントを確認。いきなり全交換は無駄が出る。"},
+    {question:"マウント劣化が確定。どう対処しますか？",choices:[
+      {text:"劣化したマウントを特定して交換する",correct:true},
+      {text:"アイドル回転を上げて振動を隠す",correct:false},
+      {text:"下回りに防振材を貼って対処する",correct:false},
+      {text:"エンジン制御を書き換えて隠す",correct:false}],
+      result_correct:"劣化マウントを交換し振動消失。アイドルも安定。",
+      result_wrong:"原因のマウント交換が本筋。回転上げや防振材での誤魔化しは不適切。"}],
+    explanation:"停車時の振動はエンジンマウント劣化が定番。負荷時の揺れ増加で確認し、該当マウントを交換。"},
+  {id:22,tier:"中級",symptom:"雨の日や湿気が多いと加速不良・失火する",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"プラグコード・コイルのリークを点検する",correct:true},
+      {text:"燃料フィルターの詰まりを点検し交換する",correct:false},
+      {text:"エアフィルターの汚れを点検し交換する",correct:false},
+      {text:"バッテリーの電圧を測定して交換する",correct:false}],
+      result_correct:"暗所でコイル周りに青白い火花リークを確認。湿気で悪化する典型。",
+      result_wrong:"雨・湿気で悪化する失火は点火リークが定番。まず点火系を点検。"},
+    {question:"点火リークが疑わしい。どう確認しますか？",choices:[
+      {text:"水をかけて失火が悪化するか確認する",correct:true},
+      {text:"燃料圧力を測定して確認する",correct:false},
+      {text:"各気筒の圧縮圧力を測定する",correct:false},
+      {text:"O2センサーを外して点検する",correct:false}],
+      result_correct:"プラグコードに水をかけると失火増。絶縁劣化によるリークと確定。",
+      result_wrong:"水をかけて再現するのが手早い切り分け。湿気で悪化＝絶縁リーク。"},
+    {question:"コードの絶縁劣化が原因。どう対処しますか？",choices:[
+      {text:"劣化したコード／コイルを交換する",correct:true},
+      {text:"リーク部に絶縁テープを巻く",correct:false},
+      {text:"シリコングリスを塗って様子を見る",correct:false},
+      {text:"雨の日は乗らないよう案内する",correct:false}],
+      result_correct:"劣化コード（またはコイル）を交換しリーク解消。雨天でも安定。",
+      result_wrong:"絶縁劣化は部品交換が本筋。テープやグリスでの応急は再発する。"}],
+    explanation:"雨・湿気で悪化する失火は点火リーク。水をかけて再現確認し、劣化したコード/コイルを交換。"},
+  {id:23,tier:"中級",symptom:"MT車。加速時に回転だけ上がり速度が乗らない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"クラッチの滑り（ミート位置の高さ）を点検する",correct:true},
+      {text:"タイヤの空気圧を点検する",correct:false},
+      {text:"ブレーキの引きずりを点検する",correct:false},
+      {text:"燃料噴射量を点検する",correct:false}],
+      result_correct:"高ギアで急加速すると回転だけ吹け上がる。クラッチ滑りの典型。",
+      result_wrong:"回転だけ上がり速度が乗らないのはクラッチ滑りの典型。まずそこを確認。"},
+    {question:"クラッチ滑りが疑わしい。どう確認しますか？",choices:[
+      {text:"サイドを引き高ギアでエンストするか試す",correct:true},
+      {text:"アイドリング回転数を測定する",correct:false},
+      {text:"エンジンオイルの量を点検する",correct:false},
+      {text:"スパークプラグの状態を点検する",correct:false}],
+      result_correct:"サイド＋高ギアでエンストせず吹け上がる＝滑り確定。",
+      result_wrong:"サイドを引いて高ギア発進し、エンストしなければ滑り確定の定番テスト。"},
+    {question:"クラッチ滑りが確定。どう対処しますか？",choices:[
+      {text:"クラッチディスク等を点検し摩耗品を交換する",correct:true},
+      {text:"レリーズの遊び調整だけで済ませる",correct:false},
+      {text:"滑り止め添加剤を入れる",correct:false},
+      {text:"回転を抑えて運転するよう案内する",correct:false}],
+      result_correct:"ディスク摩耗を確認しクラッチ一式を交換。駆動が正常化。",
+      result_wrong:"摩耗が原因なら交換が本筋。調整や添加剤では滑りは止まらない。"}],
+    explanation:"回転だけ上がるのはクラッチ滑り。サイド＋高ギアのテストで確定し、摩耗ディスクを交換。"},
+  {id:24,tier:"中級",symptom:"ハンドルが重い（パワーステアリングが効きにくい）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"電動／油圧のどちらの方式かをまず確認する",correct:true},
+      {text:"タイヤを太いものに替える",correct:false},
+      {text:"アライメントを調整する",correct:false},
+      {text:"ステアリングギアボックスを交換する",correct:false}],
+      result_correct:"車両は電動パワステ（EPS）。油圧とは点検手順が異なると確認。",
+      result_wrong:"パワステ不調はまず電動か油圧かで分岐。方式により点検が全く違う。"},
+    {question:"電動パワステ（EPS）だった。何を疑いますか？",choices:[
+      {text:"警告灯・故障コードと電源電圧を確認する",correct:true},
+      {text:"パワステフルードの量を点検する",correct:false},
+      {text:"ベルトの張りを点検する",correct:false},
+      {text:"ポンプを交換する",correct:false}],
+      result_correct:"EPS警告灯が点灯し低電圧の記録。12V系の電圧低下が一因と判明。",
+      result_wrong:"EPSはフルードもベルトも無い。警告灯・コードと電源電圧を確認する。"},
+    {question:"原因に応じた正しい対処は？",choices:[
+      {text:"コードに沿って電源・センサーを点検する",correct:true},
+      {text:"パワステフルードを規定量まで補充する",correct:false},
+      {text:"駆動ベルトの張りを点検して交換する",correct:false},
+      {text:"ハンドルを軽い社外品に交換する",correct:false}],
+      result_correct:"故障コードに沿ってトルクセンサー／電源系を点検し修理。操舵力が回復。",
+      result_wrong:"EPSはフルード・ベルト無関係。コードに沿った電気系の点検・修理が正解。"}],
+    explanation:"パワステ不調はまず電動/油圧の判別。EPSは警告灯・コード・電源電圧から。油圧と手順を混同しない。"},
+  // ===== 上級 追加 =====
+  {id:25,tier:"上級",symptom:"暖機後、時々エンジンがかからない（冷えると復活）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"再現時の故障コードと回転信号を確認する",correct:true},
+      {text:"ただちに燃料ポンプを交換して確認する",correct:false},
+      {text:"バッテリーを新品に載せ替えて確認する",correct:false},
+      {text:"スターターを新品に交換して確認する",correct:false}],
+      result_correct:"不調再現時にP0335系。クランキングしてもRPM 0＝回転信号欠落。",
+      result_wrong:"熱間の間欠始動不良はまず再現時のコードと回転信号から。当て交換は割高。"},
+    {question:"クランク角信号が出ていない。熱との関係をどう疑いますか？",choices:[
+      {text:"熱に弱くなったセンサーの不良を疑う",correct:true},
+      {text:"高温によるガソリン気化不良を疑う",correct:false},
+      {text:"イモビライザーの誤作動を疑う",correct:false},
+      {text:"オルタネーターの過充電を疑う",correct:false}],
+      result_correct:"熱間でのみ信号消失＝センサーが熱で内部断。冷えると復活する典型。",
+      result_wrong:"熱間でのみ失う回転信号は、熱に弱くなったクランク角センサーが典型。"},
+    {question:"熱に弱いクランク角センサーが濃厚。どう確定・対処しますか？",choices:[
+      {text:"配線の熱害を除外しセンサーを交換する",correct:true},
+      {text:"燃料ポンプも同時に交換しておく",correct:false},
+      {text:"そのまま納車し再発したら来てもらう",correct:false},
+      {text:"ECUを初期化して終わりにする",correct:false}],
+      result_correct:"信号線の熱害なしを確認しセンサー交換。暖機後も始動安定を確認。",
+      result_wrong:"まず配線の熱害を除外しセンサー交換。関係ない部品の同時交換や様子見は不適切。"}],
+    explanation:"熱間の間欠始動不良はクランク角センサーの熱劣化が典型。再現時の回転信号で確定。燃料ポンプ等と誤診しやすい。"},
+  {id:26,tier:"上級",symptom:"ABS・横滑り防止の警告灯が点灯した",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ABS対応スキャナーでシャシー系コードを読む",correct:true},
+      {text:"一般のコードリーダーでエンジンコードを読む",correct:false},
+      {text:"ブレーキフルードを交換する",correct:false},
+      {text:"ABSユニットをすぐ交換する",correct:false}],
+      result_correct:"C系コードで左前車輪速センサー回路の異常を検出。",
+      result_wrong:"ABSはC系コード。一般リーダーでは読めず、ABS対応機でないと特定できない。"},
+    {question:"左前の車輪速センサー回路が異常。次に何をしますか？",choices:[
+      {text:"センサーとトーンリングと配線を目視点検する",correct:true},
+      {text:"4輪のセンサーを同時に交換する",correct:false},
+      {text:"ABSユニットを交換する",correct:false},
+      {text:"ハブベアリングを交換する",correct:false}],
+      result_correct:"センサー先端に鉄粉が付着し、トーンリングにも欠けを確認。",
+      result_wrong:"回路異常はまずセンサー・トーンリング・配線を目視。いきなりユニット交換は早計。"},
+    {question:"鉄粉付着とトーンリング欠けが原因。どう対処しますか？",choices:[
+      {text:"清掃・交換後にライブデータで確認する",correct:true},
+      {text:"警告灯を消去してそのまま納車する",correct:false},
+      {text:"関連ヒューズを点検して交換する",correct:false},
+      {text:"タイヤをローテーションする",correct:false}],
+      result_correct:"清掃・部品交換後、走行ライブデータで4輪の車輪速が一致。警告灯消灯。",
+      result_wrong:"原因部品を直しライブデータで確認するのが本筋。消灯だけ・無関係作業は不可。"}],
+    explanation:"ABS警告灯はABS対応スキャナーでC系コード→該当輪のセンサー/トーンリング/配線を点検。ライブデータで検証。"},
+  {id:27,tier:"上級",symptom:"エンジン警告灯。コードはP0420（触媒効率低下）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"前後O2センサーのライブ波形を比較する",correct:true},
+      {text:"ただちに触媒を新品へ交換する",correct:false},
+      {text:"エンジンオイルを交換する",correct:false},
+      {text:"プラグを全数交換する",correct:false}],
+      result_correct:"下流O2が上流とほぼ同じ波形で変動。触媒不良かセンサー不良の疑い。",
+      result_wrong:"P0420はまず前後O2波形の比較から。触媒を即交換すると誤診で高額になりやすい。"},
+    {question:"切り分けのため、まず何を確認しますか？",choices:[
+      {text:"触媒手前の排気漏れと下流O2の劣化を確認する",correct:true},
+      {text:"燃料添加剤を入れて様子を見る",correct:false},
+      {text:"EGRをすぐ交換する",correct:false},
+      {text:"マフラーを社外品に替える",correct:false}],
+      result_correct:"排気漏れなし。下流O2の応答が鈍く、センサー劣化が濃厚と判明。",
+      result_wrong:"P0420は下流O2不良や排気漏れでも出る。触媒断定の前にここを除外する。"},
+    {question:"下流O2の劣化が濃厚。どう進めますか？",choices:[
+      {text:"O2を交換し、走行で再点灯しないか確認する",correct:true},
+      {text:"確実を期して触媒も同時交換する",correct:false},
+      {text:"警告灯を消して納車する",correct:false},
+      {text:"ECUを書き換えて監視を切る",correct:false}],
+      result_correct:"下流O2交換後、走行で再点灯せず。触媒交換せずに解決。",
+      result_wrong:"まず安価なO2交換で検証するのが定石。触媒同時交換や監視カットは不適切。"}],
+    explanation:"P0420は触媒を即交換しがちな落とし穴。前後O2波形比較→排気漏れ/下流O2の除外→安価な側から検証する。"},
+  {id:28,tier:"上級",symptom:"発進・低速加速でCVTがブルブル震える（ジャダー）",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"CVTフルードの量・色・劣化を点検する",correct:true},
+      {text:"ただちにCVTを載せ替える",correct:false},
+      {text:"エンジンマウントを交換する",correct:false},
+      {text:"タイヤのバランスを取り直す",correct:false}],
+      result_correct:"CVTフルードが変色・劣化。ジャダーの一因として濃厚。",
+      result_wrong:"CVTジャダーはまずフルードの状態から。即載せ替えは費用も大きく早計。"},
+    {question:"フルードが劣化していた。どう判断しますか？",choices:[
+      {text:"専用フルード交換の可否と摩耗度を見極める",correct:true},
+      {text:"一般のATFを入れて様子を見る",correct:false},
+      {text:"フラッシュで一気に全量洗浄する",correct:false},
+      {text:"添加剤を入れてジャダーを抑える",correct:false}],
+      result_correct:"走行距離と劣化から、専用CVTフルード交換で改善を見込めると判断。",
+      result_wrong:"CVTは専用フルード必須（一般ATF不可）。劣化が激しければ交換可否を慎重に判断。"},
+    {question:"正しい仕上げは？",choices:[
+      {text:"指定CVTフルードに交換し学習を行う",correct:true},
+      {text:"一般ATFで代用して様子を見る",correct:false},
+      {text:"学習を省略してそのまま引き渡す",correct:false},
+      {text:"ジャダーは仕様と説明して終える",correct:false}],
+      result_correct:"指定フルードに交換＋学習・確認走行でジャダー軽減を確認。",
+      result_wrong:"CVTは指定フルードと学習が必須。一般ATF代用や学習省略は不可。"}],
+    explanation:"CVTジャダーはまずフルード状態。CVT専用フルード必須で一般ATF不可。交換後は学習・確認走行まで。"},
+  {id:29,tier:"上級",symptom:"白い煙が出続け、冷却水が減る（暖機後も白煙）",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"冷却水の量と、オイルへの乳化（混入）を点検する",correct:true},
+      {text:"オイル上がりとしてリングを点検する",correct:false},
+      {text:"エアフィルターを点検する",correct:false},
+      {text:"触媒の詰まりを点検する",correct:false}],
+      result_correct:"冷却水が減少。暖機後も続く白煙＝冷却水の燃焼を示す。",
+      result_wrong:"暖機後も続く白煙＋冷却水減はヘッドガスケット系を疑う。青煙（オイル）とは別。"},
+    {question:"ヘッドガスケット抜けが疑わしい。どう確定しますか？",choices:[
+      {text:"冷却水に燃焼ガスの混入がないか検査する",correct:true},
+      {text:"圧縮回復の添加剤を入れて様子を見る",correct:false},
+      {text:"ラジエーターをすぐ交換する",correct:false},
+      {text:"サーモスタットを点検して交換する",correct:false}],
+      result_correct:"ケミカルテスターで冷却水に燃焼ガスを検出。ガスケット抜けを確定。",
+      result_wrong:"燃焼ガス混入検査（ブロックテスト）で確定するのが確実。部品当て替えではない。"},
+    {question:"ガスケット抜けが確定。どう説明・対処しますか？",choices:[
+      {text:"ヘッド歪み点検を含む本修理と費用を説明する",correct:true},
+      {text:"漏れ止め剤を入れて様子を見てもらう",correct:false},
+      {text:"冷却水を継ぎ足しながら乗るよう勧める",correct:false},
+      {text:"特に問題なしとして納車する",correct:false}],
+      result_correct:"ヘッド歪み点検込みで修理見積りを提示。費用とリスクを正直に説明。",
+      result_wrong:"ガスケット抜けは本修理が基本。漏れ止め剤や継ぎ足しは一時しのぎで悪化させる。"}],
+    explanation:"暖機後も続く白煙＋冷却水減はヘッドガスケット抜け。燃焼ガス混入検査で確定し、本修理を提示する。"},
+  {id:30,tier:"上級",symptom:"エンジン警告灯。コードはP0442（EVAP微少漏れ）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"まず給油口キャップの締まり・パッキンを点検する",correct:true},
+      {text:"ただちにパージバルブを交換する",correct:false},
+      {text:"燃料タンクを交換する",correct:false},
+      {text:"O2センサーを交換する",correct:false}],
+      result_correct:"キャップが緩く、パッキンも劣化。EVAP微少漏れの最頻原因。",
+      result_wrong:"P0442微少漏れはまず給油口キャップから。最も安価で頻度が高い原因。"},
+    {question:"キャップを正常化してもコードが再発。次は？",choices:[
+      {text:"スモークテスターでEVAP経路の漏れを特定する",correct:true},
+      {text:"コードを消してそのまま納車する",correct:false},
+      {text:"燃料ポンプを交換する",correct:false},
+      {text:"インジェクターを交換する",correct:false}],
+      result_correct:"スモークテストでパージ配管に微少漏れを発見。漏れ箇所を特定。",
+      result_wrong:"キャップで直らなければスモークテストで経路の漏れを特定するのが確実。"},
+    {question:"配管の微少漏れが原因。どう対処しますか？",choices:[
+      {text:"該当部を修理し、モニタ完了まで確認して消灯を確認する",correct:true},
+      {text:"コードを消すだけで完了とする",correct:false},
+      {text:"EVAP機能を殺して警告を出なくする",correct:false},
+      {text:"ガソリンを満タンにして様子を見る",correct:false}],
+      result_correct:"漏れ部を修理し、EVAPモニタ完了で再点灯なしを確認。",
+      result_wrong:"修理後はモニタ完了まで確認が必要。消去だけ・機能カットは不適切。"}],
+    explanation:"P0442微少漏れはまず給油口キャップ（最頻・安価）。直らなければスモークテストで経路の漏れを特定する。"},
+  // ===== 初級 追加2 =====
+  {id:31,tier:"初級",symptom:"ウインカーが片側だけ高速で点滅する",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"高速点滅側のウインカー球の球切れを点検する",correct:true},
+      {text:"ウインカーリレーを新品に交換する",correct:false},
+      {text:"ヒューズをまとめて点検交換する",correct:false},
+      {text:"ハザードスイッチを分解清掃する",correct:false}],
+      result_correct:"右後ウインカーが球切れ。1個切れると高速点滅（ハイフラ）になる。",
+      result_wrong:"片側だけ高速点滅＝その側の球切れが定番。まず球を点検する。"},
+    {question:"球切れだった。どう確認しますか？",choices:[
+      {text:"新品球に替えて点滅速度が戻るか確認する",correct:true},
+      {text:"ウインカーリレーを新品に交換する",correct:false},
+      {text:"ソケットの腐食・接触不良を点検する",correct:false},
+      {text:"配線とコネクタの導通を点検する",correct:false}],
+      result_correct:"新品球で点滅は正常速度に。リレー・配線は正常と確認。",
+      result_wrong:"球を替えて速度が戻れば球切れ確定。リレー交換は通常不要。"},
+    {question:"LED化されている車での注意点は？",choices:[
+      {text:"抵抗不足でハイフラ化するため対策品を使う",correct:true},
+      {text:"消費電力の大きい球で点滅を安定させる",correct:false},
+      {text:"リレーを高速点滅対応品に交換する",correct:false},
+      {text:"球の極性を無視して取り付ける",correct:false}],
+      result_correct:"LEDは消費電流が小さくハイフラ化。抵抗内蔵やリレーで対策する。",
+      result_wrong:"LED化時は抵抗不足でハイフラになる。対策品か専用リレーが必要。"}],
+    explanation:"片側だけ高速点滅は球切れが定番。新品球で確認。LED化時は抵抗不足によるハイフラに注意。"},
+  {id:32,tier:"初級",symptom:"室内灯（ルームランプ）が点かない",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"スイッチ位置(DOOR/ON/OFF)を確認する",correct:true},
+      {text:"ルームランプの球切れを点検する",correct:false},
+      {text:"室内灯ヒューズの断線を点検する",correct:false},
+      {text:"ルームランプ本体を新品に交換する",correct:false}],
+      result_correct:"スイッチがOFF位置だった。まず操作位置の確認が基本。",
+      result_wrong:"点かない時はまずスイッチ位置（DOOR/ON/OFF）の確認から。"},
+    {question:"スイッチはDOOR位置。開けても点かない。次は？",choices:[
+      {text:"電球の球切れとヒューズの断線を点検する",correct:true},
+      {text:"配線を一から引き直す",correct:false},
+      {text:"ドアを交換する",correct:false},
+      {text:"アース線を増設して様子を見る",correct:false}],
+      result_correct:"電球のフィラメント断線を確認。球切れが原因と判明。",
+      result_wrong:"スイッチ正常なら球切れ・ヒューズを点検するのが順序。"},
+    {question:"手動ONは点くがドア連動だけ点かない。原因は？",choices:[
+      {text:"カーテシスイッチの不良を点検する",correct:true},
+      {text:"電球をもう一度交換する",correct:false},
+      {text:"ヒューズを増設する",correct:false},
+      {text:"室内灯ごと交換する",correct:false}],
+      result_correct:"ドアスイッチの接触不良。ドア連動のみ不点の典型。",
+      result_wrong:"手動で点くなら球・電源はOK。ドア連動不良はカーテシスイッチを疑う。"}],
+    explanation:"室内灯不点はスイッチ位置→球/ヒューズ→ドアスイッチの順。ドア連動だけ不点はカーテシ不良。"},
+  {id:33,tier:"初級",symptom:"リアガラスの曇りが取れない（熱線が効かない）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"デフォッガーの作動と表示を確認する",correct:true},
+      {text:"デフォッガースイッチの不良を点検する",correct:false},
+      {text:"熱線回路のヒューズの断線を点検する",correct:false},
+      {text:"リアガラスを新品に交換する",correct:false}],
+      result_correct:"スイッチONで表示は点灯。通電はしている様子と確認。",
+      result_wrong:"まずスイッチ作動と表示を確認。ガラス交換などは順序が違う。"},
+    {question:"通電はしている。次に何を点検しますか？",choices:[
+      {text:"熱線（プリント線）の断線箇所を点検する",correct:true},
+      {text:"熱線端子の接触・はんだを点検する",correct:false},
+      {text:"デフォッガーリレーの作動を点検する",correct:false},
+      {text:"リアガラスを新品に交換する",correct:false}],
+      result_correct:"熱線の一部が断線。そこだけ曇りが残っていた。",
+      result_wrong:"通電ありなら熱線そのものの断線を点検するのが順序。"},
+    {question:"熱線の一部断線。どう対処しますか？",choices:[
+      {text:"導電補修材で断線部を導通させ作動確認する",correct:true},
+      {text:"断線部に一般の接着剤を盛って繋ぐ",correct:false},
+      {text:"曇り止めスプレーだけで対処する",correct:false},
+      {text:"リアガラスを丸ごと新品交換する",correct:false}],
+      result_correct:"専用の導電補修材で断線を補修。曇りが取れることを確認。",
+      result_wrong:"熱線断線は導電補修材で直せることが多い。ガラス全交換は過剰。"}],
+    explanation:"リア熱線不良はスイッチ/通電→熱線断線の順。部分断線は導電補修材で復旧できる。"},
+  {id:34,tier:"初級",symptom:"スマートキーが反応しない（ドアもエンジンも）",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"キーの電池残量を点検・交換する",correct:true},
+      {text:"スマートキー受信機の作動を点検する",correct:false},
+      {text:"車両の12V電圧を点検する",correct:false},
+      {text:"イモビライザーをリセットする",correct:false}],
+      result_correct:"キーの電池電圧が低下。電池切れが原因と判明。",
+      result_wrong:"反応しない時はまずキー電池から。最も多く安価な原因。"},
+    {question:"応急的にエンジンをかけるには？",choices:[
+      {text:"内蔵メカキーやキー近接でボタン始動する",correct:true},
+      {text:"スペアのスマートキーで始動を試す",correct:false},
+      {text:"キーを強く押し付けて始動を試す",correct:false},
+      {text:"ブースターケーブルで救援始動する",correct:false}],
+      result_correct:"内蔵メカキー/ボタン近接で始動可。電池系の問題と切り分け。",
+      result_wrong:"スマートキー不調は内蔵メカキーや近接始動の応急策がある。"},
+    {question:"車両側の12Vが弱いとどうなりますか？",choices:[
+      {text:"スマート系が誤作動するため電圧も点検する",correct:true},
+      {text:"12Vは無関係なので点検しない",correct:false},
+      {text:"キー本体を買い替える",correct:false},
+      {text:"受信機を交換する",correct:false}],
+      result_correct:"12V低下でスマート系が不安定に。車両側電圧も併せて点検。",
+      result_wrong:"キー電池だけでなく車両12Vの低下でもスマート系は不調になる。"}],
+    explanation:"スマートキー不反応はまずキー電池。応急は内蔵メカキー/近接始動。車両12V低下も一因。"},
+  {id:35,tier:"初級",symptom:"雨の日に滑りやすい。タイヤがツルツルに見える",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"残溝とスリップサインの露出を点検する",correct:true},
+      {text:"タイヤの偏摩耗やひび割れを点検する",correct:false},
+      {text:"タイヤの空気圧を点検する",correct:false},
+      {text:"ホイールの歪み・振れを点検する",correct:false}],
+      result_correct:"スリップサインが露出。残溝が限界（1.6mm以下）と判明。",
+      result_wrong:"滑り・摩耗はまず残溝とスリップサインを点検するのが基本。"},
+    {question:"残溝が限界だった。安全・法的な判断は？",choices:[
+      {text:"整備不良になるため交換が必要と説明する",correct:true},
+      {text:"次の車検まで使えると説明する",correct:false},
+      {text:"溝を彫り直して使う",correct:false},
+      {text:"前後ローテーションで延命する",correct:false}],
+      result_correct:"スリップサイン露出は整備不良。安全のため交換が必要。",
+      result_wrong:"残溝1.6mm以下は整備不良。延命や溝彫りでは使えない。"},
+    {question:"交換時に併せて確認することは？",choices:[
+      {text:"製造年・偏摩耗・ひび割れも確認する",correct:true},
+      {text:"銘柄は気にしなくてよい",correct:false},
+      {text:"1本だけ新品にすればよい",correct:false},
+      {text:"空気圧は確認しなくてよい",correct:false}],
+      result_correct:"製造年・偏摩耗・ひびも確認。古いタイヤは溝が残っても硬化で危険。",
+      result_wrong:"溝だけでなく製造年・ひび・偏摩耗も確認。駆動輪は揃えるのが基本。"}],
+    explanation:"スリップサイン露出（残溝1.6mm）は整備不良で要交換。製造年・ひび・偏摩耗も併せて確認。"},
+  {id:36,tier:"初級",symptom:"電動ドアミラーが動かない・格納しない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ミラー回路のヒューズの断線を点検する",correct:true},
+      {text:"ミラースイッチの操作を点検する",correct:false},
+      {text:"ミラー可動部の固着を点検する",correct:false},
+      {text:"ドアミラーを新品に交換する",correct:false}],
+      result_correct:"ミラー回路のヒューズが断線。まずここを確認。",
+      result_wrong:"動かない時はまずヒューズの断線確認が安価で確実。"},
+    {question:"ヒューズは正常。次に何を点検しますか？",choices:[
+      {text:"スイッチとモーターへの通電を確認する",correct:true},
+      {text:"ミラーモーターの単体作動を点検する",correct:false},
+      {text:"配線の断線・接触を点検する",correct:false},
+      {text:"ドアミラーを新品に交換する",correct:false}],
+      result_correct:"スイッチ操作でモーターに通電なし。スイッチ側の不良と切り分け。",
+      result_wrong:"ヒューズ正常ならスイッチ→モーター通電の順で切り分ける。"},
+    {question:"モーターに通電が来るのに動かない場合は？",choices:[
+      {text:"ミラーモーターの不良と判断し交換する",correct:true},
+      {text:"ミラースイッチを交換する",correct:false},
+      {text:"ミラーのギア・リンクを点検する",correct:false},
+      {text:"配線のコネクタを点検する",correct:false}],
+      result_correct:"通電ありで動かない＝モーター不良。ミラーAssy交換で復旧。",
+      result_wrong:"通電が来て動かないならモーター側の不良。手前の部品ではない。"}],
+    explanation:"電動ミラー不良はヒューズ→スイッチ/通電→モーターの順。通電が来て動かなければモーター不良。"},
+  {id:37,tier:"初級",symptom:"バックランプ（後退灯）が点かない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"バックランプの球切れを点検する",correct:true},
+      {text:"ソケットやコネクタの接触を点検する",correct:false},
+      {text:"バックランプ用ヒューズの断線を点検する",correct:false},
+      {text:"テールランプAssyを新品に交換する",correct:false}],
+      result_correct:"後退灯の球が切れていた。まず球を確認するのが基本。",
+      result_wrong:"点かない時はまず球切れから。安価で頻度が高い。"},
+    {question:"球は正常。R時に通電がない。次は？",choices:[
+      {text:"バックランプスイッチの作動を点検する",correct:true},
+      {text:"配線・コネクタの導通を点検する",correct:false},
+      {text:"バックランプ用ヒューズを点検する",correct:false},
+      {text:"球をもう一度新品に交換する",correct:false}],
+      result_correct:"シフトR連動のバックランプスイッチが不良。通電せず点灯しない。",
+      result_wrong:"球正常で通電なしはバックランプスイッチ（R連動）の不良が定番。"},
+    {question:"スイッチ点検で車種により違う点は？",choices:[
+      {text:"整備書でスイッチ位置を確認する",correct:true},
+      {text:"どの車も同じ場所にある",correct:false},
+      {text:"スイッチは存在しない",correct:false},
+      {text:"ヒューズだけ見ればよい",correct:false}],
+      result_correct:"バックランプスイッチの位置は車種で異なる。整備書で位置を確認。",
+      result_wrong:"スイッチ位置は車種で違う（ミッション/シフト等）。整備書で確認する。"}],
+    explanation:"後退灯不点は球切れ→R連動スイッチの順。スイッチ位置は車種で異なるため整備書で確認。"},
+  {id:38,tier:"初級",symptom:"給油口のフタ（リッド）が開かない",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"開閉レバー・スイッチの操作と手応えを確認する",correct:true},
+      {text:"オープナーのワイヤーの動きを点検する",correct:false},
+      {text:"リッドのロック機構の固着を点検する",correct:false},
+      {text:"電動リッドのヒューズを点検する",correct:false}],
+      result_correct:"レバーは引けるが手応えが軽い。ワイヤー外れ等を疑う。",
+      result_wrong:"まずレバー操作の手応えを確認。こじ開けは破損の元。"},
+    {question:"レバーの手応えが軽い。何を疑いますか？",choices:[
+      {text:"オープナーのワイヤー外れや固着を点検する",correct:true},
+      {text:"リッドのヒンジ・ロックの固着を点検する",correct:false},
+      {text:"電動オープナーのモーターを点検する",correct:false},
+      {text:"給油口リッドを新品に交換する",correct:false}],
+      result_correct:"オープナーワイヤーが外れていた。レバーが空振りしていた。",
+      result_wrong:"手応えが軽いのはワイヤー外れ・固着が定番。経路を点検する。"},
+    {question:"緊急で開けたい時の正しい方法は？",choices:[
+      {text:"トランク内の緊急オープナー（手動解除）を使う",correct:true},
+      {text:"リッドをドライバーでこじ開ける",correct:false},
+      {text:"燃料タンクを下ろして開ける",correct:false},
+      {text:"鍵穴を破壊して開ける",correct:false}],
+      result_correct:"多くの車はトランク内に手動解除あり。傷つけず開けられる。",
+      result_wrong:"無理にこじ開けず、まず緊急オープナー（手動解除）を使う。"}],
+    explanation:"給油口が開かない時はレバー操作→ワイヤー外れ/固着の順。緊急時は手動解除を使う。"},
+  {id:39,tier:"初級",symptom:"半ドア警告灯が消えない（全ドアを閉めている）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"どのドアで警告が出ているか順に確認する",correct:true},
+      {text:"各ドアスイッチの導通を点検する",correct:false},
+      {text:"メーターの警告回路を点検する",correct:false},
+      {text:"半ドア警告のヒューズを点検する",correct:false}],
+      result_correct:"運転席ドアで警告。1か所のスイッチ不良を絞り込む。",
+      result_wrong:"まずどのドアか切り分ける。メーター交換などは順序が違う。"},
+    {question:"運転席ドアが原因。何を疑いますか？",choices:[
+      {text:"カーテシスイッチの固着・接触不良を点検する",correct:true},
+      {text:"ドアの建付け・ストライカーを点検する",correct:false},
+      {text:"スイッチの配線・コネクタを点検する",correct:false},
+      {text:"ドアを新品に交換する",correct:false}],
+      result_correct:"カーテシスイッチが固着し常時ONに。半ドア誤検知の原因。",
+      result_wrong:"1ドアだけの誤検知はカーテシスイッチの固着・接触不良が定番。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"スイッチを清掃・交換し消灯を確認する",correct:true},
+      {text:"スイッチ周辺に防水処理をして組む",correct:false},
+      {text:"メーターを新品に交換する",correct:false},
+      {text:"警告灯の球を抜いて消灯させる",correct:false}],
+      result_correct:"スイッチ交換後、全ドアで警告が消えることを確認。完了。",
+      result_wrong:"原因スイッチを清掃/交換が本筋。球を抜く・無視は安全上不可。"}],
+    explanation:"半ドア警告はどのドアか切り分け→カーテシスイッチの固着/接触不良。清掃・交換で復旧。"},
+  {id:40,tier:"初級",symptom:"ブレーキランプ（制動灯）が点かない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"左右ブレーキランプの球切れを点検する",correct:true},
+      {text:"ランプソケットの接触・腐食を点検する",correct:false},
+      {text:"ブレーキランプ用ヒューズを点検する",correct:false},
+      {text:"テールランプAssyを新品に交換する",correct:false}],
+      result_correct:"片側の制動灯が球切れ。まず球を確認するのが基本。",
+      result_wrong:"制動灯不点はまず球切れから。フルードやABSは無関係。"},
+    {question:"両方点かず、踏んでも通電がない。次は？",choices:[
+      {text:"ペダル部のブレーキスイッチの作動を点検する",correct:true},
+      {text:"ストップランプ配線の導通を点検する",correct:false},
+      {text:"ブレーキランプ用ヒューズを点検する",correct:false},
+      {text:"球を両方とも新品に交換する",correct:false}],
+      result_correct:"ペダルのブレーキランプスイッチが不良。踏んでも通電せず。",
+      result_wrong:"両方不点で通電なしはペダル部のブレーキスイッチ不良が定番。"},
+    {question:"ブレーキスイッチ不良を放置するリスクは？",choices:[
+      {text:"追突やシフトロック解除不可など重大と説明する",correct:true},
+      {text:"見た目だけの問題で軽微と説明する",correct:false},
+      {text:"走行に一切影響しないと説明する",correct:false},
+      {text:"車検にもそのまま通ると説明する",correct:false}],
+      result_correct:"制動灯不点は追突の危険。AT解除不能等にも波及する重大不良。",
+      result_wrong:"制動灯不点は安全に直結（追突・シフトロック解除不可）。即修理が必要。"}],
+    explanation:"制動灯不点は球切れ→ペダルのブレーキスイッチの順。安全直結のため即修理。"},
+  // ===== 中級 追加2 =====
+  {id:41,tier:"中級",symptom:"加速時に「カリカリ」と異音（ノッキング）がする",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"燃料の質・カーボン堆積・点火時期を確認する",correct:true},
+      {text:"ただちにエンジンを載せ替える",correct:false},
+      {text:"タイヤの空気圧を点検する",correct:false},
+      {text:"ブレーキの引きずりを点検する",correct:false}],
+      result_correct:"燃焼室にカーボン堆積。ノッキングを誘発していた。",
+      result_wrong:"加速時カリカリはノッキング。燃料/カーボン/点火時期から確認する。"},
+    {question:"原因の切り分けで有効なのは？",choices:[
+      {text:"ノックセンサーの作動と点火時期を点検する",correct:true},
+      {text:"インジェクターを全数交換する",correct:false},
+      {text:"ヘッドを開けて内部を確認する",correct:false},
+      {text:"O2センサーを交換する",correct:false}],
+      result_correct:"ノックセンサー正常で点火制御も適正。カーボンが主因と絞り込み。",
+      result_wrong:"まずノックセンサー作動と点火時期を点検。分解や当て交換は後。"},
+    {question:"カーボン堆積が主因。どう対処しますか？",choices:[
+      {text:"燃焼室・吸気のカーボン除去（清浄）を行う",correct:true},
+      {text:"オクタン価の低い燃料に変える",correct:false},
+      {text:"点火時期を大幅に遅らせて隠す",correct:false},
+      {text:"ノッキングは仕様として説明する",correct:false}],
+      result_correct:"カーボン除去後にノッキング解消。指定燃料の使用も案内。",
+      result_wrong:"カーボン除去が本筋。点火を遅らせ過ぎ・低品質燃料はかえって悪化。"}],
+    explanation:"加速時ノッキングは燃料/カーボン/点火時期から。ノックセンサー確認後、カーボン除去で解消。"},
+  {id:42,tier:"中級",symptom:"始動後に黒煙、加速が重い（燃調が濃い）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"エアフロ(MAF)・吸気系と空燃比を確認する",correct:true},
+      {text:"ただちにエンジンを載せ替える",correct:false},
+      {text:"ブレーキを点検する",correct:false},
+      {text:"タイヤを新品に交換する",correct:false}],
+      result_correct:"MAFの値が異常。混合気が濃くなり黒煙が出ていた。",
+      result_wrong:"黒煙＝濃い混合気。まずMAF・吸気と空燃比データを確認する。"},
+    {question:"MAFが疑わしい。どうしますか？",choices:[
+      {text:"MAFを清掃して数値が正常化するか確認する",correct:true},
+      {text:"MAFをいきなり新品交換する",correct:false},
+      {text:"インジェクターを全数交換する",correct:false},
+      {text:"燃料ポンプを交換する",correct:false}],
+      result_correct:"MAF清掃で数値が正常化。汚れによる誤検知が原因と判明。",
+      result_wrong:"MAFはまず清掃で直ることが多い。即交換や当て交換は割高。"},
+    {question:"清掃後の確認は？",choices:[
+      {text:"空燃比・燃料補正値が正常範囲か確認する",correct:true},
+      {text:"見た目で問題なければ完了とする",correct:false},
+      {text:"黒煙が減れば数値は見ない",correct:false},
+      {text:"そのまま納車する",correct:false}],
+      result_correct:"燃料補正が正常範囲に復帰。黒煙も消え加速も回復。",
+      result_wrong:"清掃後は空燃比・補正値の数値確認まで。見た目だけでは不十分。"}],
+    explanation:"黒煙＋加速不良は濃い混合気。MAF/吸気と空燃比を確認、MAFは清掃で直ることが多い。"},
+  {id:43,tier:"中級",symptom:"足元が濡れ、甘い臭い。窓が内側から曇る",steps:[
+    {question:"最初に何を疑いますか？",choices:[
+      {text:"冷却水の減りとヒーターコアからの漏れを疑う",correct:true},
+      {text:"ボディの雨漏りを点検する",correct:false},
+      {text:"エアコンガスを補充する",correct:false},
+      {text:"フロアマットを乾かして様子を見る",correct:false}],
+      result_correct:"冷却水が減少し甘い臭い。ヒーターコア漏れの典型症状。",
+      result_wrong:"甘い臭い＋足元濡れ＋窓の油膜状曇りはヒーターコア漏れの定番。"},
+    {question:"ヒーターコア漏れが疑わしい。どう確認しますか？",choices:[
+      {text:"冷却系を加圧して漏れと減り方を点検する",correct:true},
+      {text:"エアコンガスを回収する",correct:false},
+      {text:"ラジエーターを交換する",correct:false},
+      {text:"サーモスタットを交換する",correct:false}],
+      result_correct:"加圧テストで室内側への漏れを確認。ヒーターコア不良と確定。",
+      result_wrong:"冷却系の加圧テストで漏れを特定するのが確実。ガス系とは別。"},
+    {question:"どう対処・説明しますか？",choices:[
+      {text:"コア交換（内装脱着）の費用とリスクを説明する",correct:true},
+      {text:"漏れ止め剤を入れて済ませる",correct:false},
+      {text:"冷却水を継ぎ足しながら乗ってもらう",correct:false},
+      {text:"窓を開けて乗るよう案内する",correct:false}],
+      result_correct:"ヒーターコア交換は内装脱着で工賃大。費用とリスクを正直に説明。",
+      result_wrong:"漏れ止め剤や継ぎ足しは一時しのぎ。コア交換が本筋（工賃を要説明）。"}],
+    explanation:"足元濡れ＋甘い臭い＋窓曇りはヒーターコア漏れ。加圧テストで確定。交換は工賃大で要説明。"},
+  {id:44,tier:"中級",symptom:"ブレーキを踏むとハンドル・車体が振れる",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ブレーキローターの振れ（歪み）を点検する",correct:true},
+      {text:"ホイールバランスを取り直す",correct:false},
+      {text:"タイヤを新品に交換する",correct:false},
+      {text:"アライメントを測定して調整する",correct:false}],
+      result_correct:"ローターに振れ（厚み差）を確認。制動時ジャダーの原因。",
+      result_wrong:"制動時のみ振れるのはローター歪みが定番。常時の振れとは切り分ける。"},
+    {question:"ローターの振れが原因。どう判断しますか？",choices:[
+      {text:"厚み差を測定し研磨か交換かを判断する",correct:true},
+      {text:"とりあえずパッドだけ交換する",correct:false},
+      {text:"増し締めだけで様子を見る",correct:false},
+      {text:"そのまま納車する",correct:false}],
+      result_correct:"厚み差を測定。基準超のため研磨または交換が必要と判断。",
+      result_wrong:"ローターは厚み差を測定して研磨/交換を判断。パッドだけでは直らない。"},
+    {question:"研磨・交換後に行うことは？",choices:[
+      {text:"パッドとセットで当たりを出し制動を確認する",correct:true},
+      {text:"すぐ高速で強くブレーキする",correct:false},
+      {text:"増し締めだけで完了とする",correct:false},
+      {text:"試運転は省略して納車する",correct:false}],
+      result_correct:"当たり出し後にジャダー消失を確認。パッドもセットで点検。",
+      result_wrong:"研磨/交換後は当たり出しと試運転まで。パッドもセットで確認する。"}],
+    explanation:"制動時の振れはローター歪み。厚み差を測定し研磨/交換、当たり出しまで行う。"},
+  {id:45,tier:"中級",symptom:"一定の高速域でハンドルが小刻みに震える",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ホイールバランスとタイヤの偏摩耗を点検する",correct:true},
+      {text:"ブレーキローターの歪みを点検する",correct:false},
+      {text:"アライメントを測定して調整する",correct:false},
+      {text:"ハブベアリングを交換する",correct:false}],
+      result_correct:"前輪のバランスウェイト脱落を確認。高速での震えの原因。",
+      result_wrong:"特定速度域の震えはホイールバランスが定番。制動時の振れとは別。"},
+    {question:"バランスを取り直してもまだ震える。次は？",choices:[
+      {text:"タイヤの変形とホイールの歪みを点検する",correct:true},
+      {text:"アライメントだけ調整する",correct:false},
+      {text:"ショックアブソーバーを交換する",correct:false},
+      {text:"ステアリングを交換する",correct:false}],
+      result_correct:"タイヤに変形（コブ）あり。バランスだけでは取り切れず。",
+      result_wrong:"バランス後も残る震えはタイヤ変形・ホイール歪みを点検する。"},
+    {question:"原因が特定できたら？",choices:[
+      {text:"該当タイヤ/ホイールを交換し再バランスする",correct:true},
+      {text:"ウェイトを大量に貼って隠す",correct:false},
+      {text:"空気圧を上げて震えを隠す",correct:false},
+      {text:"震えは仕様として説明する",correct:false}],
+      result_correct:"変形タイヤを交換し再バランス。高速でも震えが消えた。",
+      result_wrong:"変形は交換が本筋。ウェイト多用や空気圧での誤魔化しは不可。"}],
+    explanation:"高速域の震えはホイールバランス→タイヤ/ホイール変形の順。原因部品を交換し再バランス。"},
+  {id:46,tier:"中級",symptom:"暖房（ヒーター）が効かない・温風が出ない",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"冷却水量とサーモスタットの開閉を点検する",correct:true},
+      {text:"エアコンガスを補充する",correct:false},
+      {text:"ブロアモーターを交換する",correct:false},
+      {text:"ヒーターコアを交換する",correct:false}],
+      result_correct:"冷却水不足ぎみで水温が上がりにくい。まず量とサーモを確認。",
+      result_wrong:"暖房不良はまず冷却水量・サーモ（水温が上がるか）から。ガスは冷房側。"},
+    {question:"水温は正常。温風が出ない。次は？",choices:[
+      {text:"コア詰まりとミックスダンパーを点検する",correct:true},
+      {text:"ラジエーターを交換する",correct:false},
+      {text:"サーモを再度交換する",correct:false},
+      {text:"コンプレッサーを点検する",correct:false}],
+      result_correct:"ヒーターコアに目詰まり。温水が通らず温風が出ていなかった。",
+      result_wrong:"水温正常で温風なしはコア詰まり/ダンパー不良。冷房系とは別系統。"},
+    {question:"コア詰まりが原因。どう対処しますか？",choices:[
+      {text:"コアの洗浄（フラッシング）または交換を行う",correct:true},
+      {text:"冷却水を抜いて水道水で薄める",correct:false},
+      {text:"暖房は使わないよう案内する",correct:false},
+      {text:"サーモを外して常時開にする",correct:false}],
+      result_correct:"コア洗浄で通水改善、温風が回復。冷却系の点検も併せて実施。",
+      result_wrong:"コア詰まりは洗浄/交換が本筋。サーモ撤去や水道水希釈は不適切。"}],
+    explanation:"暖房不良は冷却水量/サーモ→ヒーターコア詰まり/ダンパーの順。冷房系（ガス）とは別。"},
+  {id:47,tier:"中級",symptom:"セルは元気に回るのにエンジンがかからない",steps:[
+    {question:"最初に何をしますか？",choices:[
+      {text:"燃料と火花のどちらが欠けているか切り分ける",correct:true},
+      {text:"バッテリーを新品に交換する",correct:false},
+      {text:"セルモーターを交換する",correct:false},
+      {text:"エンジンオイルを交換する",correct:false}],
+      result_correct:"セルが回る＝電源系はOK。燃料か点火の欠落を切り分ける。",
+      result_wrong:"セルが回るなら電源系は正常。次は燃料系と点火系の切り分け。"},
+    {question:"切り分けの具体手順は？",choices:[
+      {text:"燃圧の有無とスパークの飛びを点検する",correct:true},
+      {text:"タイヤの空気圧を点検する",correct:false},
+      {text:"エアコンの作動を点検する",correct:false},
+      {text:"ライトの点灯を点検する",correct:false}],
+      result_correct:"燃圧は正常だがスパークが飛ばない。点火系の欠落と判明。",
+      result_wrong:"燃圧測定＋スパーク確認で燃料/点火を切り分けるのが定石。"},
+    {question:"点火が来ていない。次に疑うのは？",choices:[
+      {text:"クランク角センサーや点火信号系を点検する",correct:true},
+      {text:"燃料ポンプを交換する",correct:false},
+      {text:"インジェクターを交換する",correct:false},
+      {text:"触媒を交換する",correct:false}],
+      result_correct:"クランク角信号が出ていなかった。点火・噴射の基準信号欠落。",
+      result_wrong:"火花が無い時はクランク角センサー等の基準信号系を点検する。"}],
+    explanation:"セルが回るのに不始動は燃料/点火の切り分け（燃圧＋スパーク）。火花無しはクランク角信号系を疑う。"},
+  {id:48,tier:"中級",symptom:"最近、急に燃費が悪くなった",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"空気圧・引きずり・エアクリの汚れを点検する",correct:true},
+      {text:"ただちにエンジンを載せ替える",correct:false},
+      {text:"ATをリビルトする",correct:false},
+      {text:"触媒を新品に交換する",correct:false}],
+      result_correct:"空気圧低下とエアクリ詰まりを確認。燃費悪化の基本要因。",
+      result_wrong:"急な燃費悪化はまず空気圧・引きずり・エアクリ等の基本から。"},
+    {question:"基本点検は問題なし。次に何を見ますか？",choices:[
+      {text:"O2センサーと燃料補正値を確認する",correct:true},
+      {text:"タイヤを4本とも交換する",correct:false},
+      {text:"オイルを高級品に替える",correct:false},
+      {text:"マフラーを社外品に替える",correct:false}],
+      result_correct:"O2センサーの応答が鈍く補正が乱れていた。燃費悪化の一因。",
+      result_wrong:"基本がOKなら空燃比制御（O2/補正値）を確認するのが順序。"},
+    {question:"O2センサー劣化が濃厚。どうしますか？",choices:[
+      {text:"劣化を確認しO2を交換、補正を再確認する",correct:true},
+      {text:"燃費改善の添加剤で誤魔化す",correct:false},
+      {text:"燃料を高いものに替える",correct:false},
+      {text:"燃費は運転のせいと説明する",correct:false}],
+      result_correct:"O2交換後、燃料補正が安定し燃費が回復。基本整備も併せて実施。",
+      result_wrong:"劣化が確認できれば交換が本筋。添加剤や高級燃料の誤魔化しは不可。"}],
+    explanation:"急な燃費悪化は空気圧/引きずり/エアクリ等の基本→空燃比制御(O2/補正)の順で確認する。"},
+  {id:49,tier:"中級",symptom:"ATの変速がもたつき、たまにショックがある",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"ATフルードの量と色・臭いを点検する",correct:true},
+      {text:"ただちにATをリビルトする",correct:false},
+      {text:"エンジンマウントを交換する",correct:false},
+      {text:"タイヤを新品に交換する",correct:false}],
+      result_correct:"ATFがやや不足し色も劣化ぎみ。まず量と状態を確認。",
+      result_wrong:"AT不調の第一歩はATFの量・状態。いきなりリビルトは早計。"},
+    {question:"ATFがやや劣化。健全な範囲ならどうする？",choices:[
+      {text:"規定量・指定ATFに調整し変速を再確認する",correct:true},
+      {text:"一般のエンジンオイルを足す",correct:false},
+      {text:"フラッシュで一気に全量洗浄する",correct:false},
+      {text:"量は見ずに添加剤を入れる",correct:false}],
+      result_correct:"規定量・指定ATFに調整後、変速のもたつきが改善。",
+      result_wrong:"健全範囲なら量・規定油への調整が先。激しい劣化の全量洗浄は別判断。"},
+    {question:"調整後も改善が薄い場合は？",choices:[
+      {text:"故障コードと油圧・電子制御系を点検する",correct:true},
+      {text:"そのまま納車して様子を見る",correct:false},
+      {text:"もう一度ATFを継ぎ足す",correct:false},
+      {text:"エンジンを載せ替える",correct:false}],
+      result_correct:"スキャンで変速制御系のコードを確認。電子制御側の点検へ進む。",
+      result_wrong:"ATF調整で直らなければコード・油圧・制御系へ。闇雲な継ぎ足しは不可。"}],
+    explanation:"AT変速不調はまずATF量・状態。健全なら規定量/油へ調整。改善なければコード・制御系を点検。"},
+  {id:50,tier:"中級",symptom:"発進やハンドル操作時にキュルキュル音、焦げ臭い",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"駆動ベルトの張り・劣化・鳴きを点検する",correct:true},
+      {text:"クラッチを交換する",correct:false},
+      {text:"タイヤを新品に交換する",correct:false},
+      {text:"エアコンガスを補充する",correct:false}],
+      result_correct:"駆動ベルトが緩み劣化。負荷時に滑って鳴いていた。",
+      result_wrong:"キュルキュル＋焦げ臭はベルト滑りが定番。まずベルトを点検。"},
+    {question:"ベルトが鳴いている。原因をどう絞りますか？",choices:[
+      {text:"テンショナーの張力と各プーリーの回りを点検する",correct:true},
+      {text:"ベルトに滑り止めスプレーを吹く",correct:false},
+      {text:"アイドルを上げて鳴きを隠す",correct:false},
+      {text:"ベルトを限界まで強く張る",correct:false}],
+      result_correct:"オートテンショナーの張力低下を確認。ベルト滑りの根本原因。",
+      result_wrong:"鳴きはテンショナー張力やプーリー固着を点検。スプレーは一時的。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"ベルトとテンショナーを交換する",correct:true},
+      {text:"鳴き止めスプレーで済ませる",correct:false},
+      {text:"ベルトだけを限界まで張る",correct:false},
+      {text:"鳴きは仕様として説明する",correct:false}],
+      result_correct:"ベルト＋テンショナー交換で鳴き解消。張り過ぎの弊害も説明。",
+      result_wrong:"ベルトとテンショナーはセットで交換が本筋。スプレーや過張は再発の元。"}],
+    explanation:"キュルキュル＋焦げ臭はベルト滑り。テンショナー張力/プーリーを点検し、ベルトとセットで交換。"},
+  // ===== 上級 追加2 =====
+  {id:51,tier:"上級",symptom:"エンジン警告灯。コードはP0171（混合気が薄い）",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"吸気・負圧系のエア漏れをまず点検する",correct:true},
+      {text:"ただちにO2センサーを交換する",correct:false},
+      {text:"インジェクターを全数交換する",correct:false},
+      {text:"燃料ポンプを新品に交換する",correct:false}],
+      result_correct:"インテークホースに亀裂。二次エアでリーンになっていた。",
+      result_wrong:"P0171はまず吸気/負圧漏れから。O2やインジェクター即交換は誤診の元。"},
+    {question:"明らかな漏れはない。次に点検するのは？",choices:[
+      {text:"MAFを清掃し燃料補正・燃圧を確認する",correct:true},
+      {text:"触媒を新品に交換する",correct:false},
+      {text:"点火プラグを全数交換する",correct:false},
+      {text:"EGRバルブを交換する",correct:false}],
+      result_correct:"MAF清掃で補正が改善。汚れによる過少計測が一因と判明。",
+      result_wrong:"漏れが無ければMAF清掃→燃圧の順。O2やインジェクターは最後。"},
+    {question:"P0171でやってはいけないのは？",choices:[
+      {text:"原因未特定のまま部品を交換する",correct:true},
+      {text:"先に吸気漏れを潰す",correct:false},
+      {text:"MAFを清掃する",correct:false},
+      {text:"燃圧を測定する",correct:false}],
+      result_correct:"O2やインジェクターはP0171の主因になりにくい。先の交換は無駄が多い。",
+      result_wrong:"P0171でO2/インジェクター先行交換は典型的な無駄。漏れ→MAF→燃圧が順序。"}],
+    explanation:"P0171は吸気/負圧漏れ→MAF清掃→燃圧の順。O2やインジェクターの先行交換は誤診で高額になりやすい。"},
+  {id:52,tier:"上級",symptom:"エンジン警告灯。コードはP0011（カム位相 進角過多）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"エンジンオイルの量・状態・指定粘度を確認する",correct:true},
+      {text:"ただちにカムシャフトを交換する",correct:false},
+      {text:"タイミングチェーンを交換する",correct:false},
+      {text:"ECUを新品に交換する",correct:false}],
+      result_correct:"オイルが汚れ・粘度不適。VVTの油路に影響していた。",
+      result_wrong:"P0011はまずオイル（量/汚れ/粘度）から。VVTは油圧で動くため影響大。"},
+    {question:"オイルを正常化しても再発。次は？",choices:[
+      {text:"VVTのOCV(制御弁)の固着を点検する",correct:true},
+      {text:"ヘッドを開けて内部を確認する",correct:false},
+      {text:"インジェクターを全数交換する",correct:false},
+      {text:"O2センサーを交換する",correct:false}],
+      result_correct:"OCVのスクリーンにスラッジ。バルブ固着で進角が制御できず。",
+      result_wrong:"オイルで直らなければOCVの固着/詰まりを点検。分解は最後。"},
+    {question:"OCV固着が原因。どう対処しますか？",choices:[
+      {text:"OCVを清掃・点検し不良なら交換する",correct:true},
+      {text:"粘度の高いオイルを入れて隠す",correct:false},
+      {text:"コードを消すだけにする",correct:false},
+      {text:"進角は仕様として説明する",correct:false}],
+      result_correct:"OCV清掃/交換で位相制御が正常化。定期油脂交換も案内し再発防止。",
+      result_wrong:"OCV清掃/交換が本筋。高粘度で誤魔化す・消去だけは再発する。"}],
+    explanation:"P0011はまずオイル（量/汚れ/粘度）。次にVVTのOCV固着を点検。スラッジ管理が再発防止の鍵。"},
+  {id:53,tier:"上級",symptom:"アイドル不安定・警告灯。EGR系のコードが出る",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"EGRバルブと通路のカーボン詰まりを点検する",correct:true},
+      {text:"ただちにEGRを新品交換する",correct:false},
+      {text:"燃料ポンプを交換する",correct:false},
+      {text:"ATフルードを交換する",correct:false}],
+      result_correct:"EGRバルブと通路にカーボン堆積。作動不良を起こしていた。",
+      result_wrong:"EGR系コードはまずバルブ/通路の詰まりを点検。即交換は割高。"},
+    {question:"カーボン詰まりが原因。どう対処しますか？",choices:[
+      {text:"EGRバルブと通路を清掃し作動を確認する",correct:true},
+      {text:"EGRを殺して通路を塞ぐ",correct:false},
+      {text:"コードを消すだけにする",correct:false},
+      {text:"アイドルを上げて隠す",correct:false}],
+      result_correct:"清掃後にEGRが正常作動。アイドルも安定し警告灯消灯。",
+      result_wrong:"まず清掃で復活することが多い。EGR殺し・消去だけは不正・再発の元。"},
+    {question:"清掃後の確認は？",choices:[
+      {text:"ライブデータでEGR開度と再点灯を確認する",correct:true},
+      {text:"見た目で問題なければ完了とする",correct:false},
+      {text:"アイドル音だけ聞いて完了とする",correct:false},
+      {text:"そのまま納車する",correct:false}],
+      result_correct:"ライブデータでEGR開度が正常。走行で再点灯なしを確認。",
+      result_wrong:"清掃後はライブデータと再点灯確認まで。見た目だけでは不十分。"}],
+    explanation:"EGR系コードはバルブ/通路のカーボン詰まりが定番。清掃で復活が多く、ライブデータで検証する。"},
+  {id:54,tier:"上級",symptom:"出力低下・燃費悪化。ノックセンサー系のコード",steps:[
+    {question:"最初に何を点検しますか？",choices:[
+      {text:"配線・コネクタの断線とセンサー抵抗を点検する",correct:true},
+      {text:"ただちにエンジンを載せ替える",correct:false},
+      {text:"タイヤを新品に交換する",correct:false},
+      {text:"ATフルードを交換する",correct:false}],
+      result_correct:"コネクタ接触不良を確認。配線側の問題が含まれていた。",
+      result_wrong:"センサー系コードはまず配線/コネクタと抵抗を点検。本体即断定は早計。"},
+    {question:"配線は正常。本体が疑わしい。次は？",choices:[
+      {text:"締付トルクとセンサー特性を点検する",correct:true},
+      {text:"ECUを新品に交換する",correct:false},
+      {text:"プラグを全数交換する",correct:false},
+      {text:"触媒を新品に交換する",correct:false}],
+      result_correct:"ノックセンサーの締付不良も誤検知の一因。規定トルクで点検。",
+      result_wrong:"ノックセンサーは締付トルクも重要。緩みで誤検知することがある。"},
+    {question:"本体不良が確定。対処と影響は？",choices:[
+      {text:"交換後、点火時期の補正が戻るか確認する",correct:true},
+      {text:"コードを消すだけにする",correct:false},
+      {text:"点火時期を手で大きく進める",correct:false},
+      {text:"出力低下は仕様として説明する",correct:false}],
+      result_correct:"交換後、点火リタード補正が解除され出力・燃費が回復。",
+      result_wrong:"ノック誤検知は点火を遅らせ出力低下を招く。交換後の補正復帰を確認。"}],
+    explanation:"ノックセンサー系は配線/コネクタ→締付/本体特性の順。誤検知は点火リタードで出力低下、交換で回復。"},
+  {id:55,tier:"上級",symptom:"ハイブリッド車。システム警告灯が点灯した",steps:[
+    {question:"最初に何をしますか？",choices:[
+      {text:"高電圧(オレンジ)部に触れず感電防止の安全を確保する",correct:true},
+      {text:"オレンジのサービスプラグを素手で抜く",correct:false},
+      {text:"高電圧ケーブルをテスターで直に触る",correct:false},
+      {text:"12Vを外さずに分解を始める",correct:false}],
+      result_correct:"オレンジ＝高電圧。絶縁保護や手順なしに触れるのは厳禁。まず安全確保。",
+      result_wrong:"HVのオレンジ部は数百V。有資格・絶縁保護なしに触れてはいけない。"},
+    {question:"安全確保の上で、まず何を点検しますか？",choices:[
+      {text:"12V補機バッテリーと故障コードを点検する",correct:true},
+      {text:"高電圧バッテリーを分解する",correct:false},
+      {text:"インバーターを開けて点検する",correct:false},
+      {text:"駆動モーターを取り外す",correct:false}],
+      result_correct:"12V補機バッテリー電圧が低下。HV車の不調で誤診が多い定番原因。",
+      result_wrong:"HVの警告でもまず12V補機と専用診断から。HV本体分解は有資格作業。"},
+    {question:"高電圧系の作業が必要な場合の正しい手順は？",choices:[
+      {text:"資格者が遮断・絶縁・待機して作業する",correct:true},
+      {text:"通電したまま素早く作業する",correct:false},
+      {text:"ゴム手袋なしで手早く外す",correct:false},
+      {text:"両手で同時に触れて作業する",correct:false}],
+      result_correct:"有資格者がプラグ遮断→規定時間待機→絶縁保護で作業。安全が最優先。",
+      result_wrong:"HV作業は資格・遮断・待機・絶縁が必須。通電作業や素手は重大事故の元。"}],
+    explanation:"HV警告はまず感電防止（オレンジ=高電圧、触れない）。点検は12V補機/診断から。HV本体は有資格者が安全手順で。"},
+  {id:56,tier:"上級",symptom:"ディーゼル車。DPF（すす）警告が頻発する",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"走行パターンと再生状況を確認する",correct:true},
+      {text:"ただちにDPFを新品交換する",correct:false},
+      {text:"ガソリンを入れて流す",correct:false},
+      {text:"ATフルードを交換する",correct:false}],
+      result_correct:"短距離・低速主体で自動再生が完了せず。すすが溜まりやすい使い方。",
+      result_wrong:"DPF頻発はまず走行パターンと再生状況から。即交換は高額で早計。"},
+    {question:"再生が進んでいない。次に点検するのは？",choices:[
+      {text:"差圧センサーとEGR・吸気の状態を点検する",correct:true},
+      {text:"燃料ポンプを新品に交換する",correct:false},
+      {text:"O2センサーを交換する",correct:false},
+      {text:"クラッチを点検する",correct:false}],
+      result_correct:"差圧センサーの値が不正確。再生判定が乱れていた一因と判明。",
+      result_wrong:"再生不良は差圧センサー・EGR・吸気から。本体交換の前に要因を除外。"},
+    {question:"対処と運用助言は？",choices:[
+      {text:"強制再生と要因修理を行い運用を助言する",correct:true},
+      {text:"警告を消すだけにする",correct:false},
+      {text:"DPFを取り外して塞ぐ",correct:false},
+      {text:"短距離だけ乗るよう勧める",correct:false}],
+      result_correct:"強制再生・要因修理後、定期的な十分な走行で再発を抑えると助言。",
+      result_wrong:"DPF除去は不正改造。消去だけ・短距離継続では再発。再生と運用改善が本筋。"}],
+    explanation:"DPF警告は走行パターンと再生状況→差圧センサー/EGR/吸気の順。除去は不正、強制再生＋運用改善が本筋。"},
+  {id:57,tier:"上級",symptom:"ターボ車。加速が鈍く過給が上がらない（P0299）",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"目標過給と実過給をスキャンで比較する",correct:true},
+      {text:"ただちにタービンを交換する",correct:false},
+      {text:"タイヤを新品に交換する",correct:false},
+      {text:"ATフルードを交換する",correct:false}],
+      result_correct:"実過給が目標に届かない。アンダーブーストを数値で確認。",
+      result_wrong:"過給不足はまず目標/実過給の比較から。タービン即交換は高額で早計。"},
+    {question:"過給が上がらない。次に点検するのは？",choices:[
+      {text:"インタークーラー配管などの過給漏れを点検する",correct:true},
+      {text:"燃料添加剤を入れて様子を見る",correct:false},
+      {text:"O2センサーを交換する",correct:false},
+      {text:"点火プラグを全数交換する",correct:false}],
+      result_correct:"チャージパイプの抜け（過給漏れ）を発見。圧が逃げていた。",
+      result_wrong:"アンダーブーストはまず配管の過給漏れから。高圧スモークテストが有効。"},
+    {question:"配管に漏れがない。次の疑いは？",choices:[
+      {text:"ウェイストゲートとブースト制御弁を点検する",correct:true},
+      {text:"マフラーを社外品に替える",correct:false},
+      {text:"タイヤ空気圧を上げる",correct:false},
+      {text:"過給不足は仕様として説明する",correct:false}],
+      result_correct:"ウェイストゲートの固着を確認。過給が抜けて上がらなかった。",
+      result_wrong:"漏れが無ければウェイストゲート/アクチュエータと制御弁を点検する。"}],
+    explanation:"ターボ過給不足は目標/実過給の比較→過給漏れ→ウェイストゲート/制御弁の順。タービン即交換は避ける。"},
+  {id:58,tier:"上級",symptom:"アイドリングや渋滞でだけ水温が上昇する",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"電動ラジエーターファンが回るかを確認する",correct:true},
+      {text:"ただちにラジエーターを交換する",correct:false},
+      {text:"ウォーターポンプを交換する",correct:false},
+      {text:"ヘッドガスケットを交換する",correct:false}],
+      result_correct:"アイドル時にファンが回っていない。低速時のみ過熱する典型。",
+      result_wrong:"低速/停車時だけ過熱は電動ファン不作動が定番。まず作動確認。"},
+    {question:"ファンが回らない。何を切り分けますか？",choices:[
+      {text:"モーター・リレー・水温信号を点検する",correct:true},
+      {text:"サーモスタットを交換する",correct:false},
+      {text:"冷却水を入れ替える",correct:false},
+      {text:"エアコンガスを補充する",correct:false}],
+      result_correct:"リレーは作動するが通電後もモーターが回らず。モーター不良と切り分け。",
+      result_wrong:"ファン不作動はモーター/リレー/水温信号を切り分ける。サーモとは別。"},
+    {question:"モーター不良が確定。仕上げは？",choices:[
+      {text:"ファン交換後に低速で水温安定を確認する",correct:true},
+      {text:"水温計の球を抜いて隠す",correct:false},
+      {text:"サーモを外して常時開にする",correct:false},
+      {text:"渋滞を避けるよう案内する",correct:false}],
+      result_correct:"ファン交換後、アイドル・渋滞でも水温安定を確認。完了。",
+      result_wrong:"原因のファン交換が本筋。サーモ撤去や運用回避では解決しない。"}],
+    explanation:"低速/停車時だけの過熱は電動ファン不作動。モーター/リレー/水温信号を切り分け、ファン交換で解決。"},
+  {id:59,tier:"上級",symptom:"高速や登坂など高負荷で息継ぎ・パワーダウンする",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"高負荷時の燃圧低下をデータで確認する",correct:true},
+      {text:"ただちにエンジンを載せ替える",correct:false},
+      {text:"タイヤを新品に交換する",correct:false},
+      {text:"ATフルードを交換する",correct:false}],
+      result_correct:"高負荷時に燃圧が規定以下に低下。供給不足を数値で確認。",
+      result_wrong:"高負荷時のみの息継ぎは燃圧低下が定番。まず負荷時の燃圧を測る。"},
+    {question:"燃圧が落ちる。原因をどう絞りますか？",choices:[
+      {text:"フィルター詰まりとポンプ能力を点検する",correct:true},
+      {text:"点火プラグを全数交換する",correct:false},
+      {text:"O2センサーを交換する",correct:false},
+      {text:"触媒を新品に交換する",correct:false}],
+      result_correct:"フィルター詰まりとポンプ吐出量低下を確認。供給律速と判明。",
+      result_wrong:"燃圧低下はフィルター詰まり/ポンプ能力から。点火系とは切り分ける。"},
+    {question:"ポンプ能力低下が主因。どう対処しますか？",choices:[
+      {text:"フィルターとポンプを整備して再確認する",correct:true},
+      {text:"燃料添加剤を入れて済ませる",correct:false},
+      {text:"ハイオクに替えて隠す",correct:false},
+      {text:"高速は使わないよう案内する",correct:false}],
+      result_correct:"フィルター/ポンプ整備後、高負荷でも燃圧安定。息継ぎ解消。",
+      result_wrong:"供給不足は整備が本筋。添加剤や燃料変更、運用回避では直らない。"}],
+    explanation:"高負荷時のみの息継ぎは燃圧低下。フィルター詰まり/ポンプ吐出量を点検し整備、高負荷で再確認。"},
+  {id:60,tier:"上級",symptom:"走行中にたまにエンスト、少し待つと再始動できる",steps:[
+    {question:"最初に何をしますか？",choices:[
+      {text:"再現時の故障コードと発生条件を記録する",correct:true},
+      {text:"ただちにバッテリーを交換する",correct:false},
+      {text:"タイヤを新品に交換する",correct:false},
+      {text:"ATフルードを交換する",correct:false}],
+      result_correct:"熱間で発生し冷えると復帰の傾向。記録から熱関連を疑う。",
+      result_wrong:"間欠エンストはまず発生条件とコードの記録から。当て交換は割高。"},
+    {question:"熱間で出る傾向。何を疑い分けますか？",choices:[
+      {text:"燃料ポンプの熱間性能と点火系を疑う",correct:true},
+      {text:"ブレーキの引きずりを疑う",correct:false},
+      {text:"エアコンの不調を疑う",correct:false},
+      {text:"ホイールバランスを疑う",correct:false}],
+      result_correct:"熱で能力低下する燃料ポンプ、または点火系の熱不良が候補。",
+      result_wrong:"熱間の間欠エンストは燃料ポンプ熱ダレや点火系の熱不良が定番。"},
+    {question:"切り分けの正しい進め方は？",choices:[
+      {text:"再現時に燃圧と点火信号を同時に監視する",correct:true},
+      {text:"とりあえず両方を同時に交換する",correct:false},
+      {text:"そのまま納車して様子を見る",correct:false},
+      {text:"コードを消すだけにする",correct:false}],
+      result_correct:"再現時に燃圧降下を確認し燃料ポンプと特定。狙って交換できた。",
+      result_wrong:"間欠故障は再現時の燃圧/点火の同時監視で特定。両方同時交換は無駄が出る。"}],
+    explanation:"走行中の間欠エンスト（熱間）は燃料ポンプ熱ダレ/点火系を、再現時の燃圧・点火信号監視で特定する。"},
+  // ===== ウルトラ級（開発者レベル） =====
+  {id:61,tier:"ウルトラ級",symptom:"複数の警告灯が同時点灯し、各部が誤作動する",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"全モジュールの通信状態を診断機で確認する",correct:true},
+      {text:"点灯した各警告灯の担当部品を順に点検する",correct:false},
+      {text:"メーター内部の表示回路を点検する",correct:false},
+      {text:"各センサーの単体抵抗を順に測定する",correct:false}],
+      result_correct:"複数モジュールが応答せず。CAN通信の異常を示すと判断。",
+      result_wrong:"同時多発の警告はCAN通信異常が定番。まず通信状態を俯瞰する。"},
+    {question:"通信が落ちている。次に点検するのは？",choices:[
+      {text:"CAN配線・終端抵抗・コネクタを点検する",correct:true},
+      {text:"各モジュールの内部基板を点検する",correct:false},
+      {text:"バッテリーの容量と比重を点検する",correct:false},
+      {text:"全ヒューズの容量を順に点検する",correct:false}],
+      result_correct:"CAN線に断線、終端抵抗値も異常。バス不良が原因と判明。",
+      result_wrong:"通信不良は配線・終端抵抗・コネクタから。基板や電源は後。"},
+    {question:"原因ノードの絞り込み方は？",choices:[
+      {text:"モジュールを順に切り離し通信回復を確認する",correct:true},
+      {text:"警告灯の球を外して消灯を確認する",correct:false},
+      {text:"コードを消去して再点灯を確認する",correct:false},
+      {text:"電源電圧を上げて安定を確認する",correct:false}],
+      result_correct:"1モジュールを外すと通信回復。原因ノードを特定できた。",
+      result_wrong:"バス不良は分離して原因ノードを切り分ける。消去や球外しは無効。"}],
+    explanation:"複数警告灯の同時点灯はCAN通信異常を疑う。配線/終端抵抗/コネクタ→ノード分離で原因を特定する。"},
+  {id:62,tier:"ウルトラ級",symptom:"色々な電装が不定期に誤作動・チラつく",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"各部の電源・アースの電圧降下を測定する",correct:true},
+      {text:"誤作動する装置を順に新品交換する",correct:false},
+      {text:"各回路のヒューズ容量を順に点検する",correct:false},
+      {text:"バッテリーの比重を点検する",correct:false}],
+      result_correct:"アース経路に大きな電圧降下。共通アース不良が疑わしい。",
+      result_wrong:"多装置の不定期誤作動は共通電源/アース不良が定番。まず電圧降下を測る。"},
+    {question:"電圧降下が出た。次に点検するのは？",choices:[
+      {text:"共通アースポイントの腐食・緩みを点検する",correct:true},
+      {text:"各装置の内部回路を個別に点検する",correct:false},
+      {text:"配線を全て新品に引き直す",correct:false},
+      {text:"各リレーを順に点検交換する",correct:false}],
+      result_correct:"ボディアースに腐食。接触抵抗が増え電圧降下していた。",
+      result_wrong:"電圧降下が出たら共通アースの腐食・緩みを点検するのが順序。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"アースを清掃・増し締めして再測定する",correct:true},
+      {text:"誤作動する装置を交換して確認する",correct:false},
+      {text:"アースを別途増設して隠す",correct:false},
+      {text:"コードを消して再発の有無を見る",correct:false}],
+      result_correct:"清掃・増し締め後に電圧降下が解消。各部の誤作動も消えた。",
+      result_wrong:"共通アースの整備が根本。増設での誤魔化しや個別交換は的外れ。"}],
+    explanation:"多装置の間欠誤作動は共通電源/アース不良。電圧降下測定→共通アース整備で一括解決する。"},
+  {id:63,tier:"ウルトラ級",symptom:"高負荷で不調。燃料補正値が大きく振れる",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ショート/ロング燃料補正の傾向を確認する",correct:true},
+      {text:"インジェクターを全数点検交換する",correct:false},
+      {text:"O2センサーを新品に点検交換する",correct:false},
+      {text:"点火プラグを全数点検する",correct:false}],
+      result_correct:"ロング補正が大きくプラス（薄い補正）。供給不足傾向と判明。",
+      result_wrong:"燃調不良はまず補正値の傾向を読む。当て交換では原因が掴めない。"},
+    {question:"補正の意味をどう絞り込みますか？",choices:[
+      {text:"回転・負荷別に補正のかかり方を確認する",correct:true},
+      {text:"触媒の詰まりを点検する",correct:false},
+      {text:"点火時期を点検する",correct:false},
+      {text:"各気筒の圧縮圧力を点検する",correct:false}],
+      result_correct:"高回転高負荷で薄くなる。供給律速（燃圧/MAF過小）を示唆。",
+      result_wrong:"補正は回転・負荷別に見て原因系統を絞る。一律点検は遠回り。"},
+    {question:"原因系統をどう確定しますか？",choices:[
+      {text:"燃圧とMAFの実測を突き合わせて確定する",correct:true},
+      {text:"補正をリセットして様子を見る",correct:false},
+      {text:"高オクタン燃料で症状を隠す",correct:false},
+      {text:"添加剤で補正を戻そうとする",correct:false}],
+      result_correct:"高負荷で燃圧低下を確認。供給側の不良と特定できた。",
+      result_wrong:"補正の意味は実測（燃圧・MAF）で裏取りが本筋。リセットや添加剤は誤魔化し。"}],
+    explanation:"燃調不良は補正値の傾向→回転負荷別の振る舞い→燃圧/MAF実測で原因系統を特定する。"},
+  {id:64,tier:"ウルトラ級",symptom:"低速トルク不足と燃費悪化。カム位相が指令に追従しない",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"指令位相と実位相の追従をデータで比較する",correct:true},
+      {text:"カムシャフトを点検交換する",correct:false},
+      {text:"タイミングチェーンを点検交換する",correct:false},
+      {text:"点火プラグを点検する",correct:false}],
+      result_correct:"指令に対し実位相が遅れる。VVTの追従不良と判明。",
+      result_wrong:"VVT不調は指令/実位相の追従をまず比較。部品交換は原因特定後。"},
+    {question:"追従が悪い。次に確認するのは？",choices:[
+      {text:"油圧・オイル状態とOCVの作動を確認する",correct:true},
+      {text:"燃料系の圧力を確認する",correct:false},
+      {text:"吸気系のエア漏れを確認する",correct:false},
+      {text:"点火時期を確認する",correct:false}],
+      result_correct:"OCVの作動が鈍くオイルも劣化。油圧不足で追従できず。",
+      result_wrong:"VVTは油圧駆動。オイル状態とOCV作動を確認するのが筋。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"オイル/OCVを整備し追従を確認する",correct:true},
+      {text:"位相を機械的に固定してしまう",correct:false},
+      {text:"コードを消して様子を見る",correct:false},
+      {text:"高粘度オイルで症状を隠す",correct:false}],
+      result_correct:"整備後、指令に実位相が追従。トルク・燃費が回復。",
+      result_wrong:"油圧・OCVの整備が本筋。固定や高粘度での誤魔化しは不可。"}],
+    explanation:"VVT追従不良は指令/実位相の比較→油圧・OCV確認→整備で追従回復を確認する。"},
+  {id:65,tier:"ウルトラ級",symptom:"直噴エンジン。冷間始動不良と低速失火が出る",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"吸気バルブのカーボン堆積を内視鏡で確認する",correct:true},
+      {text:"インジェクターを全数点検交換する",correct:false},
+      {text:"燃料ポンプを点検交換する",correct:false},
+      {text:"点火コイルを全数点検する",correct:false}],
+      result_correct:"吸気バルブに厚いカーボン。直噴特有の堆積を確認。",
+      result_wrong:"直噴の低速失火は吸気バルブのカーボン堆積が定番。まず堆積を確認。"},
+    {question:"堆積が多い。清浄方法をどう選びますか？",choices:[
+      {text:"堆積の程度を確認し物理清浄の要否を判断する",correct:true},
+      {text:"オイルを高粘度に変えて様子を見る",correct:false},
+      {text:"オクタン価を上げて様子を見る",correct:false},
+      {text:"アイドル回転を上げて隠す",correct:false}],
+      result_correct:"堆積が多くケミカルでは不足。物理清浄が必要と判断。",
+      result_wrong:"堆積量で清浄方法を選ぶ。燃料/オイル変更では落ちない。"},
+    {question:"どう除去しますか？",choices:[
+      {text:"ウォルナットブラスト等で物理的に除去する",correct:true},
+      {text:"添加剤を入れて経過を観察する",correct:false},
+      {text:"点火プラグだけ新品に交換する",correct:false},
+      {text:"コードを消して納める",correct:false}],
+      result_correct:"物理除去後、始動性と低速の失火が解消。",
+      result_wrong:"厚い堆積は物理除去が確実。添加剤やプラグ交換だけでは不足。"}],
+    explanation:"直噴の低速失火は吸気バルブのカーボン堆積。堆積確認→程度に応じ物理清浄（ウォルナット等）で除去。"},
+  {id:66,tier:"ウルトラ級",symptom:"特定気筒が失火。点火も燃料も替えたが直らない",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"失火気筒の圧縮圧力を測定する",correct:true},
+      {text:"イグニッションコイルを再度交換する",correct:false},
+      {text:"スパークプラグを再度交換する",correct:false},
+      {text:"インジェクターを点検交換する",correct:false}],
+      result_correct:"該当気筒の圧縮が低い。機械的不良を示す。",
+      result_wrong:"点火・燃料で直らぬ失火は機械系。まず圧縮を測るのが筋。"},
+    {question:"圧縮が低い。どう切り分けますか？",choices:[
+      {text:"リークダウンで損傷箇所を切り分ける",correct:true},
+      {text:"燃料圧力を測定して確認する",correct:false},
+      {text:"点火時期を点検する",correct:false},
+      {text:"O2センサーを点検する",correct:false}],
+      result_correct:"リークダウンでバルブからの漏れを確認。バルブ系の不良と判明。",
+      result_wrong:"圧縮低下はウェット/リークダウンでリング・バルブ・ガスケットを切り分ける。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"損傷部（バルブ等）の整備方針と費用を説明する",correct:true},
+      {text:"添加剤で圧縮を回復させようとする",correct:false},
+      {text:"コードを消してそのまま納める",correct:false},
+      {text:"アイドル回転を上げて隠す",correct:false}],
+      result_correct:"バルブ当たり不良を特定。ヘッド整備の費用とリスクを説明。",
+      result_wrong:"機械的損傷は整備が本筋。添加剤や消去では直らない。"}],
+    explanation:"点火・燃料で直らぬ失火は圧縮測定→ウェット/リークダウンで機械系を切り分け、整備方針を提示する。"},
+  {id:67,tier:"ウルトラ級",symptom:"触媒を替えてもP0420が再発する",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"触媒を傷める上流原因（燃調・失火）を確認する",correct:true},
+      {text:"もう一度触媒を点検交換する",correct:false},
+      {text:"下流O2センサーだけ点検交換する",correct:false},
+      {text:"マフラーを点検交換する",correct:false}],
+      result_correct:"濃い燃調と軽い失火を確認。触媒を傷める二次故障と判明。",
+      result_wrong:"触媒再故障は上流原因（燃調/失火/オイル）を断たないと繰り返す。"},
+    {question:"上流原因をどう特定しますか？",choices:[
+      {text:"空燃比と失火カウントの実データで特定する",correct:true},
+      {text:"触媒前後の温度だけを確認する",correct:false},
+      {text:"燃料を高い物に替えて確認する",correct:false},
+      {text:"添加剤を入れて確認する",correct:false}],
+      result_correct:"リッチ補正と失火カウントを確認。燃調・点火側が根本と特定。",
+      result_wrong:"再発は上流のデータ（空燃比/失火）で根本を特定するのが筋。"},
+    {question:"どう進めますか？",choices:[
+      {text:"燃調・点火を修理してから触媒を判断する",correct:true},
+      {text:"とりあえず触媒を再交換する",correct:false},
+      {text:"監視を切って警告を出なくする",correct:false},
+      {text:"コードを消して納める",correct:false}],
+      result_correct:"根本修理後はP0420が再発せず。触媒の追加交換も不要に。",
+      result_wrong:"上流を直さず触媒交換は再発ループ。根本修理が先。"}],
+    explanation:"P0420再発は触媒を焼く上流原因（燃調/失火/オイル）を断つのが本筋。データで根本特定してから触媒を判断する。"},
+  {id:68,tier:"ウルトラ級",symptom:"無関係な複数の不具合が同時に出ている",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"ECUの電源・接地（基準電圧）を確認する",correct:true},
+      {text:"症状ごとに担当部品を点検交換する",correct:false},
+      {text:"ECU本体を点検交換する",correct:false},
+      {text:"各センサーを順に点検する",correct:false}],
+      result_correct:"ECUの接地に異常。基準が崩れ多数の症状が出ていた。",
+      result_wrong:"無関係な同時多発は共通の電源/接地を疑う。個別対応は迷走の元。"},
+    {question:"基準が崩れている。次に点検するのは？",choices:[
+      {text:"電源・接地線の電圧降下と接続を点検する",correct:true},
+      {text:"各回路を個別に順に点検する",correct:false},
+      {text:"配線を全て新品に引き直す",correct:false},
+      {text:"バッテリーを点検交換する",correct:false}],
+      result_correct:"接地線に高い接触抵抗。電圧降下で基準電圧が低下していた。",
+      result_wrong:"基準異常は電源/接地の電圧降下・接続から。全引き直しは過剰。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"接地を整備し各症状が一括で消えるか確認する",correct:true},
+      {text:"症状ごとに部品を交換していく",correct:false},
+      {text:"ECUを初期化して様子を見る",correct:false},
+      {text:"コードを消して再発を見る",correct:false}],
+      result_correct:"接地整備で複数症状が同時に消失。根本は1箇所だった。",
+      result_wrong:"共通要因を直せば多数の症状が一括解決。個別交換は無駄が出る。"}],
+    explanation:"無関係な多重故障は共通の電源/接地を疑う。電圧降下で基準異常を特定し、整備で一括解決する。"},
+  {id:69,tier:"ウルトラ級",symptom:"ハイブリッドのHVバッテリー警告。出力が落ちる",steps:[
+    {question:"安全確保の上、最初に何を確認しますか？",choices:[
+      {text:"各ブロック電圧のばらつきを確認する",correct:true},
+      {text:"HVバッテリーを丸ごと点検交換する",correct:false},
+      {text:"12V補機バッテリーを点検交換する",correct:false},
+      {text:"インバーターを点検交換する",correct:false}],
+      result_correct:"特定ブロックの電圧が低い。セルの劣化ばらつきを確認。",
+      result_wrong:"HV劣化はブロック電圧のばらつきから。安全確保と診断が先（丸ごと交換は高額）。"},
+    {question:"ばらつきがある。どう裏取りしますか？",choices:[
+      {text:"劣化ブロックを特定し内部抵抗も確認する",correct:true},
+      {text:"全ブロックを新品に交換する",correct:false},
+      {text:"走行充電で回復を待つ",correct:false},
+      {text:"コードを消して様子を見る",correct:false}],
+      result_correct:"1ブロックの内部抵抗が高い。劣化セルを特定できた。",
+      result_wrong:"ばらつきは劣化ブロックの特定＋内部抵抗で裏取りするのが筋。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"資格者がブロック交換/リビルトの可否を判断する",correct:true},
+      {text:"素手でセルを取り外して点検する",correct:false},
+      {text:"電圧を均そうと強制放電させる",correct:false},
+      {text:"監視を切って警告を消す",correct:false}],
+      result_correct:"有資格者が安全手順でブロック交換を判断。安全と確実性を両立。",
+      result_wrong:"HVは有資格・安全手順が大前提。素手作業や安易な放電は重大事故・損傷の元。"}],
+    explanation:"HV劣化はブロック電圧のばらつき→内部抵抗で劣化セル特定。作業は有資格者が安全手順で行う。"},
+  {id:70,tier:"ウルトラ級",symptom:"ABSと電動パワステの警告が同時に出る",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"両系統が共有する信号（車速等）を確認する",correct:true},
+      {text:"ABSユニットを点検交換する",correct:false},
+      {text:"EPSモーターを点検交換する",correct:false},
+      {text:"タイヤとアライメントを点検する",correct:false}],
+      result_correct:"車速信号が両系統で欠落。共有信号の異常が疑わしい。",
+      result_wrong:"別系統が同時に出たら共有する信号/電源を疑うのが定石。"},
+    {question:"次に何を点検しますか？",choices:[
+      {text:"車速・舵角の信号源とCAN共有を点検する",correct:true},
+      {text:"両ユニットを同時に点検交換する",correct:false},
+      {text:"関連ヒューズを増設する",correct:false},
+      {text:"ホイールアライメントを調整する",correct:false}],
+      result_correct:"車速信号源（車輪速/CAN）の異常を確認。両系統に波及していた。",
+      result_wrong:"共有信号の信号源とCANを点検すれば一度に両警告の原因が掴める。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"共有信号を修理し両警告が消えるか確認する",correct:true},
+      {text:"系統ごとに部品を交換していく",correct:false},
+      {text:"コードを消して再発を見る",correct:false},
+      {text:"警告灯を外して消灯させる",correct:false}],
+      result_correct:"共有信号の修理で両警告が同時消灯。根本は1箇所だった。",
+      result_wrong:"共有要因の修理で両系統が一括解決。個別交換は無駄が出る。"}],
+    explanation:"別系統の同時警告は共有信号/電源（車速・CAN等）を疑う。信号源の修理で一括解決する。"},
+  {id:71,tier:"ウルトラ級",symptom:"P0171傾向だが吸気漏れもMAF汚れも無い",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"吸入空気量と回転・スロットルの相関を確認する",correct:true},
+      {text:"MAFをすぐ新品に点検交換する",correct:false},
+      {text:"O2センサーを点検交換する",correct:false},
+      {text:"インジェクターを点検交換する",correct:false}],
+      result_correct:"MAF値が負荷の割に低い。計測ずれ（偽の薄い）を疑う。",
+      result_wrong:"漏れも汚れも無い薄いはMAFの計測ずれを相関で疑う。即交換は早計。"},
+    {question:"妥当性をどう裏取りしますか？",choices:[
+      {text:"計算負荷やMAPと比較して確認する",correct:true},
+      {text:"燃圧だけを確認する",correct:false},
+      {text:"点火時期だけを確認する",correct:false},
+      {text:"触媒の状態を点検する",correct:false}],
+      result_correct:"他パラメータと矛盾。MAFが過小計測していると裏取り。",
+      result_wrong:"単独でなく他データと突き合わせMAFの妥当性を判断するのが筋。"},
+    {question:"どう進めますか？",choices:[
+      {text:"妥当性を確認してから交換し補正回復を見る",correct:true},
+      {text:"とりあえず関連部品を全て交換する",correct:false},
+      {text:"燃料補正をリセットして様子を見る",correct:false},
+      {text:"監視を切って警告を消す",correct:false}],
+      result_correct:"MAF交換後に燃料補正が正常化。相関診断で無駄な交換を回避できた。",
+      result_wrong:"データで妥当性を確認してから交換。当て交換やリセットは無駄・誤魔化し。"}],
+    explanation:"漏れ無しの薄いはMAF計測ずれを相関（負荷/MAP等）で見抜く。妥当性確認後に交換し補正回復を見る。"},
+  {id:72,tier:"ウルトラ級",symptom:"始動性が悪く失火。チェーン伸び/歯飛びの疑い",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"オシロでクランク/カム信号の相関を確認する",correct:true},
+      {text:"タイミングチェーンをすぐ交換する",correct:false},
+      {text:"点火プラグを点検交換する",correct:false},
+      {text:"カム角センサーを点検交換する",correct:false}],
+      result_correct:"クランクとカムの位相がずれている。同期ずれを確認。",
+      result_wrong:"同期ずれはオシロで両信号の相関を見るのが確実。当て交換は危険。"},
+    {question:"ずれの正体をどう切り分けますか？",choices:[
+      {text:"ずれ量と再現性から歯飛び/伸びを切り分ける",correct:true},
+      {text:"燃料圧力を測定して確認する",correct:false},
+      {text:"圧縮圧力だけを測定する",correct:false},
+      {text:"O2センサーを点検する",correct:false}],
+      result_correct:"位相ずれ量が一定でチェーン伸びと判明。テンショナーも疑う。",
+      result_wrong:"ずれ量と再現性で歯飛びかチェーン伸びかを切り分けるのが筋。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"チェーン等を整備し相関を再確認する",correct:true},
+      {text:"カム角センサーだけ交換する",correct:false},
+      {text:"コードを消して様子を見る",correct:false},
+      {text:"アイドル回転を上げて隠す",correct:false}],
+      result_correct:"チェーン・テンショナー整備後、位相相関が正常化。失火が解消。",
+      result_wrong:"同期系は機械整備が本筋。センサー交換や消去では直らない。"}],
+    explanation:"始動不良＋失火で同期疑いはオシロでクランク/カム相関→ずれ量で歯飛び/伸び切り分け→機械整備。"},
+  {id:73,tier:"ウルトラ級",symptom:"EVAP系の警告。漏れの大小が判然としない",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"コードがラージ/スモールどちらの漏れか確認する",correct:true},
+      {text:"パージ弁をすぐ点検交換する",correct:false},
+      {text:"給油口キャップだけ点検交換する",correct:false},
+      {text:"燃料タンクを点検する",correct:false}],
+      result_correct:"ラージリーク系のコード。大きめの開口部を疑う。",
+      result_wrong:"EVAPはまず漏れの大小（コード種別）を確認して当たりを付ける。"},
+    {question:"次に何を点検しますか？",choices:[
+      {text:"パージ/ベント弁の作動と気密を点検する",correct:true},
+      {text:"燃料ポンプの吐出圧を点検する",correct:false},
+      {text:"O2センサーを点検する",correct:false},
+      {text:"インジェクターを点検する",correct:false}],
+      result_correct:"ベント弁が閉じきらず気密不良。ラージリークの原因と判明。",
+      result_wrong:"EVAPはパージ/ベント弁の作動・気密から。燃料噴射系は無関係。"},
+    {question:"どう対処しますか？",choices:[
+      {text:"漏れ部を修理しモニタ完了まで確認する",correct:true},
+      {text:"コードを消すだけにする",correct:false},
+      {text:"EVAP機能を殺して塞ぐ",correct:false},
+      {text:"満タンにして様子を見る",correct:false}],
+      result_correct:"弁を修理しスモークで気密確認。モニタ完了で再点灯なし。",
+      result_wrong:"修理後はモニタ完了まで気密確認。消去や機能カットは不正・再発。"}],
+    explanation:"EVAPは漏れの大小→パージ/ベント弁の作動・気密→修理しモニタ完了まで確認する。"},
+  {id:74,tier:"ウルトラ級",symptom:"充電電圧が走行中に上下する。バッテリーも弱る",steps:[
+    {question:"最初に何を確認しますか？",choices:[
+      {text:"その車が充電制御車かどうかを確認する",correct:true},
+      {text:"オルタネーターをすぐ点検交換する",correct:false},
+      {text:"レギュレーターを点検交換する",correct:false},
+      {text:"バッテリーを点検交換する",correct:false}],
+      result_correct:"充電制御車と判明。電圧が上下するのは正常制御の可能性。",
+      result_wrong:"電圧変動は充電制御車では正常な場合がある。まず方式を確認。"},
+    {question:"どう判断しますか？",choices:[
+      {text:"指令通りに発電しているかデータで確認する",correct:true},
+      {text:"電圧の上下だけで故障と断定する",correct:false},
+      {text:"駆動ベルトだけを点検する",correct:false},
+      {text:"関連ヒューズを点検する",correct:false}],
+      result_correct:"指令通りに発電。制御は正常で、別に要因があると判明。",
+      result_wrong:"充電制御は指令と実発電の一致で判断。電圧変動だけで断定しない。"},
+    {question:"バッテリーが弱る真因をどう探しますか？",choices:[
+      {text:"暗電流など別要因を点検し真因を特定する",correct:true},
+      {text:"オルタネーターを交換して納める",correct:false},
+      {text:"大容量バッテリーに載せ替える",correct:false},
+      {text:"コードを消して様子を見る",correct:false}],
+      result_correct:"暗電流過大を発見。充電系ではなく漏れ電流が原因と特定。",
+      result_wrong:"充電制御の理解不足は誤診の元。電圧変動を故障と決めつけない。"}],
+    explanation:"充電制御車は電圧の上下が正常な場合あり。方式確認→指令/実発電の一致→別要因(暗電流等)で真因を特定する。"},
+  {id:75,tier:"ウルトラ級",symptom:"明確な不調があるのに故障コードが出ない",steps:[
+    {question:"最初に何をしますか？",choices:[
+      {text:"再現時のフリーズフレーム/ライブデータを記録する",correct:true},
+      {text:"とりあえず怪しい部品を点検交換する",correct:false},
+      {text:"コードが無いので問題なしとする",correct:false},
+      {text:"ECUを初期化して様子を見る",correct:false}],
+      result_correct:"コードは無いが再現時のデータに異常の兆候を確認。",
+      result_wrong:"無コードの不調は再現時のライブデータで詰める。当て交換や放置は不可。"},
+    {question:"どう切り分けますか？",choices:[
+      {text:"症状再現の条件を揃え数値の異常を切り分ける",correct:true},
+      {text:"停車アイドルの数値だけを確認する",correct:false},
+      {text:"外観の目視だけで点検する",correct:false},
+      {text:"運転の仕方の問題として片付ける",correct:false}],
+      result_correct:"特定条件で数値が破綻。発生条件と相関する系統を絞れた。",
+      result_wrong:"再現条件を揃えてデータの破綻を捉えるのが無コード診断の要。"},
+    {question:"どう確定し対処しますか？",choices:[
+      {text:"相関した系統を実測で確定してから修理する",correct:true},
+      {text:"勘で怪しい部品を交換する",correct:false},
+      {text:"コード無しを理由にそのまま納める",correct:false},
+      {text:"モニタを切って警告を抑える",correct:false}],
+      result_correct:"相関系統を実測で確定し修理。不調が再現しなくなった。",
+      result_wrong:"無コードでもデータ相関→実測で確定が本筋。勘の交換は無駄。"}],
+    explanation:"無コードの不調はフリーズフレーム/再現ライブデータで条件と数値の破綻を捉え、相関系統を実測確定して修理する。"}
+];
+
+const HI_KEY = "seibishi_highscore_v2";
+const TIME_LIMIT = 60;
+const LETTERS = ["A","B","C","D"];
+const MAX_LIVES = 3;
+const TIER_NAMES = ["初級","中級","上級","ウルトラ級"];
+// 各級の症例プール（20症例ずつ）。毎回ここからランダムに抽選して出題する。
+const CASES_PER_TIER = 10;   // 1プレイで各級から出す数
+const TIER_POOL = {
+  "初級":[1,3,5,7,11,12,13,14,15,16,31,32,33,34,35,36,37,38,39,40],
+  "中級":[4,6,17,18,19,20,21,22,23,24,41,42,43,44,45,46,47,48,49,50],
+  "上級":[2,8,9,10,25,26,27,28,29,30,51,52,53,54,55,56,57,58,59,60],
+  "ウルトラ級":[61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]
+};
+const TOTAL_CASES = CASES_PER_TIER * TIER_NAMES.length; // 1プレイの総数(30)
+const idIndex = {}; cases.forEach((c,i)=>{ idIndex[c.id]=i; });
+
+// State
+let tierIdx = 0;       // 現在の級 0..2
+let posInTier = 0;     // 級内の症例位置 0..9
+let curList = [];      // 現在の級の症例index配列
+let lives = MAX_LIVES; // 現在のライフ（級ごとにリセット）
+let pendingGameOver = false;
+let totalPassed = 0;   // 全体の合格症例数（最終スコア・ハイスコア用）
+let passedAtTierStart = 0; // 現在の級開始時点の合格数（級からのやり直し用）
+let oyaTimer = null;   // 親方表示の自動非表示タイマー
+let stepIdx = 0;       // current step within case
+let caseFailed = false;// did the player make any mistake in this case
+let answered = false;  // current step answered?
+let currentChoices = [];// 表示用にシャッフルした現ステップの選択肢（正解位置を毎回ランダム化）
+let results = [];      // {symptom, passed, tier} per case
+let timer = null;
+let timeLeft = TIME_LIMIT;
+function curCase(){ return cases[curList[posInTier]]; }
+
+// Elements
+const $ = id => document.getElementById(id);
+const startScreen = $("startScreen"), gameScreen = $("gameScreen"), endScreen = $("endScreen");
+const tierScreen = $("tierScreen"), overScreen = $("overScreen");
+function hideAllScreens(){ [startScreen,gameScreen,endScreen,tierScreen,overScreen].forEach(s=>s.classList.add("hidden")); }
+const flash = $("flash"), flashWord = flash.querySelector(".word");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function getHi(){ return parseInt(localStorage.getItem(HI_KEY) || "0",10) || 0; }
+function setHi(v){ try{ localStorage.setItem(HI_KEY, String(v)); }catch(e){} }
+
+function startGame(){
+  tierIdx = 0; totalPassed = 0; results = [];
+  hideAllScreens();
+  gameScreen.classList.remove("hidden");
+  startTier();
+}
+
+// 級の開始（ライフは級ごとにリセット）
+function startTier(){
+  posInTier = 0;
+  lives = MAX_LIVES;
+  passedAtTierStart = totalPassed;   // この級の開始時点を記録（級からのやり直し用）
+  // プールからランダムにCASES_PER_TIER件抽選＋シャッフル（毎回違う出題に）
+  curList = shuffle(TIER_POOL[TIER_NAMES[tierIdx]]).slice(0, CASES_PER_TIER).map(id=>idIndex[id]);
+  loadCase();
+}
+
+// 到達した級から再挑戦（その級の開始時点の合格数に戻す）
+function retryTier(){
+  totalPassed = passedAtTierStart;
+  hideAllScreens();
+  gameScreen.classList.remove("hidden");
+  startTier();
+}
+
+function loadCase(){
+  stepIdx = 0;
+  caseFailed = false;
+  pendingGameOver = false;
+  $("symptomText").textContent = curCase().symptom;
+  renderScene(curCase());
+  updateHud();
+  startTimer();      // 1症例60秒。タイマーは症例単位で開始し、ステップ間は継続する。
+  renderStep();
+}
+
+function updateHud(){
+  $("hudCase").textContent = TIER_NAMES[tierIdx] + " " + (posInTier+1) + "/10";
+  renderLives();
+  const done = tierIdx*10 + posInTier;
+  $("progBar").style.width = (done/TOTAL_CASES*100) + "%";
+}
+
+function renderLives(){
+  const el = $("hudLives");
+  el.textContent = lives>0 ? "❤".repeat(lives) : "✖";
+  el.classList.toggle("low", lives===1);
+}
+
+function loseLife(){
+  if(lives>0) lives--;
+  renderLives();
+  if(lives<=0) pendingGameOver = true;
+}
+
+// 症例ごとの入庫シーン演出（症状に合わせた視覚効果）
+const SMOKE = {white:"#e8eef2", blue:"#86b0e0", gray:"#9aa3ad", black:"#4a4f57"};
+const VISUAL = {
+  1:{lamp:"🔋",spark:1}, 2:{lamp:"⚠️",smoke:"black"}, 3:{sound:1}, 4:{lamp:"❄️",heat:1},
+  5:{lamp:"🌡️",steam:1}, 6:{lamp:"⬅️"}, 7:{lamp:"🛢️",puddle:"#caa24a"}, 8:{lamp:"🔋",spark:1},
+  9:{sound:1}, 10:{lamp:"⚙️",puddle:"#c0392b"}, 11:{lamp:"🛞",flat:1}, 12:{dark:1},
+  13:{rain:1}, 14:{lamp:"💦"}, 15:{lamp:"📣",sound:1}, 16:{lamp:"🛑"}, 17:{lamp:"⚠️",smoke:"white"},
+  18:{smoke:"blue"}, 19:{lamp:"🛑"}, 20:{sound:1}, 21:{shake:1}, 22:{rain:1,spark:1},
+  23:{lamp:"⚙️",shake:1}, 24:{lamp:"↩️"}, 25:{lamp:"🔋",heat:1,spark:1}, 26:{lamp:"ABS",lampText:1},
+  27:{lamp:"⚠️",smoke:"gray"}, 28:{lamp:"⚙️",shake:1}, 29:{smoke:"white",steam:1,puddle:"#23c552"}, 30:{lamp:"⛽"},
+  61:{lamp:"⚠️"}, 62:{spark:1}, 63:{lamp:"⚠️"}, 64:{lamp:"⚠️"}, 65:{smoke:"black"}, 66:{lamp:"⚠️"}, 67:{smoke:"gray",lamp:"⚠️"}, 68:{lamp:"⚠️",spark:1}, 69:{lamp:"🔋"}, 70:{lamp:"ABS",lampText:1}, 71:{lamp:"⚠️"}, 72:{lamp:"⚠️"}, 73:{lamp:"⛽"}, 74:{lamp:"🔋",spark:1}, 75:{lamp:"⚠️"}
+};
+// img/<症例ID>.png(jpg/jpeg/webp) があれば写真を表示、無ければSVGにフォールバック
+function setSceneImage(id){
+  const img=$("sceneImg"), svg=$("sceneSvg");
+  if(!img||!svg) return;
+  const exts=["png","jpg","jpeg","webp"]; let i=0;
+  img.style.display="none"; svg.style.display="";   // 既定はSVG
+  function tryNext(){
+    if(i>=exts.length){ img.style.display="none"; svg.style.display=""; return; }
+    img.onload=()=>{ img.style.display="block"; svg.style.display="none"; };
+    img.onerror=()=>{ i++; tryNext(); };
+    img.src = "img/"+id+"."+exts[i];
+  }
+  tryNext();
+}
+
+function renderScene(c){
+  setSceneImage(c.id);
+  const v = VISUAL[c.id] || {};
+  const show = (id,on)=>{ const el=$(id); if(el) el.style.display = on?"":"none"; };
+  show("fxSmoke", !!v.smoke);
+  if(v.smoke){ document.querySelectorAll("#fxSmoke .puff").forEach(p=>p.setAttribute("fill", SMOKE[v.smoke]||"#9aa3ad")); }
+  show("fxSteam", !!v.steam);
+  show("fxPuddle", !!v.puddle); if(v.puddle) $("fxPuddle").setAttribute("fill", v.puddle);
+  show("fxFlat", !!v.flat);
+  show("fxRain", !!v.rain);
+  show("fxSpark", !!v.spark);
+  show("fxSound", !!v.sound);
+  show("fxHeat", !!v.heat);
+  const hl=$("headL"); if(hl) hl.setAttribute("fill", v.dark?"#3a3f46":"#ffe27a");
+  if(v.lamp){
+    $("fxLamp").style.display="";
+    const g=$("lampGlyph"); g.textContent=v.lamp;
+    g.setAttribute("font-size", v.lampText?13:18);
+    g.setAttribute("font-weight", v.lampText?"800":"400");
+    g.setAttribute("fill", v.lampText?"#ff7a18":"#fff");
+  } else { $("fxLamp").style.display="none"; }
+  $("carBody").classList.toggle("shake", !!v.shake);
+  // 入庫アニメを毎回再生
+  const car=$("car"); car.classList.remove("in"); void car.getBoundingClientRect(); car.classList.add("in");
+}
+
+function startTimer(){
+  clearInterval(timer);
+  timeLeft = TIME_LIMIT;
+  renderTimer();
+  timer = setInterval(tick,1000);
+}
+function tick(){
+  timeLeft--;
+  renderTimer();
+  if(timeLeft<=0){ clearInterval(timer); onTimeOut(); }
+}
+function pauseTimer(){ clearInterval(timer); }
+function resumeTimer(){ clearInterval(timer); timer = setInterval(tick,1000); }
+
+function renderTimer(){
+  const t = $("hudTimer");
+  t.textContent = Math.max(0,timeLeft);
+  t.classList.toggle("danger", timeLeft<=10);
+}
+
+function renderStep(){
+  answered = false;
+  hideOyakata();
+  const c = curCase();
+  const step = c.steps[stepIdx];
+  $("stepMeta").textContent = "ステップ " + (stepIdx+1) + " / " + c.steps.length;
+  $("questionText").textContent = step.question;
+
+  currentChoices = shuffle(step.choices);   // 正解の位置を毎回ランダム化
+  const box = $("choices");
+  box.innerHTML = "";
+  currentChoices.forEach((ch,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.innerHTML = '<span class="bullet">'+LETTERS[i]+'</span><span>'+escapeHtml(ch.text)+'</span>';
+    btn.addEventListener("click", ()=>chooseAnswer(i));
+    box.appendChild(btn);
+  });
+
+  const rb = $("resultBox"); rb.classList.remove("show","ok","ng");
+  $("nextBtn").classList.remove("show");
+}
+
+function chooseAnswer(i){
+  if(answered) return;
+  answered = true;
+  pauseTimer();
+
+  const c = curCase();
+  const step = c.steps[stepIdx];
+  const chosen = currentChoices[i];
+  const isCorrect = !!chosen.correct;
+  const correctIdx = currentChoices.findIndex(x=>x.correct);
+
+  const btns = $("choices").querySelectorAll(".choice");
+  btns.forEach((b,bi)=>{
+    b.disabled = true;
+    if(bi===correctIdx) b.classList.add("correct");
+    if(bi===i && !isCorrect) b.classList.add("wrong");
+  });
+
+  const rb = $("resultBox"), head = $("resultHead"), body = $("resultBody");
+  if(isCorrect){
+    rb.classList.add("show","ok");
+    head.innerHTML = "✅ 正しい診断";
+    body.innerHTML = escapeHtml(step.result_correct);
+    doFlash(true); showOyakata(true);
+  }else{
+    caseFailed = true;
+    loseLife();
+    rb.classList.add("show","ng");
+    head.innerHTML = "❌ 診断ミス";
+    body.innerHTML = escapeHtml(step.result_wrong) +
+      '<span class="lead">▶ 正解：<b>'+escapeHtml(currentChoices[correctIdx].text)+'</b></span>'+
+      '<span class="lead">'+escapeHtml(step.result_correct)+'</span>';
+    doFlash(false); showOyakata(false);
+  }
+
+  showNextButton();
+}
+
+function onTimeOut(){
+  if(answered) return;
+  answered = true;
+  caseFailed = true;
+  loseLife();
+  const c = curCase();
+  const step = c.steps[stepIdx];
+  const correctIdx = currentChoices.findIndex(x=>x.correct);
+  const btns = $("choices").querySelectorAll(".choice");
+  btns.forEach((b,bi)=>{ b.disabled = true; if(bi===correctIdx) b.classList.add("correct"); });
+
+  const rb = $("resultBox"), head = $("resultHead"), body = $("resultBody");
+  rb.classList.add("show","ng");
+  head.innerHTML = "⏱ 時間切れ";
+  body.innerHTML = "制限時間内に診断できませんでした。"+
+    '<span class="lead">▶ 正解：<b>'+escapeHtml(currentChoices[correctIdx].text)+'</b></span>'+
+    '<span class="lead">'+escapeHtml(step.result_correct)+'</span>';
+  doFlash(false);
+
+  showNextButton();
+}
+
+function showNextButton(){
+  const c = curCase();
+  const nb = $("nextBtn");
+  const isLastStep = stepIdx >= c.steps.length-1;
+  if(pendingGameOver){ nb.textContent = "結果を見る ▶"; }
+  else nb.textContent = isLastStep ? "この症例の結果へ ▶" : "次のステップへ ▶";
+  nb.classList.add("show");
+}
+
+function nextStep(){
+  if(pendingGameOver){ gameOver(); return; }
+  const c = curCase();
+  if(stepIdx < c.steps.length-1){
+    stepIdx++;
+    renderStep();
+    resumeTimer();   // 症例内はタイマー継続
+  }else{
+    finishCase();
+  }
+}
+
+function finishCase(){
+  pauseTimer();
+  const c = curCase();
+  const passed = !caseFailed;
+  if(passed) totalPassed++;
+  results.push({symptom:c.symptom, passed:passed, tier:TIER_NAMES[tierIdx]});
+
+  posInTier++;
+  updateHud();
+  if(posInTier >= 10){ tierCleared(); }
+  else{ loadCase(); }
+}
+
+// 級クリア：最終級なら全クリア、それ以外は昇級画面へ
+function tierCleared(){
+  pauseTimer();
+  if(tierIdx >= TIER_NAMES.length-1){ endGame(); return; }
+  hideAllScreens();
+  const cleared = TIER_NAMES[tierIdx];
+  const next = TIER_NAMES[tierIdx+1];
+  $("promoteBadge").textContent = "★".repeat(tierIdx+1);
+  $("promoteTitle").textContent = cleared + "クリア！";
+  $("promoteDesc").innerHTML = "<b>"+next+"</b>に昇級します。ライフは3に回復。<br>難易度が上がります、気を引き締めて。";
+  $("promoteStat").innerHTML = "ここまでの合格 <b>"+totalPassed+"</b> / "+TOTAL_CASES+" 症例";
+  tierScreen.classList.remove("hidden");
+}
+
+function continueNextTier(){
+  tierIdx++;
+  hideAllScreens();
+  gameScreen.classList.remove("hidden");
+  startTier();
+}
+
+function gameOver(){
+  pauseTimer();
+  hideAllScreens();
+  const hi = Math.max(getHi(), totalPassed);
+  setHi(hi);
+  $("overReach").textContent = TIER_NAMES[tierIdx] + " " + (posInTier+1) + "症例目";
+  $("overPassed").textContent = totalPassed;
+  $("overHi").textContent = hi;
+  $("hiScore").textContent = hi;
+  $("overDetail").textContent = TIER_NAMES[tierIdx] + "でライフを使い切りました。やり直し方を選べます。";
+  // 再挑戦の選択肢：到達級から or 最初から
+  const tb=$("overTierBtn"), rb=$("overRestartBtn");
+  if(tierIdx>0){
+    tb.textContent = TIER_NAMES[tierIdx] + "からやり直す ▶";
+    tb.style.display = ""; tb.className = "big-btn";
+    rb.textContent = "最初(初級)からやり直す"; rb.className = "ghost-btn";
+  } else {
+    // 初級で力尽きた場合は「最初から」のみ
+    tb.style.display = "none";
+    rb.textContent = "初級からやり直す ▶"; rb.className = "big-btn";
+  }
+  overScreen.classList.remove("hidden");
+}
+
+function endGame(){
+  pauseTimer();
+  hideAllScreens();
+  endScreen.classList.remove("hidden");
+  $("progBar").style.width = "100%";
+
+  const pts = Math.round(totalPassed/TOTAL_CASES*100);
+  $("scoreRing").style.setProperty("--deg", (pts/100*360)+"deg");
+  animateNumber($("finalNum"), pts);
+  $("finalScore").textContent = totalPassed;
+
+  const hi = Math.max(getHi(), totalPassed);
+  setHi(hi);
+  $("finalHi").textContent = hi;
+  $("hiScore").textContent = hi;
+
+  let rank,cls,desc;
+  if(totalPassed===TOTAL_CASES){rank="SS ・ 神整備士";cls="s";desc="全40症例パーフェクト！ウルトラ級まで完全制覇、開発者級の診断力です。";}
+  else if(totalPassed>=36){rank="S ・ プロ整備士";cls="s";desc="ほぼ完璧。現場でもっとも頼れる存在です。";}
+  else if(totalPassed>=32){rank="A ・ 一人前";cls="a";desc="全級完走、確かな腕。取りこぼしを潰せば頂点へ。";}
+  else if(totalPassed>=28){rank="B ・ 見習い卒業";cls="b";desc="完走できる実力。手順の精度をさらに上げよう。";}
+  else{rank="C ・ 修行中";cls="c";desc="完走おめでとう。基本手順を固めて精度を上げよう。";}
+  const rt = $("rankText"); rt.textContent = rank; rt.className = "rank "+cls;
+  $("rankDesc").textContent = desc;
+
+  const rl = $("reviewList"); rl.innerHTML = "";
+  results.forEach((r)=>{
+    const div = document.createElement("div");
+    div.className = "review-item";
+    div.innerHTML = '<span class="mark '+(r.passed?"o":"x")+'">'+(r.passed?"○":"×")+'</span>'+
+      '<span class="sym">['+r.tier+'] '+escapeHtml(r.symptom)+'</span>';
+    rl.appendChild(div);
+  });
+}
+
+function animateNumber(el, target){
+  let cur=0; const step=Math.max(1,Math.ceil(target/30));
+  const iv=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur;},25);
+}
+
+// 親方（誤答で怒る／正解で褒める）
+const OYA_ANGRY = ["コラッ！よう見んかい！","そこちゃうやろ！","基本がなっとらん！","手順を飛ばすな！","それやと客が泣くぞ！","もういっぺん考えんかい！","目ェ覚まさんかい！"];
+const OYA_HAPPY = ["ええぞ、その調子や！","よう見とる！","それでええ！","筋がええな！","上等や！"];
+function showOyakata(correct){
+  const o=$("oyakata"); if(!o) return;
+  const list = correct ? OYA_HAPPY : OYA_ANGRY;
+  $("oyaBubble").textContent = list[Math.floor(Math.random()*list.length)];
+  o.classList.remove("show","angry","happy"); void o.offsetWidth;
+  o.classList.add("show", correct?"happy":"angry");
+  clearTimeout(oyaTimer);
+  oyaTimer = setTimeout(()=>o.classList.remove("show"), 2400);
+}
+function hideOyakata(){ clearTimeout(oyaTimer); const o=$("oyakata"); if(o) o.classList.remove("show"); }
+
+function doFlash(ok){
+  flash.className = ""; void flash.offsetWidth;
+  flashWord.textContent = ok ? "正解！" : "不正解";
+  flashWord.style.color = ok ? "var(--green)" : "var(--red)";
+  flash.classList.add("on", ok?"green":"red");
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+// Wire up
+$("startBtn").addEventListener("click", startGame);
+$("retryBtn").addEventListener("click", startGame);
+$("overTierBtn").addEventListener("click", retryTier);
+$("overRestartBtn").addEventListener("click", startGame);
+$("tierNextBtn").addEventListener("click", continueNextTier);
+$("nextBtn").addEventListener("click", nextStep);
+$("resetHiBtn").addEventListener("click", ()=>{
+  if(confirm("ハイスコアをリセットしますか？")){ setHi(0); $("hiScore").textContent = "0"; }
+});
+
+// init
+$("hiScore").textContent = getHi();
+</script>
+</body>
+</html>

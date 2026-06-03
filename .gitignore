@@ -1,0 +1,7 @@
+# デプロイに不要な元画像・作業ファイルは除外（容量削減）
+img/_grids/
+img/_tiles/
+img/README.txt
+
+# 元のゲーム本体（index.html を使うので任意。残してもOK）
+# 整備士育成シミュレーター.html
