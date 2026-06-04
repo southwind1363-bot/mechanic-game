@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>整備士育成シミュレーター</title>
+<title>整備士育成ゲーム</title>
 <style>
   :root{
     --bg:#0e1117;
@@ -361,7 +361,7 @@
 
 <div class="app">
   <header>
-    <div class="title"><span class="gear">⚙</span>整備士育成シミュレーター<small>診断思考トレーニング</small><button id="soundBtn" class="sound-btn" title="効果音 ON/OFF">🔊</button></div>
+    <div class="title"><span class="gear">⚙</span>整備士育成ゲーム<small>診断バトル</small><button id="soundBtn" class="sound-btn" title="効果音 ON/OFF">🔊</button></div>
     <div class="hud">
       <div class="cell"><div class="label">級・症例</div><div class="val" id="hudCase">- / 10</div></div>
       <div class="cell"><div class="label">残り時間</div><div class="val timer" id="hudTimer">60</div></div>
@@ -585,7 +585,7 @@
     <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
   </div>
 
-  <footer>整備士育成シミュレーター ・ 完全オフライン動作 ・ 記録はこの端末にのみ保存されます</footer>
+  <footer>整備士育成ゲーム ・ 完全オフライン動作 ・ 記録はこの端末にのみ保存されます</footer>
 </div>
 
 <script>
@@ -2683,20 +2683,16 @@ function continueNextTier(){
 }
 
 function gameOver(){
-  pauseTimer();
+  pauseTimer(); stopMusic();
   hideAllScreens();
-  const hi = Math.max(getHi(), totalPassed);
-  setHi(hi);
+  const hi = Math.max(getHi(), totalPassed); setHi(hi);
+  const sHi = Math.max(getScoreHi(), score); setScoreHi(sHi);
   $("overReach").textContent = TIER_NAMES[tierIdx] + " " + (posInTier+1) + "症例目";
   $("overPassed").textContent = totalPassed;
-  $("overHi").textContent = hi;
   $("hiScore").textContent = hi;
-  const sHi=Math.max(getScoreHi(),score); setScoreHi(sHi);
   $("overScoreVal").textContent = score.toLocaleString();
   $("overScoreHi").textContent = sHi.toLocaleString();
   $("hiScoreVal").textContent = sHi.toLocaleString();
-  stopMusic(); sndOver();
-  recordScore(); renderRanking("overRank"); renderRanking("startRank");
   $("overDetail").textContent = TIER_NAMES[tierIdx] + "でライフを使い切りました。やり直し方を選べます。";
   // 再挑戦の選択肢：到達級から or 最初から
   const tb=$("overTierBtn"), rb=$("overRestartBtn");
@@ -2705,11 +2701,13 @@ function gameOver(){
     tb.style.display = ""; tb.className = "big-btn";
     rb.textContent = "最初(初級)からやり直す"; rb.className = "ghost-btn";
   } else {
-    // 初級で力尽きた場合は「最初から」のみ
     tb.style.display = "none";
     rb.textContent = "初級からやり直す ▶"; rb.className = "big-btn";
   }
+  // ★先に画面とボタンを表示してから記録（記録で失敗しても操作不能にならない）
   overScreen.classList.remove("hidden");
+  try{ sndOver(); }catch(e){}
+  try{ recordScore(); renderRanking("overRank"); renderRanking("startRank"); }catch(e){}
 }
 
 function endGame(){
@@ -2732,8 +2730,8 @@ function endGame(){
   $("finalScoreHi").textContent = sHi.toLocaleString();
   $("finalCombo").textContent = bestCombo;
   $("hiScoreVal").textContent = sHi.toLocaleString();
-  stopMusic(); sndLevel();
-  recordScore(); renderRanking("finalRank"); renderRanking("startRank");
+  try{ stopMusic(); sndLevel(); }catch(e){}
+  try{ recordScore(); renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
 
   let rank,cls,desc;
   if(totalPassed===TOTAL_CASES){rank="SS ・ 神整備士";cls="s";desc="全40症例パーフェクト！ウルトラ級まで完全制覇、開発者級の診断力です。";}
