@@ -363,7 +363,7 @@
 
 <div class="app">
   <header>
-    <div class="title"><span class="gear">⚙</span>整備士育成ゲーム<small>診断バトル</small><button id="soundBtn" class="sound-btn" title="効果音 ON/OFF">🔊</button></div>
+    <div class="title"><span class="gear">⚙</span>整備士育成ゲーム<small>診断バトル</small><button id="pauseBtn" class="sound-btn" title="中断してセーブ" style="display:none;">⏸</button><button id="soundBtn" class="sound-btn" title="効果音 ON/OFF">🔊</button></div>
     <div class="hud">
       <div class="cell"><div class="label">級・症例</div><div class="val" id="hudCase">- / 10</div></div>
       <div class="cell"><div class="label">残り時間</div><div class="val timer" id="hudTimer">60</div></div>
@@ -388,6 +388,7 @@
     </ul>
     <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
     <div id="startRank" class="rank-list"></div>
+    <button class="big-btn" id="resumeBtn" style="margin-top:16px;display:none;">▶ つづきから</button>
     <button class="big-btn" id="startBtn" style="margin-top:16px;">診断を開始する</button>
     <button class="ghost-btn" id="resetHiBtn">ハイスコアをリセット</button>
   </div>
@@ -3338,11 +3339,73 @@ function shuffle(arr){
 function getHi(){ return parseInt(localStorage.getItem(HI_KEY) || "0",10) || 0; }
 function setHi(v){ try{ localStorage.setItem(HI_KEY, String(v)); }catch(e){} }
 
+// ===== 出題のかぶり対策：直近に出した症例を覚えて、なるべく避ける =====
+const SEEN_KEY = "seibishi_recent_v1";
+const SEEN_CAP = 80;   // 直近この件数は記憶し、再出題を避ける（全115症例中）
+function getSeen(){ try{ return JSON.parse(localStorage.getItem(SEEN_KEY)||"[]")||[]; }catch(e){ return []; } }
+function setSeen(a){ try{ localStorage.setItem(SEEN_KEY, JSON.stringify(a)); }catch(e){} }
+// 級のプールから、最近出していない症例を優先してCASES_PER_TIER件を抽選
+function drawTier(name){
+  const pool = TIER_POOL[name];
+  const seen = new Set(getSeen());
+  const fresh = shuffle(pool.filter(id=>!seen.has(id)));   // 最近出ていない＝優先
+  const used  = shuffle(pool.filter(id=> seen.has(id)));   // 足りない分の補充用
+  const pick  = fresh.concat(used).slice(0, CASES_PER_TIER);
+  setSeen(pick.concat(getSeen()).slice(0, SEEN_CAP));      // 直近に出したIDを記録
+  return pick.map(id=>idIndex[id]);
+}
+
+// ===== セーブ／つづきから（進行状況の保存・再開） =====
+const SAVE_KEY = "seibishi_save_v1";
+function hasSave(){ try{ return !!JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); }catch(e){ return false; } }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} refreshResumeBtn(); }
+function saveGame(){
+  if(gameScreen.classList.contains("hidden")) return;   // プレイ中のみ保存
+  const data = { v:1, tierIdx, posInTier, lives, totalPassed, passedAtTierStart,
+    score, bestCombo, results, listIds: curList.map(ix=>cases[ix].id) };
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){}
+}
+function resumeGame(){
+  let d=null; try{ d=JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); }catch(e){}
+  if(!d){ refreshResumeBtn(); return; }
+  tierIdx=d.tierIdx||0; posInTier=d.posInTier||0; lives=(d.lives==null?MAX_LIVES:d.lives);
+  totalPassed=d.totalPassed||0; passedAtTierStart=d.passedAtTierStart||0;
+  score=d.score||0; combo=0; bestCombo=d.bestCombo||0; results=d.results||[];
+  curList=(d.listIds||[]).map(id=>idIndex[id]).filter(x=>x!=null);
+  if(!curList.length){ curList = drawTier(TIER_NAMES[tierIdx]); posInTier=0; }
+  updateScoreHud(); ensureAudio(); startMusic();
+  hideAllScreens(); gameScreen.classList.remove("hidden");
+  $("pauseBtn").style.display="";
+  loadCase();   // 中断した症例は最初のステップから再開
+}
+function pauseAndSave(){
+  if(gameScreen.classList.contains("hidden")) return;
+  pauseTimer(); saveGame(); stopMusic();
+  hideAllScreens(); startScreen.classList.remove("hidden");
+  $("pauseBtn").style.display="none";
+  refreshResumeBtn();
+  toast("ここまでをセーブしました。タイトルの「つづきから」で再開できます。");
+}
+function refreshResumeBtn(){
+  const rb=$("resumeBtn"), sb=$("startBtn");
+  if(rb) rb.style.display = hasSave() ? "" : "none";
+  if(sb) sb.textContent = hasSave() ? "はじめから（新規）" : "診断を開始する";
+}
+function toast(msg){
+  let t=$("toastMsg");
+  if(!t){ t=document.createElement("div"); t.id="toastMsg";
+    t.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#15171a;color:#fff;border:1px solid #ff7a18;padding:10px 16px;border-radius:10px;font-size:.85rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:90%;text-align:center;opacity:0;transition:opacity .25s;";
+    document.body.appendChild(t); }
+  t.textContent=msg; t.style.opacity="1";
+  clearTimeout(t._h); t._h=setTimeout(()=>{ t.style.opacity="0"; },2800);
+}
+
 function startGame(){
   tierIdx = 0; totalPassed = 0; results = [];
   score = 0; combo = 0; bestCombo = 0; updateScoreHud(); ensureAudio(); startMusic();
   hideAllScreens();
   gameScreen.classList.remove("hidden");
+  $("pauseBtn").style.display="";   // プレイ中は中断ボタンを表示
   startTier();
 }
 
@@ -3351,8 +3414,8 @@ function startTier(){
   posInTier = 0;
   lives = MAX_LIVES;
   passedAtTierStart = totalPassed;   // この級の開始時点を記録（級からのやり直し用）
-  // プールからランダムにCASES_PER_TIER件抽選＋シャッフル（毎回違う出題に）
-  curList = shuffle(TIER_POOL[TIER_NAMES[tierIdx]]).slice(0, CASES_PER_TIER).map(id=>idIndex[id]);
+  // 最近出していない症例を優先して抽選（毎回なるべく新しい出題に）
+  curList = drawTier(TIER_NAMES[tierIdx]);
   loadCase();
 }
 
@@ -3372,6 +3435,7 @@ function loadCase(){
   $("symptomText").textContent = curCase().symptom;
   renderScene(curCase());
   updateHud();
+  saveGame();        // 各症例の開始時点で自動セーブ（タブを閉じても再開できる）
   startTimer();      // 1症例60秒。タイマーは症例単位で開始し、ステップ間は継続する。
   renderStep();
 }
@@ -3622,7 +3686,8 @@ function continueNextTier(){
 }
 
 function gameOver(){
-  pauseTimer(); stopMusic();
+  pauseTimer(); stopMusic(); clearSave();
+  $("pauseBtn").style.display="none";
   hideAllScreens();
   const hi = Math.max(getHi(), totalPassed); setHi(hi);
   const sHi = Math.max(getScoreHi(), score); setScoreHi(sHi);
@@ -3650,7 +3715,8 @@ function gameOver(){
 }
 
 function endGame(){
-  pauseTimer();
+  pauseTimer(); clearSave();
+  $("pauseBtn").style.display="none";
   hideAllScreens();
   endScreen.classList.remove("hidden");
   $("progBar").style.width = "100%";
@@ -3837,7 +3903,12 @@ function escapeHtml(s){
 }
 
 // Wire up
-$("startBtn").addEventListener("click", startGame);
+$("startBtn").addEventListener("click", ()=>{
+  if(hasSave() && !confirm("保存中の続きがあります。最初から始めると上書きされます。よろしいですか？")) return;
+  startGame();
+});
+$("resumeBtn").addEventListener("click", resumeGame);
+$("pauseBtn").addEventListener("click", pauseAndSave);
 $("retryBtn").addEventListener("click", startGame);
 $("overTierBtn").addEventListener("click", retryTier);
 $("overRestartBtn").addEventListener("click", startGame);
@@ -3853,6 +3924,7 @@ $("hiScore").textContent = getHi();
 $("hiScoreVal").textContent = getScoreHi().toLocaleString();
 $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
 renderRanking("startRank");
+refreshResumeBtn();   // 保存データがあれば「つづきから」を表示
 </script>
 </body>
 </html>
