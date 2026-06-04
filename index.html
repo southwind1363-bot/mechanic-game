@@ -319,6 +319,17 @@
   .pop-tag{margin:2px 0 6px;font-weight:800;color:var(--text);font-size:1.02rem;}
   .pop-tag .em{color:var(--orange);}
   .pop-badges{display:flex;justify-content:center;gap:6px;margin-bottom:6px;font-size:1.4rem;animation:popIn .8s ease .2s both;}
+  /* ===== ハイスコアランキング ===== */
+  .rank-list{margin:8px 0;text-align:left;}
+  .rank-head{font-size:.72rem;color:var(--steel);letter-spacing:.08em;font-weight:800;margin-bottom:4px;text-align:center;}
+  .rank-row{display:flex;align-items:center;gap:6px;background:var(--panel-light);border:1px solid var(--line);border-radius:8px;padding:5px 8px;margin-bottom:4px;font-size:.82rem;}
+  .rank-row.me{border-color:var(--orange);background:rgba(255,122,24,.12);}
+  .rank-row .rk{flex:0 0 auto;width:18px;height:18px;border-radius:5px;background:var(--orange);color:#1a1c1f;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.72rem;}
+  .rank-row .rn{flex:1;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rank-row .rs{color:var(--orange);font-weight:900;}
+  .rank-row .rc{color:#ffd60a;font-size:.74rem;}
+  .rank-row .rd{color:var(--steel);font-size:.7rem;}
+  .rank-empty{font-size:.78rem;color:var(--steel);text-align:center;padding:6px;}
   /* 画面内に収める：背の低いビューポートでは要素を圧縮 */
   @media (max-height:760px){
     .scene{margin-bottom:8px;}
@@ -366,6 +377,7 @@
       <li>実務シミュレーション。最善手を選び続けろ</li>
     </ul>
     <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
+    <div id="startRank" class="rank-list"></div>
     <button class="big-btn" id="startBtn" style="margin-top:16px;">診断を開始する</button>
     <button class="ghost-btn" id="resetHiBtn">ハイスコアをリセット</button>
   </div>
@@ -542,6 +554,7 @@
     <p id="overDetail"></p>
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="overScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="overScoreHi">0</b></div>
     <div class="hi-row">到達 <b id="overReach">-</b> ・ 合格 <b id="overPassed">0</b> 症例</div>
+    <div id="overRank" class="rank-list"></div>
     <button class="big-btn" id="overTierBtn">この級からやり直す ▶</button>
     <button class="ghost-btn" id="overRestartBtn">最初(初級)からやり直す</button>
   </div>
@@ -559,6 +572,7 @@
     <p id="rankDesc"></p>
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="finalScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="finalScoreHi">0</b> ・ 最大コンボ <b id="finalCombo">0</b></div>
     <div class="hi-row">合格症例 <b id="finalScore">0</b> / 40 ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
+    <div id="finalRank" class="rank-list"></div>
     <div class="review-list" id="reviewList"></div>
     <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
   </div>
@@ -2341,6 +2355,36 @@ const SCORE_KEY = "seibishi_bestscore_v1";
 function getScoreHi(){ return parseInt(localStorage.getItem(SCORE_KEY)||"0",10)||0; }
 function setScoreHi(v){ try{ localStorage.setItem(SCORE_KEY,String(v)); }catch(e){} }
 function comboMult(){ return 1 + Math.min(Math.max(combo-1,0),9)*0.2; }   // x1.0〜x2.8
+// ハイスコアランキング（ローカル上位5）
+const RANK_KEY = "seibishi_ranking_v1";
+let lastRankedScore = -1;
+function getRanking(){ try{ return JSON.parse(localStorage.getItem(RANK_KEY)||"[]")||[]; }catch(e){ return []; } }
+function saveRanking(a){ try{ localStorage.setItem(RANK_KEY, JSON.stringify(a)); }catch(e){} }
+function recordScore(){
+  if(score<=0) return;
+  const list=getRanking();
+  const worst = list.length>=5 ? list[list.length-1].s : 0;
+  if(list.length>=5 && score<=worst) return;   // 上位5に入らなければ記録しない
+  let name=""; try{ name=(window.prompt("ランクイン！名前を入力（10文字まで）","")||"").slice(0,10).trim(); }catch(e){}
+  if(!name) name="NO NAME";
+  list.push({n:name, s:score, c:bestCombo, d:new Date().toLocaleDateString("ja-JP",{month:"2-digit",day:"2-digit"})});
+  list.sort((a,b)=>b.s-a.s);
+  saveRanking(list.slice(0,5));
+  lastRankedScore = score;
+}
+function renderRanking(elId){
+  const el=$(elId); if(!el) return;
+  const list=getRanking();
+  if(!list.length){ el.innerHTML='<div class="rank-empty">まだ記録なし。1位を狙え！</div>'; return; }
+  el.innerHTML='<div class="rank-head">🏅 ハイスコアランキング TOP5</div>'+list.map((r,i)=>
+    '<div class="rank-row'+(r.s===lastRankedScore?' me':'')+'">'+
+      '<span class="rk">'+(i+1)+'</span>'+
+      '<span class="rn">'+escapeHtml(r.n)+'</span>'+
+      '<span class="rs">'+r.s.toLocaleString()+'</span>'+
+      '<span class="rc">x'+r.c+'</span>'+
+      '<span class="rd">'+escapeHtml(r.d||"")+'</span>'+
+    '</div>').join('');
+}
 function curCase(){ return cases[curList[posInTier]]; }
 
 // Elements
@@ -2644,6 +2688,7 @@ function gameOver(){
   $("overScoreHi").textContent = sHi.toLocaleString();
   $("hiScoreVal").textContent = sHi.toLocaleString();
   stopMusic(); sndOver();
+  recordScore(); renderRanking("overRank"); renderRanking("startRank");
   $("overDetail").textContent = TIER_NAMES[tierIdx] + "でライフを使い切りました。やり直し方を選べます。";
   // 再挑戦の選択肢：到達級から or 最初から
   const tb=$("overTierBtn"), rb=$("overRestartBtn");
@@ -2680,6 +2725,7 @@ function endGame(){
   $("finalCombo").textContent = bestCombo;
   $("hiScoreVal").textContent = sHi.toLocaleString();
   stopMusic(); sndLevel();
+  recordScore(); renderRanking("finalRank"); renderRanking("startRank");
 
   let rank,cls,desc;
   if(totalPassed===TOTAL_CASES){rank="SS ・ 神整備士";cls="s";desc="全40症例パーフェクト！ウルトラ級まで完全制覇、開発者級の診断力です。";}
@@ -2825,13 +2871,14 @@ $("tierNextBtn").addEventListener("click", continueNextTier);
 $("nextBtn").addEventListener("click", nextStep);
 $("soundBtn").addEventListener("click", toggleSound);
 $("resetHiBtn").addEventListener("click", ()=>{
-  if(confirm("ハイスコアをリセットしますか？")){ setHi(0); setScoreHi(0); $("hiScore").textContent="0"; $("hiScoreVal").textContent="0"; }
+  if(confirm("ハイスコアとランキングをリセットしますか？")){ setHi(0); setScoreHi(0); saveRanking([]); $("hiScore").textContent="0"; $("hiScoreVal").textContent="0"; renderRanking("startRank"); }
 });
 
 // init
 $("hiScore").textContent = getHi();
 $("hiScoreVal").textContent = getScoreHi().toLocaleString();
 $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
+renderRanking("startRank");
 </script>
 </body>
 </html>
