@@ -305,11 +305,10 @@
   /* ===== ポップなタイトル ===== */
   .pop-title{font-size:2.4rem;font-weight:900;line-height:1.08;letter-spacing:.01em;margin:4px 0 2px;
     background:linear-gradient(120deg,#ffd60a,#ff7a18 45%,#ff3b6b);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
+    -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
     filter:drop-shadow(0 3px 0 rgba(0,0,0,.35)) drop-shadow(0 6px 14px rgba(255,122,24,.35));
     animation:popIn .6s cubic-bezier(.2,1.5,.4,1), titleFloat 3.2s ease-in-out .6s infinite;}
-  .pop-title .accent{-webkit-background-clip:text;background-clip:text;color:transparent;
-    background:linear-gradient(120deg,#5ad1ff,#23c552);}
+  .pop-title .accent{background:none;color:#37d0ff;-webkit-text-fill-color:#37d0ff;}
   @keyframes popIn{0%{opacity:0;transform:scale(.5) rotate(-7deg);}70%{transform:scale(1.09) rotate(2deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
   @keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   .pop-tag{margin:2px 0 6px;font-weight:800;color:var(--text);font-size:1.02rem;}
