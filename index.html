@@ -285,6 +285,8 @@
   @keyframes oyaIn{to{opacity:1;transform:translateY(0) scale(1);}}
   #oyakata .oya-face{width:66px;height:66px;flex:0 0 auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55));}
   #oyakata .oya-img{width:76px;height:76px;flex:0 0 auto;display:none;image-rendering:pixelated;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55));}
+  #oyakata .oya-name{display:block;color:var(--orange);font-size:.7rem;font-weight:900;margin-bottom:2px;}
+  #oyakata.angry .oya-name{color:var(--red);}
   #oyakata.angry.show .oya-face,#oyakata.angry.show .oya-img{animation:oyaShake .12s linear 6;}
   @keyframes oyaShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-2px,0) rotate(-4deg)}75%{transform:translate(2px,0) rotate(4deg)}}
   #oyakata .oya-bubble{position:relative;max-width:210px;background:#fff;color:#1a1c1f;border-radius:10px;padding:7px 11px;font-size:.82rem;font-weight:800;line-height:1.4;box-shadow:0 3px 8px rgba(0,0,0,.45);}
@@ -2757,20 +2759,49 @@ function animateNumber(el, target){
   const iv=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur;},25);
 }
 
-// 親方（誤答で怒る／正解で褒める）
-const OYA_ANGRY = ["コラッ！よう見んかい！","そこちゃうやろ！","基本がなっとらん！","手順を飛ばすな！","それやと客が泣くぞ！","もういっぺん考えんかい！","目ェ覚まさんかい！"];
-const OYA_HAPPY = ["ええぞ、その調子や！","よう見とる！","それでええ！","筋がええな！","上等や！"];
+// 親方ペット16人：解答後に症状の系統で出現（誤答＝その道の専門親方が叱る／正解＝ほめ系が褒める）
+const BOSS = {
+  1:{name:"ガンコ親方",  praise:"ふん、悪くない。",         scold:"馬鹿もーーん！よう見んかい！"},
+  2:{name:"ほめ親方",    praise:"よくやったな！",           scold:"惜しい！次は当てような。"},
+  3:{name:"説教親方",    praise:"原因を見抜いたな。",       scold:"原因を探せと言うとろうが！"},
+  4:{name:"職人親方",    praise:"現車をよう見たな。",       scold:"まず現車を見ろ！"},
+  5:{name:"電装親方",    praise:"配線を読めたな。",         scold:"配線図を見ろっ！"},
+  6:{name:"エンジン親方",praise:"エンジンを分かっとる。",   scold:"圧縮を測れと言うたろ！"},
+  7:{name:"診断機親方",  praise:"コードを使いこなしたな。", scold:"故障コードは症状じゃねぇ！"},
+  8:{name:"車検親方",    praise:"基準を押さえたな。",       scold:"基準を忘れるな！"},
+  9:{name:"板金親方",    praise:"仕上げが分かっとる。",     scold:"見た目も仕事だぞ！"},
+  10:{name:"パーツ親方", praise:"交換の前に考えたな。",     scold:"部品は最後の手段だ！"},
+  11:{name:"若手好き親方",praise:"成長したな！",            scold:"まだ伸びる、もう一回！"},
+  12:{name:"無口親方",   praise:"……（頷く）",              scold:"……（首を振る）"},
+  13:{name:"昭和親方",   praise:"根性見せたな！",           scold:"気合が足らん！根性だ！"},
+  14:{name:"工具親方",   praise:"工具を活かしたな。",       scold:"工具は命だぞ！"},
+  15:{name:"クール親方", praise:"余計がないな。",           scold:"余計なことをするな。"},
+  16:{name:"感動親方",   praise:"お前…やるな…！",          scold:"惜しい…次だ…！"}
+};
+const HAPPY_BOSS = [2,11,16];   // 正解時はほめ系から
+function bossForCase(c){
+  const t=(c?c.symptom:"")+" "+(c&&c.steps&&c.steps[0]?c.steps[0].question:"");
+  if(/コード|P0\d|EVAP|CAN|故障コード|ABS|横滑り|センサー|診断/.test(t)) return 7;
+  if(/バッテリー|ヘッドライト|ウインカー|室内灯|ホーン|ミラー|ウォッシャー|熱線|スマートキー|配線|電装|チラつ|充電|ハイブリッド|高電圧|パワステ|バックランプ|ブレーキランプ|半ドア/.test(t)) return 5;
+  if(/エンジン|失火|オイル|煙|ノッキング|アイドル|EGR|VVT|カム|圧縮|エンスト|止まる|始動|過給|ターボ|燃費|燃料|DPF|触媒|水温|オーバーヒート|冷却|ヒーター|エアコン/.test(t)) return 6;
+  if(/車検|基準|法令/.test(t)) return 8;
+  if(/板金|塗装|へこみ|キズ/.test(t)) return 9;
+  if(/AT|CVT|変速|シフト|クラッチ/.test(t)) return 6;
+  if(/タイヤ|空気圧|アライメント|ハンドル|ステア|段差|振動|ブレーキ|ペダル|ローター|パッド|異音|ドライブシャフト|ベルト|ホイール/.test(t)) return 4;
+  return [1,3,12,15][(c?c.id:1)%4];   // 未マッチはガンコ/説教/無口/クールを症例ごとに固定割当
+}
 function showOyakata(correct){
   const o=$("oyakata"); if(!o) return;
-  const list = correct ? OYA_HAPPY : OYA_ANGRY;
-  $("oyaBubble").textContent = list[Math.floor(Math.random()*list.length)];
+  const id = correct ? HAPPY_BOSS[Math.floor(Math.random()*HAPPY_BOSS.length)] : bossForCase(curCase());
+  const b = BOSS[id] || {name:"親方",praise:"ええぞ！",scold:"よう見んかい！"};
+  $("oyaBubble").innerHTML = '<b class="oya-name">'+b.name+'</b>'+escapeHtml(correct?b.praise:b.scold);
   o.classList.remove("show","angry","happy"); void o.offsetWidth;
   o.classList.add("show", correct?"happy":"angry");
   const oimg=$("oyaImg"), oface=o.querySelector(".oya-face");
   if(oimg&&oface){
     oimg.onload=()=>{ oimg.style.display="block"; oface.style.display="none"; };
     oimg.onerror=()=>{ oimg.style.display="none"; oface.style.display=""; };
-    oimg.src = correct ? "oya/happy.png" : "oya/angry.png";
+    oimg.src = "oya/"+id+".png";
   }
   clearTimeout(oyaTimer);
   oyaTimer = setTimeout(()=>o.classList.remove("show"), 2400);
