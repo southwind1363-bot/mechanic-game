@@ -302,6 +302,19 @@
   .app.shake{animation:appShake .32s ease;}
   @keyframes appShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   @media (prefers-reduced-motion: reduce){.floatfx{animation:none!important;opacity:1;} .app.shake{animation:none!important;}}
+  /* ===== ポップなタイトル ===== */
+  .pop-title{font-size:2.4rem;font-weight:900;line-height:1.08;letter-spacing:.01em;margin:4px 0 2px;
+    background:linear-gradient(120deg,#ffd60a,#ff7a18 45%,#ff3b6b);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 3px 0 rgba(0,0,0,.35)) drop-shadow(0 6px 14px rgba(255,122,24,.35));
+    animation:popIn .6s cubic-bezier(.2,1.5,.4,1), titleFloat 3.2s ease-in-out .6s infinite;}
+  .pop-title .accent{-webkit-background-clip:text;background-clip:text;color:transparent;
+    background:linear-gradient(120deg,#5ad1ff,#23c552);}
+  @keyframes popIn{0%{opacity:0;transform:scale(.5) rotate(-7deg);}70%{transform:scale(1.09) rotate(2deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+  @keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .pop-tag{margin:2px 0 6px;font-weight:800;color:var(--text);font-size:1.02rem;}
+  .pop-tag .em{color:var(--orange);}
+  .pop-badges{display:flex;justify-content:center;gap:6px;margin-bottom:6px;font-size:1.4rem;animation:popIn .8s ease .2s both;}
   .hidden{display:none !important;}
   footer{text-align:center;color:#5b626b;font-size:.68rem;padding:4px 0 8px;}
 </style>
@@ -324,8 +337,10 @@
 
   <!-- Start screen -->
   <div class="card center-screen" id="startScreen">
-    <h1><span class="gear">⚙</span> 整備士育成シミュレーター</h1>
-    <p>症状から原因を段階的に特定する、実務型の診断トレーニング。<br>初心者からプロまで、本物の整備士の思考を体験しよう。</p>
+    <div class="pop-badges">🔧 🚗 💨</div>
+    <div class="pop-title">整備士<span class="accent">育成</span>ゲーム</div>
+    <div class="pop-tag">めざせ！<span class="em">スゴ腕メカニック</span> 🏆</div>
+    <p>症状から原因を見抜く、実務型の診断バトル。<br>スコア＆コンボを稼いで、初級からウルトラ級まで駆け上がれ！</p>
     <ul class="rules">
       <li><b>初級→中級→上級→ウルトラ級</b>の順に昇級。各級<b>10症例</b></li>
       <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
@@ -2328,7 +2343,7 @@ function setHi(v){ try{ localStorage.setItem(HI_KEY, String(v)); }catch(e){} }
 
 function startGame(){
   tierIdx = 0; totalPassed = 0; results = [];
-  score = 0; combo = 0; bestCombo = 0; updateScoreHud(); ensureAudio();
+  score = 0; combo = 0; bestCombo = 0; updateScoreHud(); ensureAudio(); startMusic();
   hideAllScreens();
   gameScreen.classList.remove("hidden");
   startTier();
@@ -2610,7 +2625,7 @@ function gameOver(){
   $("overScoreVal").textContent = score.toLocaleString();
   $("overScoreHi").textContent = sHi.toLocaleString();
   $("hiScoreVal").textContent = sHi.toLocaleString();
-  sndOver();
+  stopMusic(); sndOver();
   $("overDetail").textContent = TIER_NAMES[tierIdx] + "でライフを使い切りました。やり直し方を選べます。";
   // 再挑戦の選択肢：到達級から or 最初から
   const tb=$("overTierBtn"), rb=$("overRestartBtn");
@@ -2646,7 +2661,7 @@ function endGame(){
   $("finalScoreHi").textContent = sHi.toLocaleString();
   $("finalCombo").textContent = bestCombo;
   $("hiScoreVal").textContent = sHi.toLocaleString();
-  sndLevel();
+  stopMusic(); sndLevel();
 
   let rank,cls,desc;
   if(totalPassed===TOTAL_CASES){rank="SS ・ 神整備士";cls="s";desc="全40症例パーフェクト！ウルトラ級まで完全制覇、開発者級の診断力です。";}
@@ -2713,8 +2728,32 @@ function toggleSound(){
   soundOn=!soundOn;
   try{ localStorage.setItem("seibishi_sound_off", soundOn?"0":"1"); }catch(e){}
   $("soundBtn").textContent = soundOn?"🔊":"🔇";
-  if(soundOn){ ensureAudio(); beep(880,0.08,"triangle",0.15); }
+  if(soundOn){ ensureAudio(); beep(880,0.08,"triangle",0.15); if(gameScreen && !gameScreen.classList.contains("hidden")) startMusic(); }
+  else { stopMusic(); }
 }
+
+// ===== BGM（WebAudioでループ生成・オフライン） =====
+let musicTimer=null, musicStep=0;
+const MUS_MEL =[523,659,784,659,587,659,784,880, 440,523,659,523,494,587,659,587, 349,440,523,659,587,523,440,392, 392,494,587,784,659,587,494,392];
+const MUS_BASS=[131,0,196,0,165,0,196,0, 110,0,165,0,147,0,165,0, 87,0,131,0,110,0,131,0, 98,0,147,0,123,0,98,0];
+function musNote(freq,dur,vol,type){
+  if(!soundOn||!freq) return; const a=ensureAudio(); if(!a) return;
+  const t=a.currentTime; const o=a.createOscillator(), g=a.createGain();
+  o.type=type||"triangle"; o.frequency.setValueAtTime(freq,t);
+  o.connect(g); g.connect(a.destination);
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.03);
+}
+function startMusic(){
+  if(musicTimer || !soundOn) return; ensureAudio(); musicStep=0;
+  musicTimer=setInterval(()=>{
+    const i=musicStep%MUS_MEL.length;
+    musNote(MUS_MEL[i],0.16,0.045,"triangle");
+    if(MUS_BASS[i]) musNote(MUS_BASS[i],0.2,0.06,"sine");
+    musicStep++;
+  }, 165);
+}
+function stopMusic(){ if(musicTimer){ clearInterval(musicTimer); musicTimer=null; } }
 
 // ===== ジューシー演出 =====
 function floatText(txt,cls){
