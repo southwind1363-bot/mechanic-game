@@ -353,6 +353,36 @@
     .next-btn{padding:11px;margin-top:8px;}
     .card{padding:12px;}
   }
+  /* ===== ゲーム性UI（工賃/ヒート/道具/イベント/ショップ） ===== */
+  .sb-wage{margin-left:auto;font-weight:800;color:#ffd60a;font-size:.9rem;display:inline-flex;align-items:center;gap:2px;}
+  .sb-wage b{color:#ffe27a;}
+  .heat-wrap{position:relative;width:84px;height:13px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#15171a;margin-left:8px;flex:0 0 auto;}
+  .heat-wrap i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ff8a3c,#ffd60a);transition:width .25s;}
+  .heat-wrap span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.56rem;font-weight:900;color:#fff;letter-spacing:.05em;text-shadow:0 1px 1px #000;}
+  .case-banner{margin:6px 0 2px;padding:7px 10px;border-radius:9px;font-weight:800;font-size:.86rem;text-align:center;border:1px solid var(--line);}
+  .case-banner.urgent{background:rgba(255,80,80,.16);border-color:#ff5a5a;color:#ffb3b3;}
+  .case-banner.hard{background:rgba(255,122,24,.16);border-color:#ff7a18;color:#ffc98a;}
+  .case-banner.watch{background:rgba(70,160,255,.16);border-color:#46a0ff;color:#bcdcff;}
+  .case-banner.boss{background:linear-gradient(90deg,rgba(180,40,40,.32),rgba(120,20,80,.32));border-color:#ff4d6d;color:#ffd0da;animation:bossPulse 1s ease infinite;}
+  @keyframes bossPulse{0%,100%{box-shadow:0 0 0 rgba(255,77,109,0);}50%{box-shadow:0 0 14px rgba(255,77,109,.6);}}
+  .tools{display:flex;gap:6px;margin:0 0 8px;}
+  .tool{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:7px 4px;border-radius:9px;border:1px solid var(--line);background:var(--panel-light);color:var(--text);font-size:.78rem;font-weight:800;cursor:pointer;transition:.15s;}
+  .tool:hover:not(:disabled){border-color:var(--orange);transform:translateY(-1px);}
+  .tool:disabled{opacity:.38;cursor:not-allowed;}
+  .tool small{background:#15171a;border-radius:6px;padding:0 5px;font-size:.72rem;color:#ffd60a;}
+  .choice.removed{opacity:.22;text-decoration:line-through;pointer-events:none;}
+  .app.fever{animation:feverbg 1.2s linear infinite;}
+  @keyframes feverbg{0%,100%{box-shadow:inset 0 0 0 rgba(255,122,24,0);}50%{box-shadow:inset 0 0 70px rgba(255,122,24,.28);}}
+  .floatfx.fever{color:#ffd60a;font-size:1.6rem;}
+  .floatfx.wage{color:#ffe27a;}
+  .shop{margin:10px 0;text-align:left;}
+  .shop-head{font-size:.84rem;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px;}
+  .shop-head b{color:#ffd60a;}
+  .shop-items{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .shop-item{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--panel-light);color:var(--text);font-size:.8rem;font-weight:800;cursor:pointer;}
+  .shop-item:hover:not(:disabled){border-color:var(--orange);}
+  .shop-item:disabled{opacity:.4;cursor:not-allowed;}
+  .shop-item .price{color:#ffd60a;font-size:.78rem;white-space:nowrap;}
   .hidden{display:none !important;}
   footer{text-align:center;color:#5b626b;font-size:.68rem;padding:4px 0 8px;}
 </style>
@@ -370,7 +400,7 @@
       <div class="cell"><div class="label">ライフ</div><div class="val lives" id="hudLives">❤❤❤</div></div>
     </div>
     <div class="progress"><i id="progBar"></i></div>
-    <div class="scorebar"><span class="sb-lbl">SCORE</span><span id="scoreVal">0</span><span id="comboTag" class="combo-tag"></span></div>
+    <div class="scorebar"><span class="sb-lbl">SCORE</span><span id="scoreVal">0</span><span id="comboTag" class="combo-tag"></span><span class="sb-wage" title="工賃（ショップで使える）">🔧<b id="wageVal">0</b></span><div class="heat-wrap" title="ヒート：連続正解でフィーバー（スコア2倍）"><i id="heatBar"></i><span id="heatLbl">HEAT</span></div></div>
   </header>
 
   <!-- Start screen -->
@@ -384,7 +414,8 @@
       <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
       <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
       <li>ライフが尽きると<b>ゲームオーバー</b></li>
-      <li>実務シミュレーション。最善手を選び続けろ</li>
+      <li>🔧道具(テスター/ヒント/時間)・🔥連続正解でフィーバー(2倍)</li>
+      <li>🛒工賃でショップ購入・🚑急患/👹ボス症例で高得点を狙え</li>
     </ul>
     <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
     <div id="startRank" class="rank-list"></div>
@@ -510,8 +541,14 @@
       <div class="cap">▼ 症状</div>
       <div class="txt" id="symptomText"></div>
     </div>
+    <div id="caseBanner" class="case-banner hidden"></div>
     <div class="step-meta" id="stepMeta"></div>
     <div class="question" id="questionText"></div>
+    <div class="tools" id="toolBar">
+      <button class="tool" id="toolTester" title="2択に絞る">🔧テスター<small id="cTester">0</small></button>
+      <button class="tool" id="toolHint" title="誤答を1つ消す">💡ヒント<small id="cHint">0</small></button>
+      <button class="tool" id="toolTime" title="制限時間+20秒">⏱+20秒<small id="cTime">0</small></button>
+    </div>
     <div class="choices" id="choices"></div>
     <div class="result" id="resultBox">
       <div class="head" id="resultHead"></div>
@@ -554,6 +591,15 @@
     <h1 id="promoteTitle">初級クリア！</h1>
     <p id="promoteDesc"></p>
     <div class="hi-row" id="promoteStat"></div>
+    <div class="shop" id="shopBox">
+      <div class="shop-head">🛒 ピットショップ ・ 工賃 <b id="shopWage">0</b></div>
+      <div class="shop-items">
+        <button class="shop-item" data-buy="life">❤ 次の級 ライフ+1<span class="price">120</span></button>
+        <button class="shop-item" data-buy="tester">🔧 テスター<span class="price">80</span></button>
+        <button class="shop-item" data-buy="hint">💡 ヒント<span class="price">60</span></button>
+        <button class="shop-item" data-buy="time">⏱ 時間+20<span class="price">60</span></button>
+      </div>
+    </div>
     <button class="big-btn" id="tierNextBtn">次の級へ挑む ▶</button>
   </div>
 
@@ -3746,6 +3792,10 @@ let timer = null;
 let timeLeft = TIME_LIMIT;
 // アーケード要素
 let score = 0, combo = 0, bestCombo = 0, stepStart = 0;
+// ゲーム性：工賃/ヒート/フィーバー/道具/イベント・ボス
+let wage = 0, heat = 0, feverLeft = 0, extraLivesNextTier = 0;
+let items = { tester:1, hint:1, time:1 };
+let caseMod = null, isBoss = false, caseScoreMult = 1, caseWageMult = 1, caseTimeLimit = TIME_LIMIT;
 let soundOn = (localStorage.getItem("seibishi_sound_off") !== "1");
 const SCORE_KEY = "seibishi_bestscore_v1";
 function getScoreHi(){ return parseInt(localStorage.getItem(SCORE_KEY)||"0",10)||0; }
@@ -3821,8 +3871,9 @@ function hasSave(){ try{ return !!JSON.parse(localStorage.getItem(SAVE_KEY)||"nu
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} refreshResumeBtn(); }
 function saveGame(){
   if(gameScreen.classList.contains("hidden")) return;   // プレイ中のみ保存
-  const data = { v:1, tierIdx, posInTier, lives, totalPassed, passedAtTierStart,
-    score, bestCombo, results, listIds: curList.map(ix=>cases[ix].id) };
+  const data = { v:2, tierIdx, posInTier, lives, totalPassed, passedAtTierStart,
+    score, bestCombo, results, listIds: curList.map(ix=>cases[ix].id),
+    wage, heat, items, extraLivesNextTier };
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){}
 }
 function resumeGame(){
@@ -3831,9 +3882,11 @@ function resumeGame(){
   tierIdx=d.tierIdx||0; posInTier=d.posInTier||0; lives=(d.lives==null?MAX_LIVES:d.lives);
   totalPassed=d.totalPassed||0; passedAtTierStart=d.passedAtTierStart||0;
   score=d.score||0; combo=0; bestCombo=d.bestCombo||0; results=d.results||[];
+  wage=d.wage||0; heat=d.heat||0; feverLeft=0; extraLivesNextTier=d.extraLivesNextTier||0;
+  items=Object.assign({tester:0,hint:0,time:0}, d.items||{tester:1,hint:1,time:1});
   curList=(d.listIds||[]).map(id=>idIndex[id]).filter(x=>x!=null);
   if(!curList.length){ curList = drawTier(TIER_NAMES[tierIdx]); posInTier=0; }
-  updateScoreHud(); ensureAudio(); startMusic();
+  endFever(); updateScoreHud(); renderWage(); renderHeat(); ensureAudio(); startMusic();
   hideAllScreens(); gameScreen.classList.remove("hidden");
   $("pauseBtn").style.display="";
   loadCase();   // 中断した症例は最初のステップから再開
@@ -3862,7 +3915,10 @@ function toast(msg){
 
 function startGame(){
   tierIdx = 0; totalPassed = 0; results = [];
-  score = 0; combo = 0; bestCombo = 0; updateScoreHud(); ensureAudio(); startMusic();
+  score = 0; combo = 0; bestCombo = 0;
+  wage = 0; heat = 0; extraLivesNextTier = 0; items = { tester:1, hint:1, time:1 };
+  endFever(); updateScoreHud(); renderWage(); renderHeat();
+  ensureAudio(); startMusic();
   hideAllScreens();
   gameScreen.classList.remove("hidden");
   $("pauseBtn").style.display="";   // プレイ中は中断ボタンを表示
@@ -3872,7 +3928,8 @@ function startGame(){
 // 級の開始（ライフは級ごとにリセット）
 function startTier(){
   posInTier = 0;
-  lives = MAX_LIVES;
+  lives = Math.min(MAX_LIVES+2, MAX_LIVES + extraLivesNextTier);   // ショップ購入分を上乗せ
+  extraLivesNextTier = 0;
   passedAtTierStart = totalPassed;   // この級の開始時点を記録（級からのやり直し用）
   // 最近出していない症例を優先して抽選（毎回なるべく新しい出題に）
   curList = drawTier(TIER_NAMES[tierIdx]);
@@ -3892,11 +3949,12 @@ function loadCase(){
   caseFailed = false;
   caseTimedOut = false;
   pendingGameOver = false;
+  rollCaseMods();    // 急患/難症例/見守り/ボスを決定（制限時間・配点に反映）
   $("symptomText").textContent = curCase().symptom;
   renderScene(curCase());
-  updateHud();
+  updateHud(); renderWage(); renderHeat();
   saveGame();        // 各症例の開始時点で自動セーブ（タブを閉じても再開できる）
-  startTimer();      // 1症例60秒。タイマーは症例単位で開始し、ステップ間は継続する。
+  startTimer();      // 症例ごとに開始（通常60秒/急患40秒）。ステップ間は継続する。
   renderStep();
 }
 
@@ -3984,13 +4042,14 @@ function renderScene(c){
 
 function startTimer(){
   clearInterval(timer);
-  timeLeft = TIME_LIMIT;
+  timeLeft = caseTimeLimit || TIME_LIMIT;
   renderTimer();
   timer = setInterval(tick,1000);
 }
 function tick(){
   timeLeft--;
   renderTimer();
+  if(feverLeft>0){ feverLeft--; if(feverLeft<=0) endFever(); else renderHeat(); }
   if(timeLeft<=0){ clearInterval(timer); onTimeOut(); }
 }
 function pauseTimer(){ clearInterval(timer); }
@@ -4024,11 +4083,14 @@ function renderStep(){
 
   const rb = $("resultBox"); rb.classList.remove("show","ok","ng");
   $("nextBtn").classList.remove("show");
+  renderTools();
+  if(caseMod==="watch" && !caseFreeHintUsed){ removeWrong(1); caseFreeHintUsed=true; }   // 見守り：最初のヒント無料
 }
 
 function chooseAnswer(i){
   if(answered) return;
   answered = true;
+  renderTools();
   pauseTimer();
 
   const c = curCase();
@@ -4069,6 +4131,7 @@ function chooseAnswer(i){
 function onTimeOut(){
   if(answered) return;
   answered = true;
+  renderTools();
   caseFailed = true;
   caseTimedOut = true;   // 持ち時間を使い切ったので、この症例は終了（残ステップへは進ませない）
   loseLife();
@@ -4116,7 +4179,15 @@ function finishCase(){
   pauseTimer();
   const c = curCase();
   const passed = !caseFailed;
-  if(passed){ totalPassed++; score+=300; updateScoreHud(); floatText("PERFECT!  +300","perfect"); sndLevel(); }
+  if(passed){
+    totalPassed++;
+    const fev = feverLeft>0 ? 2 : 1;
+    const perfect = Math.round(300*caseScoreMult*fev);
+    score+=perfect; updateScoreHud(); floatText("PERFECT!  +"+perfect,"perfect"); sndLevel();
+  }
+  // 工賃を獲得（クリアで多め・ボスや難症例・急患で割増）
+  const earn = Math.round((passed?60:15)*caseWageMult) + (isBoss&&passed?80:0);
+  wage += earn; renderWage(); floatText("🔧工賃 +"+earn,"wage");
   results.push({symptom:c.symptom, passed:passed, tier:TIER_NAMES[tierIdx]});
 
   posInTier++;
@@ -4137,6 +4208,7 @@ function tierCleared(){
   $("promoteTitle").textContent = cleared + "クリア！";
   $("promoteDesc").innerHTML = "<b>"+next+"</b>に昇級します。ライフは3に回復。<br>難易度が上がります、気を引き締めて。";
   $("promoteStat").innerHTML = "ここまでの合格 <b>"+totalPassed+"</b> / "+TOTAL_CASES+" 症例";
+  renderShop();   // ピットショップ：工賃でライフ/道具を購入
   tierScreen.classList.remove("hidden");
 }
 
@@ -4345,13 +4417,95 @@ function scoreCorrect(){
   const secs=(Date.now()-stepStart)/1000;
   const speed=Math.max(0, Math.round(12-secs))*10;   // 速答ボーナス 0〜120
   combo++; bestCombo=Math.max(bestCombo,combo);
-  const gained=Math.round((100+speed)*comboMult());
+  heat=Math.min(HEAT_MAX,heat+1);
+  const fev = feverLeft>0 ? 2 : 1;                   // フィーバー中はスコア2倍
+  const gained=Math.round((100+speed)*comboMult()*fev*caseScoreMult);
   score+=gained; updateScoreHud();
-  floatText("+"+gained+(combo>=2?"  x"+comboMult().toFixed(1):""),"pop");
+  floatText("+"+gained+(fev>1?" 🔥":"")+(combo>=2?"  x"+comboMult().toFixed(1):""),"pop");
   sndCorrect(); if(combo>=3) sndCombo(combo);
+  if(heat>=HEAT_MAX && feverLeft<=0) startFever(); else renderHeat();
   if(combo%5===0 && lives<MAX_LIVES){ lives++; renderLives(); floatText("❤ +1","lifeup"); sndLevel(); }
 }
-function scoreWrong(){ combo=0; updateScoreHud(); shakeScreen(); sndWrong(); }
+function scoreWrong(){ combo=0; heat=0; if(feverLeft>0) endFever(); else renderHeat(); updateScoreHud(); shakeScreen(); sndWrong(); }
+
+// ===== ゲーム性：道具(ライフライン)・ヒート/フィーバー・イベント/ボス・ショップ =====
+const HEAT_MAX = 6;
+const PRICES = { life:120, tester:80, hint:60, time:60 };
+
+function renderWage(){ const e=$("wageVal"); if(e) e.textContent = wage; }
+function renderHeat(){
+  const bar=$("heatBar"), lbl=$("heatLbl"); if(!bar) return;
+  bar.style.width = Math.min(100, heat/HEAT_MAX*100) + "%";
+  if(lbl) lbl.textContent = feverLeft>0 ? ("FEVER "+feverLeft) : "HEAT";
+}
+function renderTools(){
+  if($("cTester")) $("cTester").textContent=items.tester;
+  if($("cHint"))   $("cHint").textContent=items.hint;
+  if($("cTime"))   $("cTime").textContent=items.time;
+  const lock = answered;
+  if($("toolTester")) $("toolTester").disabled = lock || items.tester<=0;
+  if($("toolHint"))   $("toolHint").disabled   = lock || items.hint<=0;
+  if($("toolTime"))   $("toolTime").disabled   = lock || items.time<=0;
+}
+function remainingWrongBtns(){
+  const btns=[...$("choices").querySelectorAll(".choice")];
+  return btns.filter((b,i)=> currentChoices[i] && !currentChoices[i].correct && !b.classList.contains("removed"));
+}
+function removeWrong(n){ shuffle(remainingWrongBtns()).slice(0,n).forEach(b=>{ b.classList.add("removed"); b.disabled=true; }); }
+function useTester(){ if(answered||items.tester<=0) return; items.tester--; removeWrong(2); renderTools(); floatText("🔧 2択に絞った","pop"); beep(720,0.08,"square",0.14); }
+function useHint(){ if(answered||items.hint<=0) return; items.hint--; removeWrong(1); renderTools(); floatText("💡 1つ消した","pop"); beep(640,0.08,"square",0.13); }
+function useTime(){ if(answered||items.time<=0) return; items.time--; timeLeft+=20; renderTimer(); renderTools(); floatText("⏱ +20秒","lifeup"); beep(880,0.1,"triangle",0.15); }
+
+function startFever(){
+  feverLeft=18; heat=0;
+  const app=document.querySelector(".app"); if(app) app.classList.add("fever");
+  floatText("🔥FEVER!! スコア2倍","fever"); shakeScreen();
+  [784,988,1175].forEach((f,i)=>beep(f,0.14,"triangle",0.2,i*0.07));
+  renderHeat();
+}
+function endFever(){ feverLeft=0; const app=document.querySelector(".app"); if(app) app.classList.remove("fever"); renderHeat(); }
+
+let caseFreeHintUsed=false;
+function rollCaseMods(){
+  isBoss = (posInTier === CASES_PER_TIER-1);
+  caseScoreMult=1; caseWageMult=1; caseTimeLimit=TIME_LIMIT; caseMod=null; caseFreeHintUsed=false;
+  if(isBoss){
+    caseScoreMult=2; caseWageMult=2;
+  } else {
+    const r=Math.random();
+    if(r<0.18){ caseMod="urgent"; caseTimeLimit=40; caseScoreMult=1.3; caseWageMult=1.5; }
+    else if(r<0.36){ caseMod="hard"; caseScoreMult=2; caseWageMult=1.5; }
+    else if(r<0.50){ caseMod="watch"; }
+  }
+  showCaseBanner();
+}
+function showCaseBanner(){
+  const el=$("caseBanner"); if(!el) return;
+  el.className="case-banner";
+  let txt="";
+  if(isBoss){ const b=BOSS[bossForCase(curCase())]||{name:"親方"}; el.classList.add("boss"); txt="👹 ボス症例！配点2倍 ・ "+b.name+"が見ている"; }
+  else if(caseMod==="urgent"){ el.classList.add("urgent"); txt="🚑 急患！制限40秒・報酬アップ"; }
+  else if(caseMod==="hard"){ el.classList.add("hard"); txt="🔥 難症例！配点2倍"; }
+  else if(caseMod==="watch"){ el.classList.add("watch"); txt="👀 親方の見守り：最初のヒントが無料"; }
+  else { el.classList.add("hidden"); el.textContent=""; return; }
+  el.textContent=txt;
+}
+
+// ショップ（級クリア画面）
+function renderShop(){
+  const w=$("shopWage"); if(w) w.textContent=wage;
+  document.querySelectorAll(".shop-item").forEach(b=>{
+    const k=b.dataset.buy, p=PRICES[k];
+    b.disabled = wage<p || (k==="life" && extraLivesNextTier>=2);
+  });
+}
+function buyItem(k){
+  const p=PRICES[k]; if(wage<p) return;
+  if(k==="life"){ if(extraLivesNextTier>=2) return; extraLivesNextTier++; }
+  else { items[k]=(items[k]||0)+1; }
+  wage-=p; renderShop(); renderWage();
+  floatText("🛒 購入","wage"); beep(660,0.09,"triangle",0.16);
+}
 
 function doFlash(ok){
   flash.className = ""; void flash.offsetWidth;
@@ -4377,6 +4531,10 @@ $("overRestartBtn").addEventListener("click", startGame);
 $("tierNextBtn").addEventListener("click", continueNextTier);
 $("nextBtn").addEventListener("click", nextStep);
 $("soundBtn").addEventListener("click", toggleSound);
+$("toolTester").addEventListener("click", useTester);
+$("toolHint").addEventListener("click", useHint);
+$("toolTime").addEventListener("click", useTime);
+document.querySelectorAll(".shop-item").forEach(b=>b.addEventListener("click", ()=>buyItem(b.dataset.buy)));
 $("resetHiBtn").addEventListener("click", ()=>{
   if(confirm("ハイスコアとランキングをリセットしますか？")){ setHi(0); setScoreHi(0); saveRanking([]); $("hiScore").textContent="0"; $("hiScoreVal").textContent="0"; renderRanking("startRank"); }
 });
