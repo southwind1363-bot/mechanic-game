@@ -279,6 +279,10 @@
   .tier-badges span{font-size:.78rem;padding:4px 10px;border-radius:20px;border:1px solid var(--line);color:var(--steel);}
   .tier-badges span.done{background:rgba(35,197,82,.15);border-color:var(--green);color:var(--green);}
   .tier-badges span.now{background:rgba(255,122,24,.15);border-color:var(--orange);color:var(--orange);}
+  .tier-pick-label{font-size:.74rem;color:var(--steel);margin:10px 0 4px;}
+  .tier-badges.pick span{cursor:pointer;user-select:none;transition:.12s;font-weight:700;}
+  .tier-badges.pick span:hover{border-color:var(--orange);}
+  .tier-badges.pick span.sel{background:var(--orange);border-color:var(--orange);color:#1a1c1f;font-weight:900;}
   /* ===== 親方（誤答で怒る／正解で褒める） ===== */
   #oyakata{position:fixed;left:12px;bottom:16px;z-index:60;display:flex;align-items:flex-end;gap:8px;opacity:0;transform:translateY(24px) scale(.85);pointer-events:none;}
   #oyakata.show{animation:oyaIn .34s cubic-bezier(.2,1.3,.4,1) forwards;}
@@ -408,9 +412,9 @@
     <div class="pop-badges">🔧 🚗 💨</div>
     <div class="pop-title">整備士<span class="accent">育成</span>ゲーム</div>
     <div class="pop-tag">めざせ！<span class="em">スゴ腕メカニック</span> 🏆</div>
-    <p>症状から原因を見抜く、実務型の診断バトル。<br>スコア＆コンボを稼いで、初級からウルトラ級まで駆け上がれ！</p>
+    <p>症状から原因を見抜く、実務型の診断バトル。<br>スコア＆コンボを稼いで、見習いから親方級まで駆け上がれ！</p>
     <ul class="rules">
-      <li><b>初級→中級→上級→ウルトラ級</b>の順に昇級。各級<b>10症例</b></li>
+      <li><b>見習い→一人前→整備主任→親方級</b>の順に昇格。各級<b>10症例</b></li>
       <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
       <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
       <li>ライフが尽きると<b>ゲームオーバー</b></li>
@@ -419,6 +423,8 @@
     </ul>
     <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
     <div id="startRank" class="rank-list"></div>
+    <div class="tier-pick-label">▼ どの級から始める？（上ほど難しい）</div>
+    <div class="tier-badges pick" id="tierBadges"></div>
     <button class="big-btn" id="resumeBtn" style="margin-top:16px;display:none;">▶ つづきから</button>
     <button class="big-btn" id="startBtn" style="margin-top:16px;">診断を開始する</button>
     <button class="ghost-btn" id="resetHiBtn">ハイスコアをリセット</button>
@@ -613,7 +619,7 @@
     <div class="hi-row">到達 <b id="overReach">-</b> ・ 合格 <b id="overPassed">0</b> 症例</div>
     <div id="overRank" class="rank-list"></div>
     <button class="big-btn" id="overTierBtn">この級からやり直す ▶</button>
-    <button class="ghost-btn" id="overRestartBtn">最初(初級)からやり直す</button>
+    <button class="ghost-btn" id="overRestartBtn">最初からやり直す</button>
   </div>
 
   <!-- End screen (全級クリア) -->
@@ -628,7 +634,7 @@
     <div class="rank" id="rankText"></div>
     <p id="rankDesc"></p>
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="finalScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="finalScoreHi">0</b> ・ 最大コンボ <b id="finalCombo">0</b></div>
-    <div class="hi-row">合格症例 <b id="finalScore">0</b> / 40 ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
+    <div class="hi-row">合格症例 <b id="finalScore">0</b> / <b id="finalTotal">40</b> ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
     <div id="finalRank" class="rank-list"></div>
     <div class="review-list" id="reviewList"></div>
     <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
@@ -4210,14 +4216,14 @@ const HI_KEY = "seibishi_highscore_v2";
 const TIME_LIMIT = 60;
 const LETTERS = ["A","B","C","D"];
 const MAX_LIVES = 3;
-const TIER_NAMES = ["初級","中級","上級","ウルトラ級"];
+const TIER_NAMES = ["見習い","一人前","整備主任","親方級"];
 // 各級の症例プール（20症例ずつ）。毎回ここからランダムに抽選して出題する。
 const CASES_PER_TIER = 10;   // 1プレイで各級から出す数
 const TIER_POOL = {
-  "初級":[1,3,5,7,11,12,13,14,15,16,31,32,33,34,35,36,37,38,39,40,76,77,78,79,80,96,97,98,99,100,116,117,118,119,120,136,137,138,139,140],
-  "中級":[4,6,17,18,19,20,21,22,23,24,41,42,43,44,45,46,47,48,49,50,81,82,83,84,85,101,102,103,104,105,121,122,123,124,125,141,142,143,144,145],
-  "上級":[2,8,9,10,25,26,27,28,29,30,51,52,53,54,55,56,57,58,59,60,86,87,88,89,90,106,107,108,109,110,126,127,128,129,130,146,147,148,149,150],
-  "ウルトラ級":[61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,91,92,93,94,95,111,112,113,114,115,131,132,133,134,135,151,152,153,154,155]
+  "見習い":[1,3,5,7,11,12,13,14,15,16,31,32,33,34,35,36,37,38,39,40,76,77,78,79,80,96,97,98,99,100,116,117,118,119,120,136,137,138,139,140],
+  "一人前":[4,6,17,18,19,20,21,22,23,24,41,42,43,44,45,46,47,48,49,50,81,82,83,84,85,101,102,103,104,105,121,122,123,124,125,141,142,143,144,145],
+  "整備主任":[2,8,9,10,25,26,27,28,29,30,51,52,53,54,55,56,57,58,59,60,86,87,88,89,90,106,107,108,109,110,126,127,128,129,130,146,147,148,149,150],
+  "親方級":[61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,91,92,93,94,95,111,112,113,114,115,131,132,133,134,135,151,152,153,154,155]
 };
 const TOTAL_CASES = CASES_PER_TIER * TIER_NAMES.length; // 1プレイの総数(30)
 const idIndex = {}; cases.forEach((c,i)=>{ idIndex[c.id]=i; });
@@ -4320,7 +4326,7 @@ function hasSave(){ try{ return !!JSON.parse(localStorage.getItem(SAVE_KEY)||"nu
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} refreshResumeBtn(); }
 function saveGame(){
   if(gameScreen.classList.contains("hidden")) return;   // プレイ中のみ保存
-  const data = { v:2, tierIdx, posInTier, lives, totalPassed, passedAtTierStart,
+  const data = { v:2, tierIdx, startTierIdx, posInTier, lives, totalPassed, passedAtTierStart,
     score, bestCombo, results, listIds: curList.map(ix=>cases[ix].id),
     wage, heat, items, extraLivesNextTier };
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){}
@@ -4328,7 +4334,7 @@ function saveGame(){
 function resumeGame(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); }catch(e){}
   if(!d){ refreshResumeBtn(); return; }
-  tierIdx=d.tierIdx||0; posInTier=d.posInTier||0; lives=(d.lives==null?MAX_LIVES:d.lives);
+  tierIdx=d.tierIdx||0; startTierIdx=d.startTierIdx||0; posInTier=d.posInTier||0; lives=(d.lives==null?MAX_LIVES:d.lives);
   totalPassed=d.totalPassed||0; passedAtTierStart=d.passedAtTierStart||0;
   score=d.score||0; combo=0; bestCombo=d.bestCombo||0; results=d.results||[];
   wage=d.wage||0; heat=d.heat||0; feverLeft=0; extraLivesNextTier=d.extraLivesNextTier||0;
@@ -4362,8 +4368,23 @@ function toast(msg){
   clearTimeout(t._h); t._h=setTimeout(()=>{ t.style.opacity="0"; },2800);
 }
 
+// 開始する級（級セレクターで選択。0=見習い）。runTotalは「開始級〜親方級」の症例数。
+let startTierIdx = 0;
+function runTotal(){ return (TIER_NAMES.length - startTierIdx) * CASES_PER_TIER; }
+function renderTierPick(){
+  const box = $("tierBadges"); if(!box) return;
+  box.innerHTML = "";
+  TIER_NAMES.forEach((nm,k)=>{
+    const sp = document.createElement("span");
+    sp.textContent = nm;
+    if(k===startTierIdx) sp.classList.add("sel");
+    sp.addEventListener("click", ()=>{ startTierIdx = k; renderTierPick(); });
+    box.appendChild(sp);
+  });
+}
+
 function startGame(){
-  tierIdx = 0; totalPassed = 0; results = [];
+  tierIdx = startTierIdx; totalPassed = 0; results = [];
   score = 0; combo = 0; bestCombo = 0;
   wage = 0; heat = 0; extraLivesNextTier = 0; items = { tester:1, hint:1, time:1 };
   endFever(); updateScoreHud(); renderWage(); renderHeat();
@@ -4408,10 +4429,10 @@ function loadCase(){
 }
 
 function updateHud(){
-  $("hudCase").textContent = TIER_NAMES[tierIdx] + " " + (posInTier+1) + "/10";
+  $("hudCase").textContent = TIER_NAMES[tierIdx] + " " + (posInTier+1) + "/" + CASES_PER_TIER;
   renderLives();
-  const done = tierIdx*10 + posInTier;
-  $("progBar").style.width = (done/TOTAL_CASES*100) + "%";
+  const done = (tierIdx-startTierIdx)*CASES_PER_TIER + posInTier;
+  $("progBar").style.width = (done/runTotal()*100) + "%";
 }
 
 function renderLives(){
@@ -4658,7 +4679,7 @@ function tierCleared(){
   $("promoteBadge").textContent = "★".repeat(tierIdx+1);
   $("promoteTitle").textContent = cleared + "クリア！";
   $("promoteDesc").innerHTML = "<b>"+next+"</b>に昇級します。ライフは3に回復。<br>難易度が上がります、気を引き締めて。";
-  $("promoteStat").innerHTML = "ここまでの合格 <b>"+totalPassed+"</b> / "+TOTAL_CASES+" 症例";
+  $("promoteStat").innerHTML = "ここまでの合格 <b>"+totalPassed+"</b> / "+runTotal()+" 症例";
   renderShop();   // ピットショップ：工賃でライフ/道具を購入
   tierScreen.classList.remove("hidden");
 }
@@ -4685,13 +4706,13 @@ function gameOver(){
   $("overDetail").textContent = TIER_NAMES[tierIdx] + "でライフを使い切りました。やり直し方を選べます。";
   // 再挑戦の選択肢：到達級から or 最初から
   const tb=$("overTierBtn"), rb=$("overRestartBtn");
-  if(tierIdx>0){
+  if(tierIdx>startTierIdx){
     tb.textContent = TIER_NAMES[tierIdx] + "からやり直す ▶";
     tb.style.display = ""; tb.className = "big-btn";
-    rb.textContent = "最初(初級)からやり直す"; rb.className = "ghost-btn";
+    rb.textContent = TIER_NAMES[startTierIdx]+"から最初やり直す"; rb.className = "ghost-btn";
   } else {
     tb.style.display = "none";
-    rb.textContent = "初級からやり直す ▶"; rb.className = "big-btn";
+    rb.textContent = TIER_NAMES[startTierIdx]+"からやり直す ▶"; rb.className = "big-btn";
   }
   // ★先に画面とボタンを表示してから記録（記録で失敗しても操作不能にならない）
   overScreen.classList.remove("hidden");
@@ -4706,10 +4727,12 @@ function endGame(){
   endScreen.classList.remove("hidden");
   $("progBar").style.width = "100%";
 
-  const pts = Math.round(totalPassed/TOTAL_CASES*100);
+  const tot = runTotal();
+  const pts = Math.round(totalPassed/tot*100);
   $("scoreRing").style.setProperty("--deg", (pts/100*360)+"deg");
   animateNumber($("finalNum"), pts);
   $("finalScore").textContent = totalPassed;
+  if($("finalTotal")) $("finalTotal").textContent = tot;
 
   const hi = Math.max(getHi(), totalPassed);
   setHi(hi);
@@ -4724,10 +4747,10 @@ function endGame(){
   try{ recordScore(); renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
 
   let rank,cls,desc;
-  if(totalPassed===TOTAL_CASES){rank="SS ・ 神整備士";cls="s";desc="全40症例パーフェクト！ウルトラ級まで完全制覇、開発者級の診断力です。";}
-  else if(totalPassed>=36){rank="S ・ プロ整備士";cls="s";desc="ほぼ完璧。現場でもっとも頼れる存在です。";}
-  else if(totalPassed>=32){rank="A ・ 一人前";cls="a";desc="全級完走、確かな腕。取りこぼしを潰せば頂点へ。";}
-  else if(totalPassed>=28){rank="B ・ 見習い卒業";cls="b";desc="完走できる実力。手順の精度をさらに上げよう。";}
+  if(pts>=100){rank="SS ・ 神整備士";cls="s";desc="全症例パーフェクト！完全制覇、開発者級の診断力です。";}
+  else if(pts>=90){rank="S ・ プロ整備士";cls="s";desc="ほぼ完璧。現場でもっとも頼れる存在です。";}
+  else if(pts>=80){rank="A ・ 一人前";cls="a";desc="確かな腕。取りこぼしを潰せば頂点へ。";}
+  else if(pts>=70){rank="B ・ 見習い卒業";cls="b";desc="完走できる実力。手順の精度をさらに上げよう。";}
   else{rank="C ・ 修行中";cls="c";desc="完走おめでとう。基本手順を固めて精度を上げよう。";}
   const rt = $("rankText"); rt.textContent = rank; rt.className = "rank "+cls;
   $("rankDesc").textContent = desc;
@@ -4995,6 +5018,7 @@ $("hiScore").textContent = getHi();
 $("hiScoreVal").textContent = getScoreHi().toLocaleString();
 $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
 renderRanking("startRank");
+renderTierPick();     // 開始する級セレクター
 refreshResumeBtn();   // 保存データがあれば「つづきから」を表示
 </script>
 </body>
