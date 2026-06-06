@@ -425,10 +425,13 @@
   .scene-cap{color:var(--cyan)!important;text-shadow:0 0 8px rgba(53,230,255,.5);}
   .score-ring{background:conic-gradient(var(--cyan) var(--deg,0deg), rgba(120,180,255,.10) 0deg)!important;
     box-shadow:0 0 30px rgba(53,230,255,.25);}
-  .pop-title{background:linear-gradient(110deg,#7df2ff,#35e6ff 40%,#8b6bff)!important;
-    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-    filter:drop-shadow(0 6px 22px rgba(53,230,255,.28))!important;}
+  .pop-title{background:none!important;color:#eef4ff!important;-webkit-text-fill-color:#eef4ff!important;
+    filter:none!important;text-shadow:0 0 22px rgba(53,230,255,.30);letter-spacing:.02em!important;}
+  .pop-title .accent{color:var(--cyan)!important;-webkit-text-fill-color:var(--cyan)!important;
+    text-shadow:0 0 18px rgba(53,230,255,.6);}
   .combo-tag{color:var(--cyan);text-shadow:0 0 8px rgba(53,230,255,.5);}
+  .rules .ki{display:inline-block;background:rgba(53,230,255,.10);border:1px solid rgba(53,230,255,.35);
+    color:var(--cyan);border-radius:6px;padding:0 7px;font-size:.7rem;font-weight:800;margin-right:6px;letter-spacing:.02em;}
   .rank.s{color:var(--cyan)!important;text-shadow:0 0 14px rgba(53,230,255,.5);}
   /* スキャンライン（極薄・全画面） */
   body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:overlay;opacity:.5;
@@ -472,8 +475,8 @@
       <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
       <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
       <li>ライフが尽きると<b>ゲームオーバー</b></li>
-      <li>🔧道具(テスター/ヒント/時間)・🔥連続正解でフィーバー(2倍)</li>
-      <li>🛒工賃でショップ購入・🚑急患/👹ボス症例で高得点を狙え</li>
+      <li><span class="ki">道具</span>テスター/ヒント/時間 ・ <span class="ki">フィーバー</span>連続正解でスコア2倍</li>
+      <li><span class="ki">ショップ</span>工賃で購入 ・ <span class="ki">急患/ボス</span>で高得点を狙え</li>
     </ul>
     <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
     <div id="startRank" class="rank-list"></div>
