@@ -378,6 +378,58 @@
     .next-btn{padding:11px;margin-top:8px;}
     .card{padding:12px;}
   }
+  /* ===== スマホ（縦長・幅狭）で1画面に収める ===== */
+  @media (max-width:540px){
+    body{padding:6px;}
+    .app{gap:7px;}
+    header{padding:9px 11px;}
+    .title{font-size:1.1rem;gap:8px;}
+    .hud{margin-top:8px;gap:6px;}
+    .hud .cell{padding:6px 4px;border-radius:11px;}
+    .hud .val{font-size:1rem;}
+    .progress{margin-top:8px;}
+    .scorebar{margin-top:6px;}
+    .card{padding:11px;}
+    .scene{margin-bottom:7px;}
+    #sceneImg{height:clamp(78px,15vh,150px);}
+    .scene svg{max-height:15vh;}
+    .symptom-box{padding:7px 10px;margin-bottom:7px;}
+    .symptom-box .txt{font-size:.96rem;}
+    .step-meta{margin-bottom:4px;}
+    .question{font-size:.95rem;margin-bottom:8px;}
+    .tools{gap:5px;margin-bottom:6px;}
+    .tool{padding:6px 3px;font-size:.72rem;}
+    .choices{gap:6px;}
+    .choice{padding:8px 11px 8px 16px!important;font-size:.88rem;border-radius:12px;}
+    .choice .bullet{width:23px;height:23px;}
+    .result{padding:9px 11px;margin-top:8px;}
+    .result .body{font-size:.86rem;}
+    .next-btn{padding:11px;margin-top:8px;}
+    /* スタート画面も詰める */
+    .center-screen p{margin:7px 0;font-size:.86rem;}
+    .rules{padding:11px;margin:10px 0;font-size:.82rem;}
+    .rules li{margin:4px 0 4px 16px;}
+    .pop-title{font-size:2rem!important;}
+    .brand-mark{margin-bottom:8px;}
+    .brand-mark svg{width:52px;height:52px;}
+  }
+  /* ===== 背の低い端末（横向き等）でさらに圧縮 ===== */
+  @media (max-height:620px){
+    .app{gap:6px;}
+    header{padding:8px 11px;}
+    .hud{margin-top:7px;}
+    .hud .cell{padding:5px 4px;}
+    .scene{margin-bottom:6px;}
+    #sceneImg{height:clamp(60px,11vh,110px);}
+    .scene svg{max-height:11vh;}
+    .symptom-box{padding:6px 10px;margin-bottom:6px;}
+    .question{font-size:.92rem;margin-bottom:6px;}
+    .tools{margin-bottom:5px;}
+    .choices{gap:5px;}
+    .choice{padding:7px 10px 7px 15px!important;font-size:.85rem;}
+    .result{padding:8px 10px;margin-top:6px;}
+    .next-btn{padding:10px;margin-top:6px;}
+  }
   /* ===== ゲーム性UI（工賃/ヒート/道具/イベント/ショップ） ===== */
   .sb-wage{margin-left:auto;font-weight:800;color:#ffd60a;font-size:.9rem;display:inline-flex;align-items:center;gap:2px;}
   .sb-wage b{color:#ffe27a;}
