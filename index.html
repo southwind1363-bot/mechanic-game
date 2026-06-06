@@ -432,6 +432,28 @@
   .combo-tag{color:var(--cyan);text-shadow:0 0 8px rgba(53,230,255,.5);}
   .rules .ki{display:inline-block;background:rgba(53,230,255,.10);border:1px solid rgba(53,230,255,.35);
     color:var(--cyan);border-radius:6px;padding:0 7px;font-size:.7rem;font-weight:800;margin-right:6px;letter-spacing:.02em;}
+  /* ===== ゲームHUDフレーム（四隅ブラケット） ===== */
+  #hudFrame{position:fixed;inset:7px;pointer-events:none;z-index:58;opacity:.6;
+    filter:drop-shadow(0 0 4px rgba(53,230,255,.55));
+    background:
+     linear-gradient(var(--cyan),var(--cyan)) left top/26px 2px no-repeat,
+     linear-gradient(var(--cyan),var(--cyan)) left top/2px 26px no-repeat,
+     linear-gradient(var(--cyan),var(--cyan)) right top/26px 2px no-repeat,
+     linear-gradient(var(--cyan),var(--cyan)) right top/2px 26px no-repeat,
+     linear-gradient(var(--violet),var(--violet)) left bottom/26px 2px no-repeat,
+     linear-gradient(var(--violet),var(--violet)) left bottom/2px 26px no-repeat,
+     linear-gradient(var(--violet),var(--violet)) right bottom/26px 2px no-repeat,
+     linear-gradient(var(--violet),var(--violet)) right bottom/2px 26px no-repeat;}
+  /* ===== 選択肢をゲームUI風（左ネオンバー＋ホバースライド） ===== */
+  .choice{position:relative;padding-left:18px!important;}
+  .choice::after{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;
+    background:var(--grad);opacity:0;transition:opacity .15s,box-shadow .15s;}
+  .choice:hover:not(:disabled){transform:translateX(4px)!important;}
+  .choice:hover:not(:disabled)::after{opacity:.95;box-shadow:0 0 10px rgba(53,230,255,.7);}
+  .choice.correct::after{opacity:.95;background:var(--green);box-shadow:0 0 10px rgba(46,255,166,.6);}
+  .choice.wrong::after{opacity:.95;background:var(--red);box-shadow:0 0 10px rgba(255,71,107,.6);}
+  /* ===== ボタンを角ばったゲーム形状に ===== */
+  .big-btn,.next-btn{clip-path:polygon(0 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%);}
   .rank.s{color:var(--cyan)!important;text-shadow:0 0 14px rgba(53,230,255,.5);}
   /* スキャンライン（極薄・全画面） */
   body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:overlay;opacity:.5;
@@ -444,6 +466,7 @@
 <body>
 <div id="flash"><div class="word"></div></div>
 <div id="fxLayer"></div>
+<div id="hudFrame" aria-hidden="true"></div>
 
 <div class="app">
   <header>
