@@ -5781,8 +5781,9 @@ function drawTier(name){
 }
 
 // ===== セーブ／つづきから（進行状況の保存・再開） =====
-const SAVE_KEY = "seibishi_save_v1";
-function hasSave(){ try{ return !!JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); }catch(e){ return false; } }
+const SAVE_KEY = "seibishi_save_v2";
+try{ localStorage.removeItem("seibishi_save_v1"); }catch(e){}   // 旧・自動セーブ(中断扱い)を一掃
+function hasSave(){ try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); return !!(d && Array.isArray(d.listIds) && d.listIds.length); }catch(e){ return false; } }
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} refreshResumeBtn(); }
 function saveGame(){
   if(gameScreen.classList.contains("hidden")) return;   // プレイ中のみ保存
@@ -5844,6 +5845,7 @@ function renderTierPick(){
 }
 
 function startGame(){
+  clearSave();   // 新規開始：中断データがあれば破棄（「つづきから」をリセット）
   tierIdx = startTierIdx; totalPassed = 0; results = [];
   score = 0; combo = 0; bestCombo = 0;
   wage = 0; heat = 0; extraLivesNextTier = 0; items = { tester:1, hint:1, time:1 };
@@ -5883,7 +5885,6 @@ function loadCase(){
   $("symptomText").textContent = curCase().symptom;
   renderScene(curCase());
   updateHud(); renderWage(); renderHeat();
-  saveGame();        // 各症例の開始時点で自動セーブ（タブを閉じても再開できる）
   startTimer();      // 症例ごとに開始（通常60秒/急患40秒）。ステップ間は継続する。
   renderStep();
 }
