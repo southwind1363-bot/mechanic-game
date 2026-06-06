@@ -322,17 +322,22 @@
   @keyframes appShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   @media (prefers-reduced-motion: reduce){.floatfx{animation:none!important;opacity:1;} .app.shake{animation:none!important;}}
   /* ===== ポップなタイトル ===== */
-  .pop-title{font-size:2.4rem;font-weight:900;line-height:1.08;letter-spacing:.01em;margin:4px 0 2px;
-    background:linear-gradient(120deg,#ffd60a,#ff7a18 45%,#ff3b6b);
+  .pop-title{font-size:2.5rem;font-weight:900;line-height:1.05;letter-spacing:-.015em;margin:2px 0 4px;
+    background:linear-gradient(110deg,#9fe7ff,#37d0ff 38%,#ff7a18);
     -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
-    filter:drop-shadow(0 3px 0 rgba(0,0,0,.35)) drop-shadow(0 6px 14px rgba(255,122,24,.35));
-    animation:popIn .6s cubic-bezier(.2,1.5,.4,1), titleFloat 3.2s ease-in-out .6s infinite;}
-  .pop-title .accent{background:none;color:#37d0ff;-webkit-text-fill-color:#37d0ff;}
-  @keyframes popIn{0%{opacity:0;transform:scale(.5) rotate(-7deg);}70%{transform:scale(1.09) rotate(2deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
-  @keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-  .pop-tag{margin:2px 0 6px;font-weight:800;color:var(--text);font-size:1.02rem;}
-  .pop-tag .em{color:var(--orange);}
-  .pop-badges{display:flex;justify-content:center;gap:6px;margin-bottom:6px;font-size:1.4rem;animation:popIn .8s ease .2s both;}
+    filter:drop-shadow(0 6px 20px rgba(55,208,255,.22));
+    animation:titleIn .6s cubic-bezier(.2,.8,.3,1) both;}
+  .pop-title .accent{-webkit-text-fill-color:#fff;color:#fff;}
+  @keyframes titleIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .pop-tag{margin:1px 0 10px;font-weight:700;color:var(--steel);font-size:.92rem;letter-spacing:.04em;
+    animation:titleIn .6s ease .08s both;}
+  .pop-tag .em{color:var(--text);font-weight:800;}
+  .brand-mark{display:flex;justify-content:center;margin-bottom:14px;animation:markIn .55s cubic-bezier(.2,.8,.3,1) both;}
+  .brand-mark svg{width:64px;height:64px;filter:drop-shadow(0 8px 18px rgba(55,208,255,.3));}
+  .brand-mark .spin{transform-origin:32px 32px;animation:slowspin 14s linear infinite;}
+  @keyframes markIn{from{opacity:0;transform:translateY(10px) scale(.92);}to{opacity:1;transform:none;}}
+  @keyframes slowspin{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: reduce){.brand-mark .spin{animation:none;}}
   /* ===== ハイスコアランキング ===== */
   .rank-list{margin:8px 0;text-align:left;}
   .rank-head{font-size:.72rem;color:var(--steel);letter-spacing:.08em;font-weight:800;margin-bottom:4px;text-align:center;}
@@ -409,9 +414,16 @@
 
   <!-- Start screen -->
   <div class="card center-screen" id="startScreen">
-    <div class="pop-badges">🔧 🚗 💨</div>
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" role="img" aria-label="ロゴ">
+        <defs><linearGradient id="bm" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse"><stop stop-color="#37d0ff"/><stop offset="1" stop-color="#ff7a18"/></linearGradient></defs>
+        <polygon points="52,32 42,49.3 22,49.3 12,32 22,14.7 42,14.7" fill="url(#bm)" fill-opacity=".08" stroke="url(#bm)" stroke-width="2.6" stroke-linejoin="round"/>
+        <g class="spin"><circle cx="32" cy="32" r="11.5" stroke="url(#bm)" stroke-width="2.6"/><g stroke="url(#bm)" stroke-width="2.6" stroke-linecap="round"><line x1="32" y1="17" x2="32" y2="20.5"/><line x1="32" y1="47" x2="32" y2="43.5"/><line x1="17" y1="32" x2="20.5" y2="32"/><line x1="47" y1="32" x2="43.5" y2="32"/><line x1="21.4" y1="21.4" x2="23.9" y2="23.9"/><line x1="42.6" y1="42.6" x2="40.1" y2="40.1"/><line x1="21.4" y1="42.6" x2="23.9" y2="40.1"/><line x1="42.6" y1="21.4" x2="40.1" y2="23.9"/></g></g>
+        <circle cx="32" cy="32" r="3.6" fill="url(#bm)"/>
+      </svg>
+    </div>
     <div class="pop-title">整備士<span class="accent">育成</span>ゲーム</div>
-    <div class="pop-tag">めざせ！<span class="em">スゴ腕メカニック</span> 🏆</div>
+    <div class="pop-tag"><span class="em">スゴ腕メカニック</span>をめざせ</div>
     <p>症状から原因を見抜く、実務型の診断バトル。<br>スコア＆コンボを稼いで、見習いから親方級まで駆け上がれ！</p>
     <ul class="rules">
       <li><b>見習い→一人前→整備主任→親方級</b>の順に昇格。各級<b>10症例</b></li>
