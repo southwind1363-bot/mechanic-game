@@ -1392,7 +1392,7 @@ const cases = [
       result_wrong:"温度のみや燃料/添加剤では上流原因を絞れない。"},
     {question:"どう進める？",choices:[
       {text:"原因を直し触媒の劣化を再判定する",correct:true},
-      {text:"とりあえず触媒を交換して作動を確認する",correct:false},
+      {text:"上流原因を直さず触媒を先に交換する",correct:false},
       {text:"下流O2を予防交換する",correct:false},
       {text:"上流を見ず触媒を洗浄する",correct:false}],
       result_correct:"上流を直し再評価。真に劣化なら交換へ進む。",
@@ -2013,7 +2013,7 @@ const cases = [
       result_wrong:"即ECU/交換や燃料では迷走。実ノックと補正を診る。"},
     {question:"どう確定する？",choices:[
       {text:"センサーの妥当性を確認し原因を特定する",correct:true},
-      {text:"とりあえず確認する",correct:false},
+      {text:"ノックセンサーを予防交換して確認する",correct:false},
       {text:"基準を書き換える",correct:false},
       {text:"点火を一律遅角で固定する",correct:false}],
       result_correct:"配線/取付/本体のどれかを確認し特定する。",
@@ -2099,7 +2099,7 @@ const cases = [
     {question:"何を点検する？",choices:[
       {text:"ファンモーターとリレーとヒューズを点検する",correct:true},
       {text:"サーモのみ確認する",correct:false},
-      {text:"水を足すだけにする",correct:false},
+      {text:"ラジエータキャップを交換して確認する",correct:false},
       {text:"電圧を上げて回す",correct:false}],
       result_correct:"ファン回路はモーター/リレー/ヒューズの順で点検。",
       result_wrong:"部分交換や補水、昇圧は的外れ。回路を点検。"},
@@ -2789,7 +2789,7 @@ const cases = [
     {question:"どう測る？",choices:[
       {text:"オシロでリップルの大きさを測定する",correct:true},
       {text:"アーシングを追加する",correct:false},
-      {text:"端子を磨くだけにする",correct:false},
+      {text:"バッテリーを交換してリップルを見る",correct:false},
       {text:"電圧計の平均値だけ見る",correct:false}],
       result_correct:"オシロで交流リップル過大なら整流不良が確定に近い。",
       result_wrong:"増設や清掃、平均表示ではリップルを捉えられない。"},
@@ -2835,7 +2835,7 @@ const cases = [
     {question:"何を点検する？",choices:[
       {text:"サーモの開弁温度と固着を点検する",correct:true},
       {text:"電動ファンを点検する",correct:false},
-      {text:"水を足すだけにする",correct:false},
+      {text:"冷却水を全量交換して水温を確認する",correct:false},
       {text:"ヒーターバルブを点検して原因を絞る",correct:false}],
       result_correct:"開弁温度の異常や開固着で水温が上がらない。点検する。",
       result_wrong:"ファン/補水/バルブは無関係。サーモを点検。"},
@@ -3209,7 +3209,7 @@ const cases = [
       result_wrong:"温度のみや燃料/添加剤では原因を絞れない。"},
     {question:"どう進める？",choices:[
       {text:"上流を直し触媒の劣化を再判定する",correct:true},
-      {text:"とりあえず触媒を交換して作動を確認する",correct:false},
+      {text:"上流原因を直さず触媒を先に交換する",correct:false},
       {text:"下流O2を予防交換する",correct:false},
       {text:"上流を見ず触媒を洗浄する",correct:false}],
       result_correct:"上流を直し再評価。真に劣化なら交換へ進む。",
@@ -3692,7 +3692,7 @@ const cases = [
       result_wrong:"ECU交換や燃料/手調整は的外れ。配線を点検。"},
     {question:"どう対処する？",choices:[
       {text:"信号源か配線かを切り分けて修理する",correct:true},
-      {text:"とりあえず点検する",correct:false},
+      {text:"配線を見ずにECUを先に点検する",correct:false},
       {text:"センサーのみ予防交換して作動を確認する",correct:false},
       {text:"カムを点検せず交換する",correct:false}],
       result_correct:"接触不良/本体のどちらかを特定し修理する。",
@@ -3738,7 +3738,7 @@ const cases = [
       result_wrong:"添加剤やマフラー、リセットは的外れ。混入を点検。"},
     {question:"どう対処する？",choices:[
       {text:"排気漏れか燃調かを切り分ける",correct:true},
-      {text:"とりあえず確認する",correct:false},
+      {text:"下流の燃調を手で濃くして補正する",correct:false},
       {text:"下流O2のみ交換して作動を確認する",correct:false},
       {text:"触媒の状態を点検する",correct:false}],
       result_correct:"下流の排気漏れ等を修理すれば再発しない。",
@@ -4590,10 +4590,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"センサー不良か燃調と配線かを切り分け直す",correct:true},
       {text:"O2を予防で確認する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"燃調補正だけリセットして走行する",correct:false},
+      {text:"排気漏れの修理のみで完結する",correct:false}],
       result_correct:"O2本体か燃調/配線かを特定し直せば再発しない。",
-      result_wrong:"予防交換や消去、基準緩めは再発・不正。"}],
+      result_wrong:"予防交換やリセット、一部修理だけでは再発する。"}],
     explanation:"P0131は上流O2の出力/配線→排気漏れ/空燃比→センサーか燃調/配線かを切り分け直す。"},
   {id:167,tier:"整備主任",symptom:"エンジン警告灯。コードはP0014（排気カム位相 進角過多）",steps:[
     {question:"最初は？",choices:[
@@ -4614,9 +4614,9 @@ const cases = [
       {text:"OCVと油圧とオイルを正し追従を確認する",correct:true},
       {text:"カムスプロケットのみ確認して結果を確かめる",correct:false},
       {text:"油圧を上げて補う",correct:false},
-      {text:"コードを消すだけにする",correct:false}],
+      {text:"OCVを見ずに油圧だけ修正する",correct:false}],
       result_correct:"OCVや油圧/オイルを正せば排気位相が追従する。",
-      result_wrong:"部分交換や小細工、消去では再発。原因を直す。"}],
+      result_wrong:"部分確認や小細工、OCV無視では再発。原因を直す。"}],
     explanation:"P0014は排気の指令vs実位相→OCV固着/油圧/オイル→正して追従を確認する。"},
   {id:168,tier:"整備主任",symptom:"エンジン警告灯。コードはP0234（過給圧が過大／オーバーブースト）",steps:[
     {question:"最初は？",choices:[
@@ -4660,9 +4660,9 @@ const cases = [
       {text:"固着した弁を交換し流量の正常化を確認する",correct:true},
       {text:"弁を見ずに配管を替える",correct:false},
       {text:"パージを物理的に塞ぐ",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"ホースだけ交換して作動を確認する",correct:false}],
       result_correct:"開固着の弁を交換すれば流量が正常化する。",
-      result_wrong:"配管交換や封止、基準緩めは不適切。弁を直す。"}],
+      result_wrong:"配管だけや封止、ホース交換のみは不適切。弁を直す。"}],
     explanation:"P0496(流量過大)はパージ弁の開固着→作動/ホース経路→弁を交換し流量を正常化する。"},
   {id:170,tier:"整備主任",symptom:"エンジン警告灯。コードはP0128（水温が規定に達しない）",steps:[
     {question:"最初は？",choices:[
@@ -4676,16 +4676,16 @@ const cases = [
       {text:"サーモの開弁温度と固着を確認する",correct:true},
       {text:"電動ファンを点検する",correct:false},
       {text:"ヒーターコアを確認して結果を確かめる",correct:false},
-      {text:"水を足すだけにする",correct:false}],
+      {text:"冷却水を全量交換して水温を確認する",correct:false}],
       result_correct:"規定温度で閉じないサーモを点検する。",
       result_wrong:"ファン/コア/補水は暖機不良の主因でない。"},
     {question:"どう対処する？",choices:[
       {text:"規定開弁のサーモへ交換しエア抜きする",correct:true},
       {text:"冷却水を薄めて入れる",correct:false},
       {text:"サーモを抜いて運用する",correct:false},
-      {text:"コードを消すだけにする",correct:false}],
+      {text:"水温センサーだけ交換して確認する",correct:false}],
       result_correct:"規定サーモへ交換すれば水温が規定に達する。",
-      result_wrong:"希釈やサーモレス、消去は不適切。規定品へ交換。"}],
+      result_wrong:"希釈やサーモレス、センサーのみ交換は不適切。"}],
     explanation:"P0128は実水温/サーモ開弁→開弁温度/固着→規定サーモへ交換しエア抜きする。"},
   {id:171,tier:"親方級",symptom:"P0301(1番失火)とP0171(薄い)が同時に出る",steps:[
     {question:"最初は？",choices:[
@@ -5050,10 +5050,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"配線とコネクタかMAF本体かを切り分け直す",correct:true},
       {text:"MAFを点検する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"コネクタだけ清掃して対応する",correct:false},
+      {text:"吸気漏れだけ修理して完結する",correct:false}],
       result_correct:"配線/コネクタかMAF本体かを特定し直せば再発しない。",
-      result_wrong:"予防交換や消去、基準緩めは再発・不正。"}],
+      result_wrong:"切り分けずの清掃のみや一部修理では再発する。"}],
     explanation:"P0102は信号/電源/配線→吸気漏れ/コネクタ→配線かMAF本体かを切り分け直す。"},
   {id:187,tier:"整備主任",symptom:"エンジン警告灯。コードはP0327（ノックセンサー低入力）",steps:[
     {question:"最初は？",choices:[
@@ -5073,10 +5073,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"配線と接触かセンサー本体かを切り分け直す",correct:true},
       {text:"センサーを点検する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
+      {text:"ノック補正だけリセットして走行する",correct:false},
       {text:"接触を見ずに本体を確認して原因を切り分ける",correct:false}],
       result_correct:"配線/接触かセンサー本体かを特定し直せば再発しない。",
-      result_wrong:"予防交換や消去、推測交換は不適切。原因を直す。"}],
+      result_wrong:"先行交換やリセット、推測交換は不適切。原因を直す。"}],
     explanation:"P0327は配線/抵抗/電圧→コネクタ接触/締付→配線かセンサー本体かを切り分け直す。"},
   {id:188,tier:"整備主任",symptom:"エンジン警告灯。コードはP0506（アイドル回転が規定より低い）",steps:[
     {question:"最初は？",choices:[
@@ -5119,10 +5119,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"配線と汚れかセンサー本体かを切り分け直す",correct:true},
       {text:"センサーを点検する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
+      {text:"センサー先端だけ清掃して完結する",correct:false},
       {text:"パルサーを見ずに本体を点検して原因を切り分ける",correct:false}],
       result_correct:"配線/汚れかセンサー本体かを特定し直せば安定する。",
-      result_wrong:"予防交換や消去、推測交換は不適切。原因を直す。"}],
+      result_wrong:"先行交換や清掃のみ、推測交換は不適切。原因を直す。"}],
     explanation:"P0335は信号/配線/電源→先端汚れ/パルサー欠け→配線かセンサー本体かを切り分け直す。"},
   {id:190,tier:"整備主任",symptom:"エンジン警告灯。コードはP0401（EGR流量不足）",steps:[
     {question:"最初は？",choices:[
@@ -5142,10 +5142,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"通路とバルブを清掃と交換し流量を確認する",correct:true},
       {text:"バルブを見ずに点検して不良箇所を切り分ける",correct:false},
-      {text:"コードを消すだけにする",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"EGRバルブのみ先に交換して確認する",correct:false},
+      {text:"差圧センサーだけ交換して確認する",correct:false}],
       result_correct:"通路/バルブを清掃・交換すれば流量が回復する。",
-      result_wrong:"推測交換や消去、基準緩めは再発・不正。"}],
+      result_wrong:"推測で一部交換や先行交換では原因を残す。"}],
     explanation:"P0401(流量不足)はEGR通路/バルブの詰まり→差圧/温度応答→清掃・交換して流量を確認する。"},
   {id:191,tier:"親方級",symptom:"P0011とP0014が同時（吸排気カム位相が両方ずれる）",steps:[
     {question:"最初は？",choices:[
@@ -5510,10 +5510,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"配線と接触かセンサー本体かを切り分け直す",correct:true},
       {text:"センサーを点検する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"IATセンサーを先に交換して確認する",correct:false},
+      {text:"エアダクトだけ確認して完結する",correct:false}],
       result_correct:"配線/接触かセンサー本体かを特定し直せば再発しない。",
-      result_wrong:"予防交換や消去、基準緩めは再発・不正。"}],
+      result_wrong:"先行交換や一部確認だけでは再発する。"}],
     explanation:"P0113はIATの抵抗/配線→コネクタ/基準電圧→配線かセンサー本体かを切り分け直す。"},
   {id:207,tier:"整備主任",symptom:"エンジン警告灯。コードはP0118（水温ECT高入力）",steps:[
     {question:"最初は？",choices:[
@@ -5533,10 +5533,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"配線と接触かセンサー本体かを切り分け直す",correct:true},
       {text:"センサーを確認する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"ECTセンサーを先に交換して確認する",correct:false},
+      {text:"実水温と照らさず本体を先に交換する",correct:false}],
       result_correct:"配線/接触かセンサー本体かを特定し直せば再発しない。",
-      result_wrong:"予防交換や消去、基準緩めは再発・不正。"}],
+      result_wrong:"先行交換や検証なし交換は再発する。原因を直す。"}],
     explanation:"P0118はECTの抵抗/配線→コネクタ/実水温整合→配線かセンサー本体かを切り分け直す。"},
   {id:208,tier:"整備主任",symptom:"エンジン警告灯。コードはP0443（EVAPパージ弁回路）",steps:[
     {question:"最初は？",choices:[
@@ -5556,10 +5556,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"弁本体か配線と駆動側かを切り分け直す",correct:true},
       {text:"弁を確認する",correct:false},
-      {text:"コードを消すだけにする",correct:false},
-      {text:"基準を緩めて消灯する",correct:false}],
+      {text:"パージ弁を先に交換して作動を確認する",correct:false},
+      {text:"配線を見ずに弁のみ交換する",correct:false}],
       result_correct:"弁本体か配線/駆動側かを特定し直せば再発しない。",
-      result_wrong:"予防交換や消去、基準緩めは再発・不正。"}],
+      result_wrong:"切り分けずの弁交換や配線無視では再発する。"}],
     explanation:"P0443はパージ弁の駆動回路/配線→コイル抵抗/コネクタ→弁本体か配線かを切り分け直す。"},
   {id:209,tier:"整備主任",symptom:"エンジン警告灯。コードはP0562（システム電圧が低い）",steps:[
     {question:"最初は？",choices:[
@@ -5579,10 +5579,10 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"発電と配線と接地のどれかを特定する",correct:true},
       {text:"バッテリーだけ確認して結果を確かめる",correct:false},
-      {text:"コードを消すだけにする",correct:false},
+      {text:"オルタを見ずバッテリーを先に交換する",correct:false},
       {text:"オルタを確認する",correct:false}],
       result_correct:"発電か配線か接地かを特定し直せば電圧が回復する。",
-      result_wrong:"電池のみや消去、予防交換は再発。原因を直す。"}],
+      result_wrong:"電池のみや先行交換、一部確認は再発。原因を直す。"}],
     explanation:"P0562は充電電圧/オルタ/ベルト→B端子降下/接地→発電/配線/接地を特定して直す。"},
   {id:210,tier:"整備主任",symptom:"エンジン警告灯。コードはP0016（クランク/カム相関）",steps:[
     {question:"最初は？",choices:[
@@ -5601,11 +5601,11 @@ const cases = [
       result_wrong:"張り単独/スロットル/触媒は相関ずれの主因でない。"},
     {question:"どう対処する？",choices:[
       {text:"タイミングずれかセンサーかを切り分け修理する",correct:true},
-      {text:"コードを消すだけにする",correct:false},
+      {text:"チェーンを見ずにセンサーを2つ交換する",correct:false},
       {text:"センサーを点検する",correct:false},
       {text:"センサーを点検せず本体交換して作動と数値を確認する",correct:false}],
       result_correct:"タイミング(機械)かセンサーかを特定し直せば相関が合う。",
-      result_wrong:"消去や予防交換、言い訳は再発。原因を直す。"}],
+      result_wrong:"推測でのセンサー交換や切り分けなしは再発する。"}],
     explanation:"P0016は相関データ→チェーン伸び/歯飛び/センサーずれ→機械かセンサーかを切り分け修理する。"},
   {id:211,tier:"親方級",symptom:"P0171とP0174が同時（両バンクが薄い）",steps:[
     {question:"最初は？",choices:[
