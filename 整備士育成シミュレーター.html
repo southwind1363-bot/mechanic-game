@@ -360,6 +360,13 @@
   .rank-head{font-size:.72rem;color:var(--steel);letter-spacing:.08em;font-weight:800;margin-bottom:4px;text-align:center;}
   .rank-row{display:flex;align-items:center;gap:6px;background:var(--panel-light);border:1px solid var(--line);border-radius:8px;padding:5px 8px;margin-bottom:4px;font-size:.82rem;}
   .rank-row.me{border-color:var(--orange);background:rgba(255,122,24,.12);}
+  /* ===== グローバルランキング ===== */
+  .name-submit-box{display:flex;flex-direction:column;gap:8px;margin:10px 0;padding:12px;background:var(--panel-light);border:1px solid rgba(53,230,255,.25);border-radius:12px;}
+  .name-submit-box label{font-size:.8rem;color:var(--cyan);font-weight:700;}
+  .name-input{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.95rem;width:100%;outline:none;}
+  .name-input:focus{border-color:var(--cyan);}
+  .submit-rank-btn{background:var(--grad);border:none;border-radius:10px;padding:9px 18px;color:#fff;font-weight:800;font-size:.9rem;cursor:pointer;width:100%;}
+  .submit-rank-btn:disabled{opacity:.5;cursor:default;}
   .rank-row .rk{flex:0 0 auto;width:18px;height:18px;border-radius:5px;background:var(--orange);color:#1a1c1f;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.72rem;}
   .rank-row .rn{flex:1;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .rank-row .rs{color:var(--orange);font-weight:900;}
@@ -557,6 +564,7 @@
     <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
     <div id="playCnt" style="font-size:.72rem;color:var(--steel);margin-top:2px;min-height:1em;"></div>
     <div id="startRank" class="rank-list"></div>
+    <div id="globalRankStart" class="rank-list"></div>
     <div class="tier-pick-label">▼ どの級から始める？（上ほど難しい）</div>
     <div class="tier-badges pick" id="tierBadges"></div>
     <button class="big-btn" id="resumeBtn" style="margin-top:16px;display:none;">▶ つづきから</button>
@@ -770,6 +778,13 @@
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="finalScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="finalScoreHi">0</b> ・ 最大コンボ <b id="finalCombo">0</b></div>
     <div class="hi-row">合格症例 <b id="finalScore">0</b> / <b id="finalTotal">40</b> ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
     <div id="finalRank" class="rank-list"></div>
+    <div id="globalSubmitBox" class="name-submit-box" style="display:none">
+      <label>🌐 全国ランキングに登録する</label>
+      <input id="playerNameInput" class="name-input" type="text" maxlength="10" placeholder="名前（10文字まで）">
+      <button class="submit-rank-btn" id="submitRankBtn">ランキングに登録する 🏆</button>
+      <div id="submitResult" style="font-size:.78rem;color:var(--steel);text-align:center;min-height:1em;"></div>
+    </div>
+    <div id="globalRankFinal" class="rank-list"></div>
     <div class="review-list" id="reviewList"></div>
     <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
   </div>
@@ -6266,6 +6281,11 @@ function endGame(){
   $("hiScoreVal").textContent = sHi.toLocaleString();
   try{ stopMusic(); sndLevel(); }catch(e){}
   try{ recordScore(); renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
+  // グローバルランキング
+  try{
+    const box=$("globalSubmitBox"); if(box){ box.style.display=""; const ni=$("playerNameInput"); if(ni) ni.value=""; const r=$("submitResult"); if(r) r.textContent=""; const b=$("submitRankBtn"); if(b) b.disabled=false; }
+    fetchGlobalRanking();
+  }catch(e){}
 
   let rank,cls,desc;
   if(pts>=100){rank="SS ・ 神整備士";cls="s";desc="全症例パーフェクト！完全制覇、開発者級の診断力です。";}
@@ -6539,8 +6559,57 @@ $("hiScore").textContent = getHi();
 $("hiScoreVal").textContent = getScoreHi().toLocaleString();
 $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
 renderRanking("startRank");
+$("submitRankBtn").addEventListener("click", submitGlobalScore);
+fetchGlobalRanking();
 renderTierPick();     // 開始する級セレクター
 refreshResumeBtn();   // 保存データがあれば「つづきから」を表示
+
+// ===== グローバルランキング（GAS）=====
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxtPJwzLPixbx4gCvU8oY34mUrfDGCEVS4imnDyekdBdd4gM-qXmE93nrvX68wrefWy/exec";
+
+function renderGlobalRanking(data, elIds){
+  const html = data.length === 0
+    ? '<div class="rank-empty">まだ全国記録なし。1位を狙え！</div>'
+    : '<div class="rank-head">🌐 全国ランキング TOP10</div>' +
+      data.map((r,i)=>{
+        const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":`${i+1}.`;
+        return `<div class="rank-row"><span style="font-size:.9rem;min-width:22px">${medal}</span>`+
+          `<span style="flex:1;font-weight:700">${escapeHtml(String(r.name||"名無し"))}</span>`+
+          `<span style="color:var(--orange);font-weight:800">${Number(r.score||0).toLocaleString()}</span>`+
+          `<span style="color:var(--steel);font-size:.72rem;margin-left:6px">${escapeHtml(String(r.date||""))}</span></div>`;
+      }).join("");
+  elIds.forEach(id=>{ const e=$(id); if(e) e.innerHTML=html; });
+}
+
+function fetchGlobalRanking(){
+  const ids = ["globalRankStart","globalRankFinal"];
+  ids.forEach(id=>{ const e=$(id); if(e) e.innerHTML='<div class="rank-head" style="color:var(--steel)">🌐 全国ランキング 読込中…</div>'; });
+  fetch(GAS_URL+"?action=get")
+    .then(r=>r.json())
+    .then(data=>{ if(Array.isArray(data)) renderGlobalRanking(data, ids); })
+    .catch(()=>{ ids.forEach(id=>{ const e=$(id); if(e) e.innerHTML=""; }); });
+}
+
+function submitGlobalScore(){
+  const nameEl=$("playerNameInput");
+  const name=(nameEl?nameEl.value.trim():"")||"名無し";
+  const btn=$("submitRankBtn"), res=$("submitResult");
+  if(btn) btn.disabled=true;
+  if(res) res.textContent="送信中…";
+  fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+score)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.ok){
+        const box=$("globalSubmitBox");
+        if(box) box.innerHTML=`<div style="text-align:center;padding:6px 0;color:var(--green);font-weight:800">✅ ${escapeHtml(name)} さんのスコア ${score.toLocaleString()} を登録！${d.rank>0?" 🏆"+d.rank+"位":""}</div>`;
+        fetchGlobalRanking();
+      } else {
+        if(res) res.textContent="⚠ 登録失敗しました。";
+        if(btn) btn.disabled=false;
+      }
+    })
+    .catch(()=>{ if(res) res.textContent="⚠ 通信エラー。再度試してください。"; if(btn) btn.disabled=false; });
+}
 
 // 累計アクセス数（counterapi.dev）
 fetch("https://api.counterapi.dev/v1/mukiguri-mechanic/plays/up")
