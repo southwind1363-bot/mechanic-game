@@ -6611,12 +6611,12 @@ function submitGlobalScore(){
     .catch(()=>{ if(res) res.textContent="⚠ 通信エラー。再度試してください。"; if(btn) btn.disabled=false; });
 }
 
-// 累計アクセス数（counterapi.dev）
-fetch("https://api.counterapi.dev/v1/mukiguri-mechanic/plays/up")
+// 累計アクセス数（GAS）
+fetch(GAS_URL+"?action=view")
   .then(r=>r.json())
   .then(d=>{
     const el=$("playCnt");
-    if(el && d.count) el.textContent="👥 累計 "+d.count.toLocaleString()+" アクセス";
+    if(el && d.views) el.textContent="👥 累計 "+d.views.toLocaleString()+" アクセス";
   })
   .catch(()=>{});
 </script>
