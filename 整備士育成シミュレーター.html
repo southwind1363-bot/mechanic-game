@@ -6565,7 +6565,7 @@ renderTierPick();     // 開始する級セレクター
 refreshResumeBtn();   // 保存データがあれば「つづきから」を表示
 
 // ===== グローバルランキング（GAS）=====
-const GAS_URL = "/api/ranking";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxtPJwzLPixbx4gCvU8oY34mUrfDGCEVS4imnDyekdBdd4gM-qXmE93nrvX68wrefWy/exec";
 
 function renderGlobalRanking(data, elIds){
   const html = data.length === 0
@@ -6583,11 +6583,12 @@ function renderGlobalRanking(data, elIds){
 
 function fetchGlobalRanking(){
   const ids = ["globalRankStart","globalRankFinal"];
-  ids.forEach(id=>{ const e=$(id); if(e) e.innerHTML='<div class="rank-head" style="color:var(--steel)">🌐 全国ランキング 読込中…</div>'; });
+  const clear = ()=>{ ids.forEach(id=>{ const e=$(id); if(e) e.innerHTML=""; }); };
+  const timer = setTimeout(clear, 8000); // 8秒でタイムアウト
   fetch(GAS_URL+"?action=get")
     .then(r=>r.json())
-    .then(data=>{ if(Array.isArray(data)) renderGlobalRanking(data, ids); })
-    .catch(()=>{ ids.forEach(id=>{ const e=$(id); if(e) e.innerHTML=""; }); });
+    .then(data=>{ clearTimeout(timer); if(Array.isArray(data)) renderGlobalRanking(data, ids); else clear(); })
+    .catch(()=>{ clearTimeout(timer); clear(); });
 }
 
 function submitGlobalScore(){
@@ -6611,12 +6612,12 @@ function submitGlobalScore(){
     .catch(()=>{ if(res) res.textContent="⚠ 通信エラー。再度試してください。"; if(btn) btn.disabled=false; });
 }
 
-// 累計アクセス数（GAS）
-fetch(GAS_URL+"?action=view")
+// 累計アクセス数（counterapi.dev）
+fetch("https://api.counterapi.dev/v1/mukiguri-mechanic/plays/up")
   .then(r=>r.json())
   .then(d=>{
     const el=$("playCnt");
-    if(el && d.views) el.textContent="👥 累計 "+d.views.toLocaleString()+" アクセス";
+    if(el && d.count) el.textContent="👥 累計 "+d.count.toLocaleString()+" アクセス";
   })
   .catch(()=>{});
 </script>
