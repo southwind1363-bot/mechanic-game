@@ -271,13 +271,30 @@
   .rank.c{color:var(--steel);}
   .review-list{text-align:left;margin:14px 0;}
   .review-item{
-    display:flex;gap:10px;align-items:center;background:var(--panel-light);
+    display:flex;gap:10px;align-items:flex-start;background:var(--panel-light);
     border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:.82rem;
   }
-  .review-item .mark{flex:0 0 auto;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;}
+  .review-item.failed{border-color:rgba(255,80,80,.35);background:rgba(255,60,60,.07);}
+  .review-item .mark{flex:0 0 auto;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;margin-top:1px;}
   .review-item .mark.o{background:var(--green);color:#fff;}
   .review-item .mark.x{background:var(--red);color:#fff;}
   .review-item .sym{flex:1;color:var(--steel);}
+  .review-item .sym .r-cat{display:inline-block;font-size:.7rem;font-weight:900;color:#a05000;background:rgba(255,178,61,.15);border:1px solid rgba(255,178,61,.35);border-radius:4px;padding:1px 6px;margin-right:5px;vertical-align:middle;}
+  .review-item .sym .r-text{display:block;margin-top:2px;line-height:1.45;}
+  .review-section-title{font-size:.78rem;font-weight:900;color:var(--steel);letter-spacing:.06em;margin:12px 0 6px;display:flex;align-items:center;gap:6px;}
+  .review-section-title.failed-title{color:var(--red);}
+  .review-section-title::before{content:"";display:block;width:3px;height:1em;background:currentColor;border-radius:2px;}
+  .review-passed-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--panel-light);border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--steel);font-size:.78rem;font-weight:800;cursor:pointer;margin-top:6px;letter-spacing:.04em;}
+  .review-passed-toggle .arr{font-size:.65rem;transition:transform .22s;display:inline-block;}
+  .review-passed-toggle.open .arr{transform:rotate(180deg);}
+  .review-passed-body{overflow:hidden;max-height:0;transition:max-height .28s ease;}
+  .review-passed-body.open{max-height:2000px;}
+  .review-item.failed{cursor:pointer;}
+  .review-item.failed:active{opacity:.85;}
+  .r-explain-toggle{font-size:.72rem;color:var(--orange);font-weight:800;margin-top:4px;display:inline-block;}
+  .r-explain-body{overflow:hidden;max-height:0;transition:max-height .3s ease;}
+  .r-explain-body.open{max-height:400px;}
+  .r-explain-text{margin-top:8px;padding:9px 10px;background:rgba(255,178,61,.1);border-left:3px solid var(--orange);border-radius:0 6px 6px 0;font-size:.8rem;line-height:1.65;color:var(--text);font-weight:600;}
   .val.lives{color:var(--red);letter-spacing:1px;}
   .val.lives.low{animation:pulse .6s infinite;}
   .promote-badge{
@@ -377,16 +394,37 @@
   /* ===== グローバルランキング ===== */
   .name-submit-box{display:flex;flex-direction:column;gap:8px;margin:10px 0;padding:12px;background:var(--panel-light);border:1px solid rgba(53,230,255,.25);border-radius:12px;}
   .name-submit-box label{font-size:.8rem;color:var(--cyan);font-weight:700;}
-  .name-input{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.95rem;width:100%;outline:none;}
+  .name-input{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.95rem;width:100%;outline:none;box-sizing:border-box;}
   .name-input:focus{border-color:var(--cyan);}
   .submit-rank-btn{background:var(--grad);border:none;border-radius:10px;padding:9px 18px;color:#fff;font-weight:800;font-size:.9rem;cursor:pointer;width:100%;}
   .submit-rank-btn:disabled{opacity:.5;cursor:default;}
+  .global-first-label{font-size:.8rem;color:var(--cyan);font-weight:700;}
+  .global-auto-status{font-size:.85rem;font-weight:700;color:var(--steel);text-align:center;padding:4px 0;}
+  .global-auto-status.success{color:var(--green);font-size:.9rem;}
   .rank-row .rk{flex:0 0 auto;width:18px;height:18px;border-radius:5px;background:var(--orange);color:#1a1c1f;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:.72rem;}
   .rank-row .rn{flex:1;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .rank-row .rs{color:var(--orange);font-weight:900;}
   .rank-row .rc{color:#ffd60a;font-size:.74rem;}
   .rank-row .rd{color:var(--steel);font-size:.7rem;}
   .rank-empty{font-size:.78rem;color:var(--steel);text-align:center;padding:6px;}
+  /* ===== 弱点カテゴリー表示 ===== */
+  .weakness-box{background:var(--panel-light);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0 4px;}
+  .weakness-title{font-size:.82rem;font-weight:900;color:var(--steel);letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .weakness-title::before{content:"";display:block;width:4px;height:1em;background:var(--orange);border-radius:2px;}
+  .weakness-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .weakness-rank{font-size:.72rem;font-weight:900;color:var(--steel);min-width:22px;}
+  .weakness-bar-wrap{flex:1;background:var(--panel);border-radius:4px;height:8px;overflow:hidden;}
+  .weakness-bar{height:100%;border-radius:4px;background:var(--orange);transition:width .5s ease;}
+  .weakness-bar.rank1{background:#ff4e4e;}
+  .weakness-bar.rank2{background:#ff8c00;}
+  .weakness-bar.rank3{background:#ffd60a;}
+  .weakness-cat{font-size:.8rem;font-weight:700;color:var(--text);min-width:130px;}
+  .weakness-count{font-size:.78rem;font-weight:900;color:var(--steel);min-width:36px;text-align:right;}
+  .weakness-none{font-size:.85rem;font-weight:700;color:var(--cyan);text-align:center;padding:6px 0;}
+  /* ===== Xシェアボタン ===== */
+  .x-share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 0;margin:10px 0 4px;background:#000;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:900;cursor:pointer;letter-spacing:.04em;transition:opacity .15s;}
+  .x-share-btn:hover{opacity:.82;}
+  .x-share-btn .x-icon{font-size:1.1rem;line-height:1;font-weight:900;}
   /* ===== アコーディオン（スタート画面） ===== */
   .collapse-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--panel-light);border:1px solid var(--line);border-radius:9px;padding:8px 12px;color:var(--steel);font-size:.8rem;font-weight:800;cursor:pointer;margin:5px 0 0;letter-spacing:.04em;transition:border-color .15s,color .15s;}
   .collapse-toggle:hover,.collapse-toggle.open{border-color:var(--orange);color:var(--text);}
@@ -806,6 +844,8 @@
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="overScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="overScoreHi">0</b></div>
     <div class="hi-row">到達 <b id="overReach">-</b> ・ 合格 <b id="overPassed">0</b> 症例</div>
     <div id="overRank" class="rank-list"></div>
+    <div id="globalSubmitBoxOver" class="name-submit-box" style="display:none"></div>
+    <div id="weaknessOver" class="weakness-box" style="display:none"></div>
     <button class="big-btn" id="overTierBtn">この級からやり直す ▶</button>
     <button class="ghost-btn" id="overRestartBtn">最初からやり直す</button>
   </div>
@@ -824,14 +864,17 @@
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="finalScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="finalScoreHi">0</b> ・ 最大コンボ <b id="finalCombo">0</b></div>
     <div class="hi-row">合格症例 <b id="finalScore">0</b> / <b id="finalTotal">40</b> ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
     <div id="finalRank" class="rank-list"></div>
-    <div id="globalSubmitBox" class="name-submit-box" style="display:none">
-      <label>🌐 全国ランキングに登録する（初回のみ名前を入力）</label>
-      <input id="playerNameInput" class="name-input" type="text" maxlength="10" placeholder="名前（10文字まで）">
-      <button class="submit-rank-btn" id="submitRankBtn">登録する 🏆</button>
-      <div id="submitResult" style="font-size:.78rem;color:var(--steel);text-align:center;min-height:1em;"></div>
-    </div>
+    <div id="globalSubmitBox" class="name-submit-box" style="display:none"></div>
     <div id="globalRankFinal" class="rank-list"></div>
-    <div class="review-list" id="reviewList"></div>
+    <div id="weaknessEnd" class="weakness-box" style="display:none"></div>
+    <div id="reviewList">
+      <div id="failedList"></div>
+      <button class="review-passed-toggle" id="passedToggle" style="display:none">
+        合格した症例を見る <span class="arr">▼</span>
+      </button>
+      <div class="review-passed-body" id="passedBody"></div>
+    </div>
+    <button class="x-share-btn" id="xShareBtn"><span class="x-icon">𝕏</span> Xでシェアする</button>
     <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
   </div>
 
@@ -6294,6 +6337,7 @@ let score = 0, combo = 0, bestCombo = 0, stepStart = 0;
 let wage = 0, heat = 0, feverLeft = 0, extraLivesNextTier = 0;
 let items = { tester:1, hint:1, time:1 };
 let caseMod = null, isBoss = false, caseScoreMult = 1, caseWageMult = 1, caseTimeLimit = TIME_LIMIT;
+let finalRankText = "";
 let soundOn = (localStorage.getItem("seibishi_sound_off") !== "1");
 const SCORE_KEY = "seibishi_bestscore_v1";
 function getScoreHi(){ return parseInt(localStorage.getItem(SCORE_KEY)||"0",10)||0; }
@@ -6461,6 +6505,8 @@ function retryTier(){
   totalPassed = passedAtTierStart;
   hideAllScreens();
   gameScreen.classList.remove("hidden");
+  $("pauseBtn").style.display="";   // 一時停止ボタン復元
+  ensureAudio(); startMusic();       // BGM・AudioContext 再開
   startTier();
 }
 
@@ -6581,6 +6627,7 @@ function tick(){
   timeLeft--;
   renderTimer();
   if(feverLeft>0){ feverLeft--; if(feverLeft<=0) endFever(); else renderHeat(); }
+  if(timeLeft>0 && timeLeft<=10) sndTick();
   if(timeLeft<=0){ clearInterval(timer); onTimeOut(); }
 }
 function pauseTimer(){ clearInterval(timer); }
@@ -6714,12 +6761,12 @@ function finishCase(){
     totalPassed++;
     const fev = feverLeft>0 ? 2 : 1;
     const perfect = Math.round(300*caseScoreMult*fev);
-    score+=perfect; updateScoreHud(); floatText("PERFECT!  +"+perfect,"perfect"); sndLevel();
+    score+=perfect; updateScoreHud(); floatText("PERFECT!  +"+perfect,"perfect"); sndPerfect();
   }
   // 工賃を獲得（クリアで多め・ボスや難症例・急患で割増）
   const earn = Math.round((passed?60:15)*caseWageMult) + (isBoss&&passed?80:0);
   wage += earn; renderWage(); floatText("🔧工賃 +"+earn,"wage");
-  results.push({symptom:c.symptom, passed:passed, tier:TIER_NAMES[tierIdx]});
+  results.push({symptom:c.symptom, passed:passed, tier:TIER_NAMES[tierIdx], explanation:c.explanation||""});
 
   posInTier++;
   updateHud();
@@ -6777,6 +6824,8 @@ function gameOver(){
   overScreen.classList.remove("hidden");
   try{ sndOver(); }catch(e){}
   try{ recordScore(); renderRanking("overRank"); renderRanking("startRank"); }catch(e){}
+  try{ initGlobalSubmit(score,"globalSubmitBoxOver"); fetchGlobalRanking(); }catch(e){}
+  try{ renderWeakness("weaknessOver"); }catch(e){}
 }
 
 function endGame(){
@@ -6802,21 +6851,10 @@ function endGame(){
   $("finalScoreHi").textContent = sHi.toLocaleString();
   $("finalCombo").textContent = bestCombo;
   $("hiScoreVal").textContent = sHi.toLocaleString();
-  try{ stopMusic(); sndLevel(); }catch(e){}
+  try{ stopMusic(); sndClear(); }catch(e){}
   try{ recordScore(); renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
-  // グローバルランキング
-  try{
-    const box=$("globalSubmitBox");
-    if(box){
-      box.style.display="";
-      const savedName=localStorage.getItem("seibishi_player_name")||"";
-      const ni=$("playerNameInput"); if(ni) ni.value=savedName;
-      const r=$("submitResult"); if(r) r.textContent=savedName?"⏳ 自動送信中…":"";
-      const b=$("submitRankBtn"); if(b) b.disabled=false;
-      if(savedName) setTimeout(submitGlobalScore, 800); // 名前が保存済みなら自動送信
-    }
-    fetchGlobalRanking();
-  }catch(e){}
+  // グローバルランキング自動登録
+  try{ initGlobalSubmit(score,"globalSubmitBox"); fetchGlobalRanking(); }catch(e){}
 
   let rank,cls,desc;
   if(pts>=100){rank="SS ・ 神整備士";cls="s";desc="全症例パーフェクト！完全制覇、開発者級の診断力です。";}
@@ -6824,17 +6862,111 @@ function endGame(){
   else if(pts>=80){rank="A ・ 一人前";cls="a";desc="確かな腕。取りこぼしを潰せば頂点へ。";}
   else if(pts>=70){rank="B ・ 見習い卒業";cls="b";desc="完走できる実力。手順の精度をさらに上げよう。";}
   else{rank="C ・ 修行中";cls="c";desc="完走おめでとう。基本手順を固めて精度を上げよう。";}
+  finalRankText = rank;
   const rt = $("rankText"); rt.textContent = rank; rt.className = "rank "+cls;
   $("rankDesc").textContent = desc;
 
-  const rl = $("reviewList"); rl.innerHTML = "";
-  results.forEach((r)=>{
-    const div = document.createElement("div");
-    div.className = "review-item";
-    div.innerHTML = '<span class="mark '+(r.passed?"o":"x")+'">'+(r.passed?"○":"×")+'</span>'+
-      '<span class="sym">['+r.tier+'] '+escapeHtml(r.symptom)+'</span>';
-    rl.appendChild(div);
-  });
+  renderWeakness("weaknessEnd");
+  renderReview();
+}
+
+function makeReviewItem(r, showCat){
+  const div = document.createElement("div");
+  div.className = "review-item" + (r.passed ? "" : " failed");
+  const catTag = showCat ? `<span class="r-cat">${getCategory(r.symptom)}</span>` : "";
+
+  if(!r.passed && r.explanation){
+    div.innerHTML =
+      `<span class="mark x">×</span>`+
+      `<span class="sym">${catTag}<span class="r-text">[${r.tier}] ${escapeHtml(r.symptom)}</span>`+
+      `<span class="r-explain-toggle">解説を見る ▼</span>`+
+      `<div class="r-explain-body"><div class="r-explain-text">🔧 ${escapeHtml(r.explanation)}</div></div>`+
+      `</span>`;
+    div.addEventListener("click", ()=>{
+      const body = div.querySelector(".r-explain-body");
+      const toggle = div.querySelector(".r-explain-toggle");
+      const open = body.classList.toggle("open");
+      toggle.textContent = open ? "解説を閉じる ▲" : "解説を見る ▼";
+    });
+  } else {
+    div.innerHTML =
+      `<span class="mark ${r.passed?"o":"x"}">${r.passed?"○":"×"}</span>`+
+      `<span class="sym">${catTag}<span class="r-text">[${r.tier}] ${escapeHtml(r.symptom)}</span></span>`;
+  }
+  return div;
+}
+
+function renderReview(){
+  const fl = $("failedList"); if(!fl) return;
+  const pb = $("passedBody"); const pt = $("passedToggle");
+  fl.innerHTML = ""; if(pb) pb.innerHTML = "";
+
+  const failed = results.filter(r=>!r.passed);
+  const passed = results.filter(r=>r.passed);
+
+  if(failed.length){
+    const title = document.createElement("div");
+    title.className = "review-section-title failed-title";
+    title.textContent = `間違えた症例 ${failed.length}件`;
+    fl.appendChild(title);
+    failed.forEach(r => fl.appendChild(makeReviewItem(r, true)));
+  } else {
+    const none = document.createElement("div");
+    none.className = "review-section-title";
+    none.textContent = "🎉 間違いなし！全症例クリア";
+    fl.appendChild(none);
+  }
+
+  if(passed.length && pb && pt){
+    pt.style.display = "";
+    pt.querySelector(".arr").textContent = "▼";
+    passed.forEach(r => pb.appendChild(makeReviewItem(r, false)));
+    pt.onclick = ()=>{
+      const open = pb.classList.toggle("open");
+      pt.classList.toggle("open", open);
+    };
+  }
+}
+
+// ===== 弱点カテゴリー =====
+function getCategory(symptom){
+  if(/エアコン|コンプレッサー/.test(symptom))           return "❄️ エアコン系";
+  if(/冷却水|オーバーヒート|ラジエーター/.test(symptom)) return "🌡️ 冷却系";
+  if(/ブレーキ(?!ランプ|警告|ライト)/.test(symptom))    return "🛑 ブレーキ系";
+  if(/AT\b|CVT|MT\b|シフト|変速|クラッチ|ジャダー/.test(symptom)) return "⚙️ 駆動・変速系";
+  if(/ハンドル|パワーステアリング|アライメント|タイヤ.*空気|TPMS|段差.*異音|サスペンション|足回り/.test(symptom)) return "🚗 足回り・操舵系";
+  if(/マフラー|触媒|排気|EVAP|P04[0-9][0-9]/.test(symptom)) return "💨 排気・燃料系";
+  if(/バッテリー|充電|オルタネーター/.test(symptom))    return "🔋 バッテリー系";
+  if(/エンジン|アイドリング|煙|オイル|セルモーター|点火|燃料ポンプ/.test(symptom)) return "🔧 エンジン系";
+  if(/ABS|横滑り|スマートキー|P0[0-9]/.test(symptom))  return "🔍 電子制御系";
+  if(/ランプ|ライト|ウインカー|ホーン|ルーム|熱線|ミラー|ワイパー|ウォッシャー|ドア|リッド|バックランプ|ブレーキランプ/.test(symptom)) return "💡 電装・ボディ系";
+  return "🔧 その他";
+}
+
+function renderWeakness(containerId){
+  const el = $(containerId); if(!el) return;
+  const failed = results.filter(r=>!r.passed);
+  if(!failed.length){ el.style.display="none"; return; }
+  const map = {};
+  failed.forEach(r=>{ const c=getCategory(r.symptom); map[c]=(map[c]||0)+1; });
+  const sorted = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const max = sorted[0][1];
+  const rankCls = ["rank1","rank2","rank3",""];
+  const rows = sorted.map(([cat,cnt],i)=>`
+    <div class="weakness-row">
+      <span class="weakness-rank">${i+1}位</span>
+      <span class="weakness-cat">${cat}</span>
+      <div class="weakness-bar-wrap"><div class="weakness-bar ${rankCls[i]||""}" style="width:${Math.round(cnt/max*100)}%"></div></div>
+      <span class="weakness-count">×${cnt}回</span>
+    </div>`).join("");
+  el.style.display="";
+  el.innerHTML=`<div class="weakness-title">あなたの弱点カテゴリー</div>${rows}`;
+}
+
+function shareToX(){
+  const tot = runTotal();
+  const text = `整備士育成ゲームで${score.toLocaleString()}点！\nランク：${finalRankText}\n合格 ${totalPassed}/${tot}症例\nmechanic.mukiguri.com\n#整備士育成ゲーム`;
+  window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(text),"_blank","noopener,noreferrer");
 }
 
 function animateNumber(el, target){
@@ -7014,8 +7146,40 @@ function beep(freq,dur,type,vol,delay){
 }
 function sndCorrect(){ beep(660,0.12,"triangle",0.22); beep(990,0.16,"triangle",0.18,0.07); }
 function sndWrong(){ beep(196,0.2,"sawtooth",0.2); beep(146,0.26,"sawtooth",0.18,0.06); }
-function sndCombo(n){ beep(520+Math.min(n,14)*45,0.09,"square",0.13); }
-function sndLevel(){ [523,659,784,1047].forEach((f,i)=>beep(f,0.16,"triangle",0.18,i*0.09)); }
+function sndCombo(n){
+  if(n>=10){ // 10コンボ以上：派手な3音
+    const b=440+Math.min(n,20)*28;
+    [b,b*1.25,b*1.5].forEach((f,i)=>beep(f,0.12,"square",0.14,i*0.05));
+  } else {
+    beep(520+Math.min(n,14)*45,0.09,"square",0.13);
+  }
+}
+function sndPerfect(){ // 症例PERFECT（3音上昇）
+  beep(784,0.10,"triangle",0.20);
+  beep(988,0.10,"triangle",0.20,0.09);
+  beep(1175,0.22,"triangle",0.24,0.18);
+}
+function sndLifeUp(){ // ライフ+1（明るい2音）
+  beep(660,0.10,"triangle",0.18);
+  beep(880,0.18,"triangle",0.22,0.10);
+}
+function sndTierUp(){ // 昇級ファンファーレ（6音）
+  [523,659,784,659,784,1047].forEach((f,i)=>beep(f,0.15,"triangle",0.20,i*0.10));
+}
+function sndClear(){ // 全クリア（7音豪華版）
+  [523,659,784,880,1047,1319,1568].forEach((f,i)=>beep(f,0.22,"triangle",0.22,i*0.11));
+}
+function sndFever(){ // フィーバー開始（5音上昇）
+  [523,659,784,1047,1319].forEach((f,i)=>beep(f,0.10,"square",0.13,i*0.06));
+}
+function sndShop(){ // ショップ購入（コイン音）
+  beep(1047,0.06,"sine",0.18);
+  beep(1319,0.12,"sine",0.16,0.06);
+}
+function sndTick(){ // タイマー警告ティック
+  beep(880,0.04,"square",0.07);
+}
+function sndLevel(){ sndTierUp(); } // 後方互換
 function sndOver(){ [392,311,262,196].forEach((f,i)=>beep(f,0.28,"sawtooth",0.18,i*0.13)); }
 function toggleSound(){
   soundOn=!soundOn;
@@ -7073,7 +7237,7 @@ function scoreCorrect(){
   floatText("+"+gained+(fev>1?" 🔥":"")+(combo>=2?"  x"+comboMult().toFixed(1):""),"pop");
   sndCorrect(); if(combo>=3) sndCombo(combo);
   if(heat>=HEAT_MAX && feverLeft<=0) startFever(); else renderHeat();
-  if(combo%5===0 && lives<MAX_LIVES){ lives++; renderLives(); floatText("❤ +1","lifeup"); sndLevel(); }
+  if(combo%5===0 && lives<MAX_LIVES){ lives++; renderLives(); floatText("❤ +1","lifeup"); sndLifeUp(); }
 }
 function scoreWrong(){ combo=0; heat=0; if(feverLeft>0) endFever(); else renderHeat(); updateScoreHud(); shakeScreen(); sndWrong(); }
 
@@ -7108,8 +7272,7 @@ function useTime(){ if(answered||items.time<=0) return; items.time--; timeLeft+=
 function startFever(){
   feverLeft=18; heat=0;
   const app=document.querySelector(".app"); if(app) app.classList.add("fever");
-  floatText("🔥FEVER!! スコア2倍","fever"); shakeScreen();
-  [784,988,1175].forEach((f,i)=>beep(f,0.14,"triangle",0.2,i*0.07));
+  floatText("🔥FEVER!! スコア2倍","fever"); shakeScreen(); sndFever();
   renderHeat();
 }
 function endFever(){ feverLeft=0; const app=document.querySelector(".app"); if(app) app.classList.remove("fever"); renderHeat(); }
@@ -7153,7 +7316,7 @@ function buyItem(k){
   if(k==="life"){ if(extraLivesNextTier>=2) return; extraLivesNextTier++; }
   else { items[k]=(items[k]||0)+1; }
   wage-=p; renderShop(); renderWage();
-  floatText("🛒 購入","wage"); beep(660,0.09,"triangle",0.16);
+  floatText("🛒 購入","wage"); sndShop();
 }
 
 function doFlash(ok){
@@ -7175,6 +7338,7 @@ $("startBtn").addEventListener("click", ()=>{
 $("resumeBtn").addEventListener("click", resumeGame);
 $("pauseBtn").addEventListener("click", pauseAndSave);
 $("retryBtn").addEventListener("click", startGame);
+$("xShareBtn").addEventListener("click", shareToX);
 $("overTierBtn").addEventListener("click", retryTier);
 $("overRestartBtn").addEventListener("click", startGame);
 $("tierNextBtn").addEventListener("click", continueNextTier);
@@ -7196,7 +7360,7 @@ $("hiScore").textContent = getHi();
 $("hiScoreVal").textContent = getScoreHi().toLocaleString();
 $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
 renderRanking("startRank");
-$("submitRankBtn").addEventListener("click", submitGlobalScore);
+// submitRankBtn は動的生成になったため個別リスナー不要
 fetchGlobalRanking();
 renderTierPick();
 refreshResumeBtn();
@@ -7275,27 +7439,54 @@ function fetchGlobalRanking(){
     .catch(()=>{ clearTimeout(timer); clear(); });
 }
 
-function submitGlobalScore(){
-  const nameEl=$("playerNameInput");
-  const name=(nameEl?nameEl.value.trim():"")||"名無し";
-  try{ localStorage.setItem("seibishi_player_name", name); }catch(e){} // 名前を次回のために保存
-  const btn=$("submitRankBtn"), res=$("submitResult");
-  if(btn) btn.disabled=true;
-  if(res) res.textContent="送信中…";
-  fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+score)
+// ===== 全国ランキング自動登録 =====
+function sendToGlobal(name, scoreVal, box){
+  fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+scoreVal)
     .then(r=>r.json())
     .then(d=>{
       if(d.ok){
-        const box=$("globalSubmitBox");
-        if(box) box.innerHTML=`<div style="text-align:center;padding:6px 0;color:var(--green);font-weight:800">✅ ${escapeHtml(name)} さんのスコア ${score.toLocaleString()} を登録！${d.rank>0?" 🏆"+d.rank+"位":""}</div>`;
+        const rankStr = d.rank>0 ? ` 🏆${d.rank}位` : "";
+        if(box) box.innerHTML=`<div class="global-auto-status success">✅ ${escapeHtml(name)} さん ${Number(scoreVal).toLocaleString()}点${rankStr} 登録完了！</div>`;
         fetchGlobalRanking();
       } else {
-        if(res) res.textContent="⚠ 登録失敗しました。";
-        if(btn) btn.disabled=false;
+        if(box) box.innerHTML=`<div class="global-auto-status">⚠ 登録失敗しました</div>`;
       }
     })
-    .catch(()=>{ if(res) res.textContent="⚠ 通信エラー。再度試してください。"; if(btn) btn.disabled=false; });
+    .catch(()=>{ if(box) box.innerHTML=`<div class="global-auto-status">⚠ 通信エラー</div>`; });
 }
+
+function initGlobalSubmit(scoreVal, boxId){
+  const box=$(boxId); if(!box) return;
+  if(scoreVal<=0){ box.style.display="none"; return; }
+  const savedName = localStorage.getItem("seibishi_player_name")||"";
+  box.style.display="";
+  if(savedName){
+    // 名前保存済み → 完全自動送信
+    box.innerHTML=`<div class="global-auto-status">🌐 <b>${escapeHtml(savedName)}</b> でランキング送信中…</div>`;
+    setTimeout(()=>sendToGlobal(savedName, scoreVal, box), 600);
+  } else {
+    // 初回 → 名前入力UI
+    const inp_id=boxId+"_inp", btn_id=boxId+"_btn", res_id=boxId+"_res";
+    box.innerHTML=
+      `<div class="global-first-label">🌐 全国ランキングに登録する（名前は一度だけ入力）</div>`+
+      `<div style="display:flex;gap:8px;align-items:center">`+
+        `<input id="${inp_id}" class="name-input" type="text" maxlength="10" placeholder="名前（10文字まで）">`+
+        `<button class="submit-rank-btn" id="${btn_id}" style="width:auto;white-space:nowrap;padding:9px 14px">登録 🏆</button>`+
+      `</div>`+
+      `<div id="${res_id}" class="global-auto-status"></div>`;
+    const inp=$(inp_id), btn=$(btn_id);
+    const doSend=()=>{
+      const name=(inp?inp.value.trim():"")||"名無し";
+      try{ localStorage.setItem("seibishi_player_name", name); }catch(e){}
+      if(btn){ btn.disabled=true; btn.textContent="送信中…"; }
+      sendToGlobal(name, scoreVal, box);
+    };
+    if(btn) btn.addEventListener("click", doSend);
+    if(inp) inp.addEventListener("keydown", e=>{ if(e.key==="Enter") doSend(); });
+  }
+}
+
+function submitGlobalScore(){ initGlobalSubmit(score,"globalSubmitBox"); } // 後方互換
 
 // 累計アクセス数（counterapi.dev）
 fetch("https://api.counterapi.dev/v1/mukiguri-mechanic/plays/up")
