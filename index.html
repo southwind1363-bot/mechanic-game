@@ -387,6 +387,13 @@
   .rank-row .rc{color:#ffd60a;font-size:.74rem;}
   .rank-row .rd{color:var(--steel);font-size:.7rem;}
   .rank-empty{font-size:.78rem;color:var(--steel);text-align:center;padding:6px;}
+  /* ===== アコーディオン（スタート画面） ===== */
+  .collapse-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--panel-light);border:1px solid var(--line);border-radius:9px;padding:8px 12px;color:var(--steel);font-size:.8rem;font-weight:800;cursor:pointer;margin:5px 0 0;letter-spacing:.04em;transition:border-color .15s,color .15s;}
+  .collapse-toggle:hover,.collapse-toggle.open{border-color:var(--orange);color:var(--text);}
+  .collapse-toggle .arr{font-size:.7rem;transition:transform .22s;display:inline-block;}
+  .collapse-toggle.open .arr{transform:rotate(180deg);}
+  .collapse-body{overflow:hidden;max-height:0;transition:max-height .28s ease;}
+  .collapse-body.open{max-height:700px;}
   /* 画面内に収める：背の低いビューポートでは要素を圧縮 */
   @media (max-height:760px){
     .scene{margin-bottom:8px;}
@@ -566,27 +573,44 @@
     </div>
     <div class="pop-title">整備士<span class="accent">育成</span>ゲーム</div>
     <div class="pop-tag"><span class="em">スゴ腕メカニック</span>をめざせ</div>
-    <p>症状から原因を見抜く、実務型の診断バトル。<br>スコア＆コンボを稼いで、見習いから親方級まで駆け上がれ！</p>
-    <ul class="rules">
-      <li><b>見習い→一人前→整備主任→親方級</b>の順に昇格。各級<b>10症例</b></li>
-      <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
-      <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
-      <li>ライフが尽きると<b>ゲームオーバー</b></li>
-      <li><span class="ki">道具</span>テスター/ヒント/時間 ・ <span class="ki">フィーバー</span>連続正解でスコア2倍</li>
-      <li><span class="ki">ショップ</span>工賃で購入 ・ <span class="ki">急患/ボス</span>で高得点を狙え</li>
-    </ul>
-    <div class="hi-row">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
-    <div id="playCnt" style="font-size:.72rem;color:var(--steel);margin-top:2px;min-height:1em;"></div>
-    <div id="startRank" class="rank-list"></div>
-    <div id="globalRankStart" class="rank-list"></div>
-    <div id="globalRegBox" style="display:none;padding:6px 0 2px;border-top:1px solid var(--line);margin-top:4px;">
-      <div style="font-size:.7rem;color:var(--steel);text-align:center;margin-bottom:4px;">🌐 全国ランキングにベストスコアを登録する</div>
-      <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
-        <input id="globalRegName" type="text" maxlength="10" placeholder="名前（10文字まで）" style="flex:1;max-width:150px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:.85rem;">
-        <button id="globalRegBtn" style="padding:5px 14px;border-radius:8px;background:var(--violet);color:#fff;border:none;font-size:.82rem;cursor:pointer;font-weight:700;">登録 🏆</button>
-      </div>
-      <div id="globalRegResult" style="font-size:.72rem;text-align:center;min-height:1.2em;margin-top:3px;color:var(--steel);"></div>
+
+    <!-- ルール（折りたたみ） -->
+    <button class="collapse-toggle" id="rulesToggle">📋 ルール <span class="arr">▼</span></button>
+    <div class="collapse-body" id="rulesBody">
+      <ul class="rules">
+        <li><b>見習い→一人前→整備主任→親方級</b>の順に昇格。各級<b>10症例</b></li>
+        <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
+        <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
+        <li>ライフが尽きると<b>ゲームオーバー</b></li>
+        <li><span class="ki">道具</span>テスター/ヒント/時間 ・ <span class="ki">フィーバー</span>連続正解でスコア2倍</li>
+        <li><span class="ki">ショップ</span>工賃で購入 ・ <span class="ki">急患/ボス</span>で高得点を狙え</li>
+      </ul>
     </div>
+
+    <!-- ハイスコア（常時表示） -->
+    <div class="hi-row" style="margin-top:8px;">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
+    <div id="playCnt" style="font-size:.72rem;color:var(--steel);margin-top:2px;min-height:1em;"></div>
+
+    <!-- ハイスコアランキング（折りたたみ） -->
+    <button class="collapse-toggle" id="localRankToggle">🏅 ハイスコアランキング <span class="arr">▼</span></button>
+    <div class="collapse-body" id="localRankBody">
+      <div id="startRank" class="rank-list"></div>
+    </div>
+
+    <!-- 全国ランキング（折りたたみ） -->
+    <button class="collapse-toggle" id="globalRankToggle">🌐 全国ランキング <span class="arr">▼</span></button>
+    <div class="collapse-body" id="globalRankBody">
+      <div id="globalRankStart" class="rank-list"></div>
+      <div id="globalRegBox" style="display:none;padding:6px 0 2px;border-top:1px solid var(--line);margin-top:4px;">
+        <div style="font-size:.7rem;color:var(--steel);text-align:center;margin-bottom:4px;">🌐 全国ランキングにベストスコアを登録する</div>
+        <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
+          <input id="globalRegName" type="text" maxlength="10" placeholder="名前（10文字まで）" style="flex:1;max-width:150px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:.85rem;">
+          <button id="globalRegBtn" style="padding:5px 14px;border-radius:8px;background:var(--violet);color:#fff;border:none;font-size:.82rem;cursor:pointer;font-weight:700;">登録 🏆</button>
+        </div>
+        <div id="globalRegResult" style="font-size:.72rem;text-align:center;min-height:1.2em;margin-top:3px;color:var(--steel);"></div>
+      </div>
+    </div>
+
     <div class="tier-pick-label">▼ どの級から始める？（上ほど難しい）</div>
     <div class="tier-badges pick" id="tierBadges"></div>
     <button class="big-btn" id="resumeBtn" style="margin-top:16px;display:none;">▶ つづきから</button>
@@ -7177,6 +7201,23 @@ fetchGlobalRanking();
 renderTierPick();
 refreshResumeBtn();
 initGlobalRegBox();   // スタート画面の全国登録ボックス
+
+// ===== アコーディオン =====
+(function(){
+  const pairs = [
+    ["rulesToggle",      "rulesBody"],
+    ["localRankToggle",  "localRankBody"],
+    ["globalRankToggle", "globalRankBody"]
+  ];
+  pairs.forEach(([tid, bid])=>{
+    const btn = $(tid), body = $(bid);
+    if(!btn||!body) return;
+    btn.addEventListener("click", ()=>{
+      const open = body.classList.toggle("open");
+      btn.classList.toggle("open", open);
+    });
+  });
+})();
 
 function initGlobalRegBox(){
   const bestScore = getScoreHi();
