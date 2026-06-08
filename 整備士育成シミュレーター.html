@@ -779,9 +779,9 @@
     <div class="hi-row">合格症例 <b id="finalScore">0</b> / <b id="finalTotal">40</b> ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
     <div id="finalRank" class="rank-list"></div>
     <div id="globalSubmitBox" class="name-submit-box" style="display:none">
-      <label>🌐 全国ランキングに登録する</label>
+      <label>🌐 全国ランキングに登録する（初回のみ名前を入力）</label>
       <input id="playerNameInput" class="name-input" type="text" maxlength="10" placeholder="名前（10文字まで）">
-      <button class="submit-rank-btn" id="submitRankBtn">ランキングに登録する 🏆</button>
+      <button class="submit-rank-btn" id="submitRankBtn">登録する 🏆</button>
       <div id="submitResult" style="font-size:.78rem;color:var(--steel);text-align:center;min-height:1em;"></div>
     </div>
     <div id="globalRankFinal" class="rank-list"></div>
@@ -6751,7 +6751,15 @@ function endGame(){
   try{ recordScore(); renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
   // グローバルランキング
   try{
-    const box=$("globalSubmitBox"); if(box){ box.style.display=""; const ni=$("playerNameInput"); if(ni) ni.value=""; const r=$("submitResult"); if(r) r.textContent=""; const b=$("submitRankBtn"); if(b) b.disabled=false; }
+    const box=$("globalSubmitBox");
+    if(box){
+      box.style.display="";
+      const savedName=localStorage.getItem("seibishi_player_name")||"";
+      const ni=$("playerNameInput"); if(ni) ni.value=savedName;
+      const r=$("submitResult"); if(r) r.textContent=savedName?"⏳ 自動送信中…":"";
+      const b=$("submitRankBtn"); if(b) b.disabled=false;
+      if(savedName) setTimeout(submitGlobalScore, 800); // 名前が保存済みなら自動送信
+    }
     fetchGlobalRanking();
   }catch(e){}
 
@@ -7062,6 +7070,7 @@ function fetchGlobalRanking(){
 function submitGlobalScore(){
   const nameEl=$("playerNameInput");
   const name=(nameEl?nameEl.value.trim():"")||"名無し";
+  try{ localStorage.setItem("seibishi_player_name", name); }catch(e){} // 名前を次回のために保存
   const btn=$("submitRankBtn"), res=$("submitResult");
   if(btn) btn.disabled=true;
   if(res) res.textContent="送信中…";
