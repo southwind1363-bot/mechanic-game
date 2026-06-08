@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>整備士育成ゲーム</title>
+<title>GARAGE CRISIS</title>
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root{
@@ -589,7 +589,7 @@
 
 <div class="app">
   <header>
-    <div class="title"><span class="gear">⚙</span>整備士育成ゲーム<small>診断バトル</small><button id="pauseBtn" class="sound-btn" title="中断してセーブ" style="display:none;">⏸</button><button id="soundBtn" class="sound-btn" title="効果音 ON/OFF">🔊</button></div>
+    <div class="title"><span class="gear">⚙</span>GARAGE CRISIS<small>整備診断バトル</small><button id="pauseBtn" class="sound-btn" title="中断してセーブ" style="display:none;">⏸</button><button id="soundBtn" class="sound-btn" title="効果音 ON/OFF">🔊</button></div>
     <div class="hud">
       <div class="cell"><div class="label">級・症例</div><div class="val" id="hudCase">- / 10</div></div>
       <div class="cell"><div class="label">残り時間</div><div class="val timer" id="hudTimer">60</div></div>
@@ -878,7 +878,7 @@
     <button class="big-btn" id="retryBtn">もう一度挑戦する</button>
   </div>
 
-  <footer>整備士育成ゲーム ・ 完全オフライン動作 ・ 記録はこの端末にのみ保存されます</footer>
+  <footer>GARAGE CRISIS ・ 完全オフライン動作 ・ 記録はこの端末にのみ保存されます</footer>
 </div>
 
 <script>
@@ -6965,7 +6965,7 @@ function renderWeakness(containerId){
 
 function shareToX(){
   const tot = runTotal();
-  const text = `整備士育成ゲームで${score.toLocaleString()}点！\nランク：${finalRankText}\n合格 ${totalPassed}/${tot}症例\nmechanic.mukiguri.com\n#整備士育成ゲーム`;
+  const text = `GARAGE CRISISで${score.toLocaleString()}点！\nランク：${finalRankText}\n合格 ${totalPassed}/${tot}症例\nmechanic.mukiguri.com\n#GARAGE_CRISIS`;
   window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(text),"_blank","noopener,noreferrer");
 }
 
