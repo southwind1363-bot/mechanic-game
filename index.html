@@ -6554,6 +6554,9 @@ $("resetHiBtn").addEventListener("click", ()=>{
   if(confirm("ハイスコアとランキングをリセットしますか？")){ setHi(0); setScoreHi(0); saveRanking([]); $("hiScore").textContent="0"; $("hiScoreVal").textContent="0"; renderRanking("startRank"); }
 });
 
+// ===== グローバルランキング（GAS）=====
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxtPJwzLPixbx4gCvU8oY34mUrfDGCEVS4imnDyekdBdd4gM-qXmE93nrvX68wrefWy/exec";
+
 // init
 $("hiScore").textContent = getHi();
 $("hiScoreVal").textContent = getScoreHi().toLocaleString();
@@ -6563,9 +6566,6 @@ $("submitRankBtn").addEventListener("click", submitGlobalScore);
 fetchGlobalRanking();
 renderTierPick();     // 開始する級セレクター
 refreshResumeBtn();   // 保存データがあれば「つづきから」を表示
-
-// ===== グローバルランキング（GAS）=====
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxtPJwzLPixbx4gCvU8oY34mUrfDGCEVS4imnDyekdBdd4gM-qXmE93nrvX68wrefWy/exec";
 
 function renderGlobalRanking(data, elIds){
   const html = data.length === 0
