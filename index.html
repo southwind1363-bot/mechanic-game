@@ -319,11 +319,11 @@
   #oyakata.happy .happyOnly{display:inline;}
   @media (prefers-reduced-motion: reduce){#oyakata.show{animation:none;opacity:1;transform:none;}#oyakata.angry.show .oya-face{animation:none;}}
   /* ===== 豆知識モード（ケース終了後に親方の大吹き出し） ===== */
-  #oyakata.trivia{left:0;right:0;bottom:0;padding:12px 14px;background:rgba(13,15,20,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:all;z-index:100;align-items:flex-end;gap:10px;}
-  #oyakata.trivia .oya-face{width:72px;height:72px;}
-  #oyakata.trivia .oya-img{width:82px;height:82px;}
-  #oyakata.trivia .oya-bubble{max-width:none;flex:1;padding:14px 16px;border-radius:14px;color:#111;}
-  #oyakata.trivia .oya-bubble::after{bottom:18px;}
+  #oyakata.trivia{left:0;right:0;bottom:0;flex-direction:column;align-items:center;padding:10px 16px 14px;background:rgba(13,15,20,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:all;z-index:100;gap:6px;}
+  #oyakata.trivia .oya-face{width:54px;height:54px;flex:0 0 auto;}
+  #oyakata.trivia .oya-img{width:60px;height:60px;flex:0 0 auto;}
+  #oyakata.trivia .oya-bubble{max-width:480px;width:100%;flex:none;padding:14px 16px;border-radius:14px;color:#111;}
+  #oyakata.trivia .oya-bubble::after{display:none;}
   #oyakata.trivia .oya-name{display:none;}
   .trivia-header{font-size:1rem;font-weight:900;letter-spacing:.06em;color:#1a1c1f;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
   .trivia-header::before{content:"";display:block;width:4px;height:1.1em;background:var(--orange);border-radius:2px;flex-shrink:0;}
