@@ -565,6 +565,14 @@
     <div id="playCnt" style="font-size:.72rem;color:var(--steel);margin-top:2px;min-height:1em;"></div>
     <div id="startRank" class="rank-list"></div>
     <div id="globalRankStart" class="rank-list"></div>
+    <div id="globalRegBox" style="display:none;padding:6px 0 2px;border-top:1px solid var(--line);margin-top:4px;">
+      <div style="font-size:.7rem;color:var(--steel);text-align:center;margin-bottom:4px;">🌐 全国ランキングにベストスコアを登録する</div>
+      <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
+        <input id="globalRegName" type="text" maxlength="10" placeholder="名前（10文字まで）" style="flex:1;max-width:150px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:.85rem;">
+        <button id="globalRegBtn" style="padding:5px 14px;border-radius:8px;background:var(--violet);color:#fff;border:none;font-size:.82rem;cursor:pointer;font-weight:700;">登録 🏆</button>
+      </div>
+      <div id="globalRegResult" style="font-size:.72rem;text-align:center;min-height:1.2em;margin-top:3px;color:var(--steel);"></div>
+    </div>
     <div class="tier-pick-label">▼ どの級から始める？（上ほど難しい）</div>
     <div class="tier-badges pick" id="tierBadges"></div>
     <button class="big-btn" id="resumeBtn" style="margin-top:16px;display:none;">▶ つづきから</button>
@@ -6262,9 +6270,14 @@ function recordScore(){
   if(score<=0) return;
   const list=getRanking();
   const worst = list.length>=5 ? list[list.length-1].s : 0;
-  if(list.length>=5 && score<=worst) return;   // 上位5に入らなければ記録しない
-  let name=""; try{ name=(window.prompt("ランクイン！名前を入力（10文字まで）","")||"").slice(0,10).trim(); }catch(e){}
-  if(!name) name="NO NAME";
+  if(list.length>=5 && score<=worst) return;
+  // 全国ランキングと名前を統一：seibishi_player_nameが保存済みならそれを使う
+  let name = localStorage.getItem("seibishi_player_name")||"";
+  if(!name){
+    try{ name=(window.prompt("ランクイン！名前を入力（10文字まで）","")||"").slice(0,10).trim(); }catch(e){}
+    if(!name) name="NO NAME";
+    try{ localStorage.setItem("seibishi_player_name", name); }catch(e){} // 全国ランキング用にも保存
+  }
   list.push({n:name, s:score, c:bestCombo, d:new Date().toLocaleDateString("ja-JP",{month:"2-digit",day:"2-digit"})});
   list.sort((a,b)=>b.s-a.s);
   saveRanking(list.slice(0,5));
@@ -7040,8 +7053,41 @@ $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
 renderRanking("startRank");
 $("submitRankBtn").addEventListener("click", submitGlobalScore);
 fetchGlobalRanking();
-renderTierPick();     // 開始する級セレクター
-refreshResumeBtn();   // 保存データがあれば「つづきから」を表示
+renderTierPick();
+refreshResumeBtn();
+initGlobalRegBox();   // スタート画面の全国登録ボックス
+
+function initGlobalRegBox(){
+  const bestScore = getScoreHi();
+  if(bestScore <= 0) return; // スコアなければ非表示
+  const box = $("globalRegBox");
+  if(!box) return;
+  // seibishi_player_name → なければローカルランキングの名前 → なければ空
+  const savedName = localStorage.getItem("seibishi_player_name") ||
+    (()=>{ try{ const r=getRanking(); return r.length?r[0].n:""; }catch(e){ return ""; } })();
+  const ni = $("globalRegName");
+  if(ni) ni.value = savedName;
+  box.style.display = "";
+  $("globalRegBtn").addEventListener("click", ()=>{
+    const name = (ni ? ni.value.trim() : "") || "名無し";
+    try{ localStorage.setItem("seibishi_player_name", name); }catch(e){}
+    const btn = $("globalRegBtn"), res = $("globalRegResult");
+    if(btn) btn.disabled = true;
+    if(res) res.textContent = "送信中…";
+    fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+bestScore)
+      .then(r=>r.json())
+      .then(d=>{
+        if(d.ok){
+          if(res) res.textContent = "✅ 登録完了！"+(d.rank>0?" 🏆"+d.rank+"位":"");
+          fetchGlobalRanking();
+        } else {
+          if(res) res.textContent = "⚠ 登録失敗";
+          if(btn) btn.disabled = false;
+        }
+      })
+      .catch(()=>{ if(res) res.textContent = "⚠ 通信エラー"; if(btn) btn.disabled = false; });
+  });
+}
 
 function renderGlobalRanking(data, elIds){
   const html = data.length === 0
