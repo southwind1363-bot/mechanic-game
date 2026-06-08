@@ -7023,7 +7023,7 @@ $("resetHiBtn").addEventListener("click", ()=>{
 });
 
 // ===== グローバルランキング（GAS）=====
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxtPJwzLPixbx4gCvU8oY34mUrfDGCEVS4imnDyekdBdd4gM-qXmE93nrvX68wrefWy/exec";
+const GAS_URL = "/api/ranking"; // Vercelプロキシ経由（CORS対策）
 
 // init
 $("hiScore").textContent = getHi();

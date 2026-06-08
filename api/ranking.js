@@ -2,7 +2,13 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxtPJwzLPixbx4gCvU8oY34
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // OPTIONSプリフライトには即座に200を返す
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
   const { action, name, score } = req.query;
   let url = GAS_URL + "?action=" + (action || "get");
