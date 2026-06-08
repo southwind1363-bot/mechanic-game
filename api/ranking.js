@@ -11,7 +11,8 @@ export default async function handler(req, res) {
   }
 
   const { action, name, score } = req.query;
-  let url = GAS_URL + "?action=" + (action || "get");
+  // キャッシュ回避のため常にタイムスタンプを付加
+  let url = GAS_URL + "?action=" + (action || "get") + "&_t=" + Date.now();
   if (name)  url += "&name="  + encodeURIComponent(name);
   if (score) url += "&score=" + encodeURIComponent(score);
 
@@ -23,13 +24,12 @@ export default async function handler(req, res) {
     });
 
     let finalUrl = url;
-    // 302リダイレクトならLocationヘッダーを取得
     if (r1.status === 302 || r1.status === 301) {
       const loc = r1.headers.get("location");
       if (loc) finalUrl = loc;
     }
 
-    // Step2: リダイレクト先（script.googleusercontent.com）から実データを取得
+    // Step2: リダイレクト先から実データを取得
     const r2 = await fetch(finalUrl, {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
