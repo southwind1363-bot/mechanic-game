@@ -33,7 +33,23 @@ export default async function handler(req, res) {
     const r2 = await fetch(finalUrl, {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
-    const data = await r2.json();
+    let data = await r2.json();
+
+    // GETの場合: テストデータ除去・名前重複排除（最高スコアのみ残す）・ソート
+    if (!action || action === "get") {
+      if (Array.isArray(data)) {
+        const TEST_NAMES = ["テスト","テスト2","GASTEST","GASTEST_77","GASTEST_77777",
+                            "VERIFY","VERIFY2","FINALTEST","TEST","テスト1"];
+        data = data.filter(e => !TEST_NAMES.includes(e.name));
+        // 名前ごとに最高スコアのエントリだけ残す
+        const best = {};
+        for (const e of data) {
+          if (!best[e.name] || e.score > best[e.name].score) best[e.name] = e;
+        }
+        data = Object.values(best).sort((a, b) => b.score - a.score).slice(0, 10);
+      }
+    }
+
     res.status(200).json(data);
   } catch (e) {
     res.status(500).json({ error: "proxy error", detail: String(e) });
