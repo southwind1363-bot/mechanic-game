@@ -6970,7 +6970,7 @@ function renderStep(){
     let _scrolled=false, _tsY=0;
     btn.addEventListener("touchstart", (e)=>{ _scrolled=false; _tsY=e.touches[0].clientY; }, {passive:true});
     btn.addEventListener("touchmove",  (e)=>{ if(Math.abs(e.touches[0].clientY-_tsY)>12) _scrolled=true; }, {passive:true});
-    btn.addEventListener("touchend",   (e)=>{ if(_scrolled) return; e.preventDefault(); chooseAnswer(i); }, {passive:false});
+    btn.addEventListener("touchend",   (e)=>{ e.preventDefault(); if(_scrolled) return; chooseAnswer(i); }, {passive:false});
     btn.addEventListener("click", ()=>chooseAnswer(i)); // PC用
     box.appendChild(btn);
   });
@@ -7778,8 +7778,9 @@ $("tierNextBtn").addEventListener("click", continueNextTier);
   nb.addEventListener("touchstart", (e)=>{ _nbScrolled=false; _nbTsY=e.touches[0].clientY; }, {passive:true});
   nb.addEventListener("touchmove",  (e)=>{ if(Math.abs(e.touches[0].clientY-_nbTsY)>12) _nbScrolled=true; }, {passive:true});
   nb.addEventListener("touchend", (e)=>{
+    e.preventDefault();
     if(_nbBusy||!nb.classList.contains("show")||_nbScrolled) return;
-    _nbBusy=true; e.preventDefault(); nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; });
+    _nbBusy=true; nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; });
   }, {passive:false});
   nb.addEventListener("click", (e)=>{ if(_nbBusy||!nb.classList.contains("show")) return; _nbBusy=true; nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; }); });
 })();
