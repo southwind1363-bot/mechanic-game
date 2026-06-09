@@ -6657,6 +6657,17 @@ function recordScore(){
   saveRanking(list.slice(0,5));
   lastRankedScore = score;
 }
+// 名前を後から入力したとき、ローカル順位の仮名(プレイヤー/NO NAME)を本名に置き換えて再描画
+function applyEnteredName(name){
+  if(!name) return;
+  try{
+    const list=getRanking();
+    let changed=false;
+    for(const r of list){ if(r.n==="プレイヤー"||r.n==="NO NAME"){ r.n=name; changed=true; } }
+    if(changed) saveRanking(list);
+  }catch(e){}
+  try{ renderRanking("startRank"); renderRanking("overRank"); renderRanking("finalRank"); }catch(e){}
+}
 function renderRanking(elId){
   const el=$(elId); if(!el) return;
   const list=getRanking();
@@ -7846,6 +7857,7 @@ function initGlobalRegBox(){
     $("globalRegBtn").addEventListener("click", ()=>{
       const name = (ni ? ni.value.trim() : "") || "名無し";
       try{ localStorage.setItem("seibishi_player_name", name); }catch(e){}
+      applyEnteredName(name);   // ローカル順位の仮名を本名へ
       sendToGlobal(name, bestScore, box);
     });
   }
@@ -7944,6 +7956,7 @@ function initGlobalSubmit(scoreVal, boxId){
     const doSend=()=>{
       const name=(inp?inp.value.trim():"")||"名無し";
       try{ localStorage.setItem("seibishi_player_name", name); }catch(e){}
+      applyEnteredName(name);   // ローカル順位の仮名を本名へ
       if(btn){ btn.disabled=true; btn.textContent="送信中…"; }
       sendToGlobal(name, scoreVal, box);
     };
