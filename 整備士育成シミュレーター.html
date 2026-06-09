@@ -628,7 +628,7 @@
     </div>
 
     <!-- ハイスコア（常時表示） -->
-    <div class="hi-row" style="margin-top:8px;">🏆 自己ベスト <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
+    <div class="hi-row" style="margin-top:8px;">🏆 最高スコア <b id="hiScoreVal">0</b> ・ 合格最高 <b id="hiScore">0</b>/40</div>
     <div id="playCnt" style="font-size:.72rem;color:var(--steel);margin-top:2px;min-height:1em;"></div>
 
     <!-- ハイスコアランキング（折りたたみ） -->
@@ -6649,12 +6649,9 @@ function recordScore(){
   const worst = list.length>=5 ? list[list.length-1].s : 0;
   if(list.length>=5 && score<=worst) return;
   // 全国ランキングと名前を統一：seibishi_player_nameが保存済みならそれを使う
+  // window.promptはスマホで動かないため廃止→名前入力はゲームオーバーUIで行う
   let name = localStorage.getItem("seibishi_player_name")||"";
-  if(!name){
-    try{ name=(window.prompt("ランクイン！名前を入力（10文字まで）","")||"").slice(0,10).trim(); }catch(e){}
-    if(!name) name="NO NAME";
-    try{ localStorage.setItem("seibishi_player_name", name); }catch(e){} // 全国ランキング用にも保存
-  }
+  if(!name || name==="NO NAME") name="プレイヤー"; // ローカル表示用の仮名（localStorageには保存しない）
   list.push({n:name, s:score, c:bestCombo, d:new Date().toLocaleDateString("ja-JP",{month:"2-digit",day:"2-digit"})});
   list.sort((a,b)=>b.s-a.s);
   saveRanking(list.slice(0,5));
