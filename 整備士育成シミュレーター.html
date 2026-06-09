@@ -2401,7 +2401,7 @@ const cases = [
       result_correct:"バルブ/ガスケット等の損傷を特定し、整備方針と費用を説明。",
       result_wrong:"電装の保証交換や添加剤では機械損傷は直らない。"}],
     explanation:"電装交換で直らぬ単気筒失火は圧縮/リークダウンで機械系を特定→損傷部の整備方針を提示する。"},
-  {id:67,tier:"ウルトラ級",symptom:"触媒を替えてもP0420が再発する",steps:[
+  {id:67,tier:"ウルトラ級",symptom:"前回の修理で触媒を交換したが、しばらくするとエンジン警告灯が再点灯（P0420再発）",steps:[
     {question:"触媒を替えてもP0420が再発する。最初は？",choices:[
       {text:"触媒を傷める上流原因を確認する",correct:true},
       {text:"新品触媒の適合を確認して原因を絞る",correct:false},
@@ -2493,7 +2493,7 @@ const cases = [
       result_correct:"共有部（車速/電源/通信）を直せば両系の警告が一括で消える。",
       result_wrong:"一括交換や増設は無駄。共有部を直し両消灯を確認。"}],
     explanation:"ABSとEPSの同時警告は共有入力（車速/電源/通信）を疑い、共有点を特定→直して両警告の消灯を確認。"},
-  {id:71,tier:"ウルトラ級",symptom:"P0171傾向だが吸気漏れもMAF汚れも無い",steps:[
+  {id:71,tier:"ウルトラ級",symptom:"エンジン警告灯点灯・燃費悪化（P0171傾向）だが吸気漏れもMAF汚れも見当たらない難事例",steps:[
     {question:"漏れもMAF汚れも無いP0171傾向。最初は？",choices:[
       {text:"燃圧の実測と上流の排気漏れを確認する",correct:true},
       {text:"MAFをもう一度清掃して作動を確認する",correct:false},
@@ -2976,7 +2976,7 @@ const cases = [
       result_correct:"5Vを引っ張る短絡センサー/配線を外して特定し修理。",
       result_wrong:"全交換や昇圧、書き換えでは再発。短絡源を特定して直す。"}],
     explanation:"複数センサー同時異常は共通5V/接地→5V線の電圧/短絡→短絡源を特定して修理する。"},
-  {id:92,tier:"ウルトラ級",symptom:"V型で片側バンクだけ燃調が薄い（P0171系）",steps:[
+  {id:92,tier:"ウルトラ級",symptom:"V型エンジン車。燃費悪化・軽い息継ぎ。スキャンすると片側バンクだけP0171（燃調希薄）が記録",steps:[
     {question:"V型で片バンクだけ薄い（P0171系）。最初は？",choices:[
       {text:"薄い側バンクの燃圧と吸気と排気を左右比較する",correct:true},
       {text:"両バンクのO2を比較する",correct:false},
@@ -3298,29 +3298,29 @@ const cases = [
       result_correct:"順に切り分けて不良箇所を特定。該当部の修理で解決した。",
       result_wrong:"切り分けずまとめ交換は無駄。整備不良で車検も通らない。"}],
     explanation:"ロービーム片側不点灯は球・ヒューズ→コネクタ/リレー→配線の順に切り分けて原因を特定する。"},
-  {id:106,tier:"上級",symptom:"エンジン警告灯。コードはP0171（燃料系統希薄）が記録されている",steps:[
-    {question:"P0171(燃料希薄)。最初に確認することは？",choices:[
-      {text:"インテーク系の二次エア漏れと燃圧を確認する",correct:true},
-      {text:"インジェクターをすぐ交換する",correct:false},
-      {text:"O2センサーを先に交換する",correct:false},
-      {text:"エアクリーナーだけ交換する",correct:false}],
-      result_correct:"希薄の主因は二次エア漏れ・燃圧低下・MAFセンサー誤検知が多い。まずこれらを確認。",
-      result_wrong:"部品の即交換は誤診につながる。二次エア・燃圧の確認が先決。"},
-    {question:"燃圧正常。インテークホースを確認すると小さな亀裂があった。どうする？",choices:[
-      {text:"ホースを交換してリセット後、ロングトリムの回復を確認する",correct:true},
-      {text:"亀裂にパーツクリーナーを吹いてごまかす",correct:false},
-      {text:"燃圧レギュレーターを交換する",correct:false},
-      {text:"インジェクターを清掃する",correct:false}],
-      result_correct:"二次エア漏れ箇所を修理し、ロングトリムが0付近に戻るか確認して完了。",
-      result_wrong:"応急処置ではなく原因を修理し、補正値の回復を確認するのが正しい手順。"},
-    {question:"修理後もロングトリムがプラス方向に大きい。次は？",choices:[
-      {text:"MAFセンサーの汚れ・誤検知を点検し、必要なら交換する",correct:true},
-      {text:"エンジンをオーバーホールする",correct:false},
+  {id:106,tier:"上級",symptom:"エンジン警告灯が点灯し燃費が急に悪化。スキャンするとP0172（混合気過濃）が記録",steps:[
+    {question:"P0172(過濃)の原因として最初に確認することは？",choices:[
+      {text:"燃圧・インジェクター漏れ・MAF誤検知を確認する",correct:true},
+      {text:"O2センサーをすぐ交換する",correct:false},
+      {text:"エアクリーナーを点検する",correct:false},
+      {text:"点火プラグをすぐ交換する",correct:false}],
+      result_correct:"過濃の主因は燃圧過高・インジェクター漏れ・MAF誤検知（実流量より少なく認識）。燃料側から確認。",
+      result_wrong:"O2交換やプラグ交換では過濃の根本原因に届かない。燃料系を先に確認する。"},
+    {question:"燃圧を測ると規定値より高い。次に何を確認する？",choices:[
+      {text:"燃圧レギュレーターの不良を確認し、必要なら交換する",correct:true},
+      {text:"燃料ポンプをすぐ交換する",correct:false},
       {text:"インジェクターを全数交換する",correct:false},
-      {text:"ECUを書き換える",correct:false}],
-      result_correct:"二次エア修理後も希薄なら次はMAF誤検知。センサー清掃または交換で解決できることが多い。",
-      result_wrong:"オーバーホールや全交換は最終手段。MAFセンサーを先に確認する。"}],
-    explanation:"P0171は二次エア漏れ→燃圧→MAFセンサーの順で確認。ロングトリムの回復をデータで確認して締める。"},
+      {text:"補正をリセットして様子を見る",correct:false}],
+      result_correct:"燃圧過高の主因は燃圧レギュレーター不良。確認・交換後に燃圧が規定値に戻るか確認する。",
+      result_wrong:"リセットだけや全交換では根本解決にならない。まずレギュレーターを確認する。"},
+    {question:"レギュレーター交換後も燃圧正常だがP0172が残る。次は？",choices:[
+      {text:"インジェクターの閉弁不良（漏れ）を確認し、必要なら交換する",correct:true},
+      {text:"ECUを交換する",correct:false},
+      {text:"触媒を交換する",correct:false},
+      {text:"O2センサーを全数交換する",correct:false}],
+      result_correct:"燃圧正常でも過濃が続く場合はインジェクター閉弁不良（燃料漏れ）が次の候補。",
+      result_wrong:"ECU・触媒・O2は過濃の直接原因ではない。インジェクター漏れを先に確認する。"}],
+    explanation:"P0172は燃圧過高→レギュレーター確認→それでも残るならインジェクター閉弁不良の順で診る。ロングトリムで回復を確認。"},
   {id:107,tier:"上級",symptom:"アイドル振動。コードはP0300（ランダム失火）",steps:[
     {question:"P0300(ランダム失火)。最初は？",choices:[
       {text:"全気筒共通の要因から確認する",correct:true},
@@ -4402,7 +4402,7 @@ const cases = [
       result_correct:"エアばね亀裂等の漏れ部を交換すれば車高が保持される。",
       result_wrong:"加圧誤魔化しや同時交換、固定化は不適切。漏れ部を直す。"}],
     explanation:"エアサス片側下がりは位置/漏れ音→エアばね/配管/バルブを石鹸水→漏れ部を特定し交換する。"},
-  {id:154,tier:"ウルトラ級",symptom:"P0420（触媒）とP0171（薄い）が同時に出る",steps:[
+  {id:154,tier:"ウルトラ級",symptom:"エンジン警告灯が点灯し燃費も悪化。スキャンするとP0420（触媒効率低下）とP0171（燃調希薄）が同時に記録",steps:[
     {question:"P0420（触媒）とP0171（薄い）が同時。最初は？",choices:[
       {text:"上流の薄さを先に直す方針とする",correct:true},
       {text:"先に触媒の劣化を評価して確認する",correct:false},
@@ -4793,7 +4793,7 @@ const cases = [
       result_correct:"規定サーモへ交換すれば水温が規定に達する。",
       result_wrong:"希釈やサーモレス、センサーのみ交換は不適切。"}],
     explanation:"P0128は実水温/サーモ開弁→開弁温度/固着→規定サーモへ交換しエア抜きする。"},
-  {id:171,tier:"親方級",symptom:"P0301(1番失火)とP0171(薄い)が同時に出る",steps:[
+  {id:171,tier:"親方級",symptom:"アイドル振動がひどく走行中もガタつく。スキャンするとP0301（1番気筒失火）とP0171（燃調希薄）が同時に記録",steps:[
     {question:"最初は？",choices:[
       {text:"1番の吸気漏れが共通原因か確認する",correct:true},
       {text:"1番のコイルを先に疑う",correct:false},
@@ -5253,7 +5253,7 @@ const cases = [
       result_correct:"通路/バルブを清掃・交換すれば流量が回復する。",
       result_wrong:"推測で一部交換や先行交換では原因を残す。"}],
     explanation:"P0401(流量不足)はEGR通路/バルブの詰まり→差圧/温度応答→清掃・交換して流量を確認する。"},
-  {id:191,tier:"親方級",symptom:"P0011とP0014が同時（吸排気カム位相が両方ずれる）",steps:[
+  {id:191,tier:"親方級",symptom:"加速が鈍くアイドルが不安定。スキャンするとP0011（吸気カム進角過多）とP0014（排気カム進角過多）が同時に記録",steps:[
     {question:"最初は？",choices:[
       {text:"共通の油圧とオイルを確認する",correct:true},
       {text:"吸気カムを先に疑う",correct:false},
@@ -5713,7 +5713,7 @@ const cases = [
       result_correct:"タイミング(機械)かセンサーかを特定し直せば相関が合う。",
       result_wrong:"推測でのセンサー交換や切り分けなしは再発する。"}],
     explanation:"P0016は相関データ→チェーン伸び/歯飛び/センサーずれ→機械かセンサーかを切り分け修理する。"},
-  {id:211,tier:"親方級",symptom:"P0171とP0174が同時（両バンクが薄い）",steps:[
+  {id:211,tier:"親方級",symptom:"V型エンジン車で燃費悪化・加速不良。スキャンするとP0171とP0174（両バンク燃調希薄）が同時に記録",steps:[
     {question:"最初は？",choices:[
       {text:"共通の吸気漏れと燃圧不足を確認する",correct:true},
       {text:"片バンクのO2を先に疑う",correct:false},
