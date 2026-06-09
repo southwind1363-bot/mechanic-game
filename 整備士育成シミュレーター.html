@@ -6972,6 +6972,9 @@ function renderStep(){
     btn.addEventListener("click", ()=>chooseAnswer(i));
     box.appendChild(btn);
   });
+  // スマホ「次へ」タップ貫通防止：新ボタン描画後400ms間は回答受付を無効化
+  box.style.pointerEvents = "none";
+  setTimeout(()=>{ box.style.pointerEvents = ""; }, 400);
 
   const rb = $("resultBox"); rb.classList.remove("show","ok","ng");
   $("nextBtn").classList.remove("show");
