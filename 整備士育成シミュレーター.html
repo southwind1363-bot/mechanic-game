@@ -7875,14 +7875,13 @@ function fetchGlobalRanking(injectEntry){
       clearTimeout(timer);
       if(Array.isArray(raw)){
         let data = raw;
-        // GAS保存遅延対策：自分のエントリがなければクライアント側で注入
+        // GAS保存遅延対策：自分のエントリを注入。ただし名前で重複排除し高い方だけ残す
         if(injectEntry){
-          const exists = data.some(e=>e.name===injectEntry.name && Number(e.score)===Number(injectEntry.score));
-          if(!exists){
-            data = [...data, injectEntry];
-            data.sort((a,b)=>Number(b.score)-Number(a.score));
-            if(data.length>10) data=data.slice(0,10);
+          const merged = {};
+          for(const e of [...data, injectEntry]){
+            if(!merged[e.name] || Number(e.score) > Number(merged[e.name].score)) merged[e.name]=e;
           }
+          data = Object.values(merged).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,10);
         }
         renderGlobalRanking(data, ids);
       } else {
@@ -7893,15 +7892,26 @@ function fetchGlobalRanking(injectEntry){
 }
 
 // ===== 全国ランキング自動登録 =====
+const SUBMIT_KEY = "seibishi_last_global_submit";   // 二重送信防止：最後に送った name|score
 function sendToGlobal(name, scoreVal, box){
+  const today = new Date().toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
+  const myEntry = {name:name, score:Number(scoreVal), date:today};
+  // 二重送信ガード：同じ名前×同じスコアは一度しか送らない（GASに重複が溜まり他人が消えるのを防ぐ）
+  const key = name + "|" + scoreVal;
+  let already=false;
+  try{ already = (localStorage.getItem(SUBMIT_KEY) === key); }catch(e){}
+  if(already){
+    if(box) box.innerHTML=`<div class="global-auto-status success">✅ ${escapeHtml(name)} さん ${Number(scoreVal).toLocaleString()}点 登録済み</div>`;
+    fetchGlobalRanking(myEntry);
+    return;
+  }
   fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+scoreVal)
     .then(r=>r.json())
     .then(d=>{
       if(d.ok){
+        try{ localStorage.setItem(SUBMIT_KEY, key); }catch(e){}
         const rankStr = d.rank>0 ? ` 🏆${d.rank}位` : "";
         if(box) box.innerHTML=`<div class="global-auto-status success">✅ ${escapeHtml(name)} さん ${Number(scoreVal).toLocaleString()}点${rankStr} 登録完了！</div>`;
-        const today = new Date().toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
-        const myEntry = {name:name, score:Number(scoreVal), date:today};
         setTimeout(()=>fetchGlobalRanking(myEntry), 2500);
       } else {
         if(box) box.innerHTML=`<div class="global-auto-status">⚠ 登録失敗しました</div>`;
