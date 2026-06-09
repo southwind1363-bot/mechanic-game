@@ -7934,6 +7934,8 @@ function sendToGlobal(name, scoreVal, box){
 
 function initGlobalSubmit(scoreVal, boxId){
   const box=$(boxId); if(!box) return;
+  // 全国ランキングは自己ベストを送る（今回が低い回でもベストを登録・表示する）
+  scoreVal = Math.max(Number(scoreVal)||0, getScoreHi());
   if(scoreVal<=0){ box.style.display="none"; return; }
   const savedName = localStorage.getItem("seibishi_player_name")||"";
   const hasRealName = savedName && savedName !== "NO NAME";
