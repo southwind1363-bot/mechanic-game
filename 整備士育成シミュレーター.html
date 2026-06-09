@@ -6967,15 +6967,10 @@ function renderStep(){
     const btn = document.createElement("button");
     btn.className = "choice";
     btn.innerHTML = '<span class="bullet">'+LETTERS[i]+'</span><span>'+escapeHtml(ch.text)+'</span>';
-    let _tsX=0, _tsY=0;
-    btn.addEventListener("touchstart", (e)=>{ _tsX=e.touches[0].clientX; _tsY=e.touches[0].clientY; }, {passive:true});
-    btn.addEventListener("touchend", (e)=>{
-      const dx=Math.abs(e.changedTouches[0].clientX-_tsX);
-      const dy=Math.abs(e.changedTouches[0].clientY-_tsY);
-      if(dx>8||dy>8) return; // スクロール判定：8px以上動いたら無視
-      e.preventDefault(); // 合成clickを止める
-      chooseAnswer(i);
-    }, {passive:false});
+    let _scrolled=false, _tsY=0;
+    btn.addEventListener("touchstart", (e)=>{ _scrolled=false; _tsY=e.touches[0].clientY; }, {passive:true});
+    btn.addEventListener("touchmove",  (e)=>{ if(Math.abs(e.touches[0].clientY-_tsY)>12) _scrolled=true; }, {passive:true});
+    btn.addEventListener("touchend",   (e)=>{ if(_scrolled) return; e.preventDefault(); chooseAnswer(i); }, {passive:false});
     btn.addEventListener("click", ()=>chooseAnswer(i)); // PC用
     box.appendChild(btn);
   });
@@ -7779,13 +7774,11 @@ $("tierNextBtn").addEventListener("click", continueNextTier);
 // nextBtn：スクロール誤爆防止 + 即応答
 (()=>{
   const nb=$("nextBtn");
-  let _nbBusy=false, _tsX=0, _tsY=0;
-  nb.addEventListener("touchstart", (e)=>{ _tsX=e.touches[0].clientX; _tsY=e.touches[0].clientY; }, {passive:true});
+  let _nbBusy=false, _nbScrolled=false, _nbTsY=0;
+  nb.addEventListener("touchstart", (e)=>{ _nbScrolled=false; _nbTsY=e.touches[0].clientY; }, {passive:true});
+  nb.addEventListener("touchmove",  (e)=>{ if(Math.abs(e.touches[0].clientY-_nbTsY)>12) _nbScrolled=true; }, {passive:true});
   nb.addEventListener("touchend", (e)=>{
-    if(_nbBusy||!nb.classList.contains("show")) return;
-    const dx=Math.abs(e.changedTouches[0].clientX-_tsX);
-    const dy=Math.abs(e.changedTouches[0].clientY-_tsY);
-    if(dx>8||dy>8) return; // スクロール判定：無視
+    if(_nbBusy||!nb.classList.contains("show")||_nbScrolled) return;
     _nbBusy=true; e.preventDefault(); nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; });
   }, {passive:false});
   nb.addEventListener("click", (e)=>{ if(_nbBusy||!nb.classList.contains("show")) return; _nbBusy=true; nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; }); });
