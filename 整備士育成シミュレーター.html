@@ -6466,7 +6466,128 @@ const cases = [
       {text:"エンジン全体をオーバーホールする",correct:false}],
       result_correct:"漏れ箇所を修理してから冷却水を規定量に補充。放置するとオーバーヒートにつながる。",
       result_wrong:"補充だけでは根本解決にならない。漏れ箇所を修理するのが正しい対応。"}],
-    explanation:"甘い匂いは冷却水漏れのサイン。エンジンルームで漏れ確認→漏れ箇所修理→クーラント補充。"}
+    explanation:"甘い匂いは冷却水漏れのサイン。エンジンルームで漏れ確認→漏れ箇所修理→クーラント補充。"},
+
+  // ===== 親方級 追加5件（246-250）=====
+  {id:246,tier:"親方級",symptom:"高回転域（3500rpm以上）でだけ間欠的に失火する。スキャンにはP0300が稀に記録されるのみ",steps:[
+    {question:"最初は？",choices:[
+      {text:"高回転でのみ失火するデータを記録し、再現条件を特定する",correct:true},
+      {text:"全気筒のプラグとコイルを交換する",correct:false},
+      {text:"低回転でのデータを採取して原因を推測する",correct:false},
+      {text:"ECUをリセットして様子を見る",correct:false}],
+      result_correct:"間欠・高回転限定の失火は再現条件の記録が最優先。発生パターンを押さえる。",
+      result_wrong:"低回転データや全交換・リセットでは高回転限定の失火を捕まえられない。"},
+    {question:"高回転で特定気筒の失火カウントが増える。その気筒のコイル・プラグを正常気筒と入れ替えたが失火が移動しない。次は？",choices:[
+      {text:"カムロブの摩耗によるバルブリフト不足を疑い、カムシャフトを点検する",correct:true},
+      {text:"インジェクターを全数交換する",correct:false},
+      {text:"燃圧を上げる設定にする",correct:false},
+      {text:"圧縮を冷間時だけ測定する",correct:false}],
+      result_correct:"コイル・プラグで移動しない失火は燃料/圧縮/バルブ側。高回転でリフト不足になるカムロブ摩耗が典型。",
+      result_wrong:"既に点火側は否定済み。燃料系調整やコールドコンプレッションだけでは高回転失火を特定できない。"},
+    {question:"カムロブの摩耗を確認した。どう対処する？",choices:[
+      {text:"カムシャフトを交換し、高回転での失火消失をデータで確認してから返車する",correct:true},
+      {text:"添加剤でカム面を保護して様子を見る",correct:false},
+      {text:"オイルを粘度の高いものに換えて様子を見る",correct:false},
+      {text:"カムロブだけを研磨して再使用する",correct:false}],
+      result_correct:"摩耗カムは交換が正解。高回転テストでデータ確認してから返車。",
+      result_wrong:"添加剤や粘度変更は応急処置。摩耗したカムロブは研磨では回復しない。"}],
+    explanation:"高回転限定失火は再現データ取得→点火側否定→カムロブ摩耗確認→カムシャフト交換→高回転で失火消失確認。"},
+
+  {id:247,tier:"親方級",symptom:"ターボ車。加速中に過給圧が突然抜けてパワーが一瞬消え、直後に戻る症状が断続的に出る",steps:[
+    {question:"最初は？",choices:[
+      {text:"過給圧の実測値と指令値のずれを記録しながら再現を試みる",correct:true},
+      {text:"ターボ本体をすぐ交換する",correct:false},
+      {text:"インタークーラーだけ点検する",correct:false},
+      {text:"アクセルポジションセンサーを確認する",correct:false}],
+      result_correct:"断続的な過給圧抜けは記録が命。実測値と指令値のギャップを記録してから原因を絞る。",
+      result_wrong:"ターボ本体交換や部分点検は高額・誤診につながる。まず圧力データを取る。"},
+    {question:"過給圧指令は正常なのに実圧が断続的に低下する。次の確認は？",choices:[
+      {text:"ウェストゲートアクチュエーターの作動と配管の亀裂・抜けを点検する",correct:true},
+      {text:"ターボのシャフト遊びを測る",correct:false},
+      {text:"ECUを交換する",correct:false},
+      {text:"インジェクターを清掃する",correct:false}],
+      result_correct:"指令は正常で実圧だけ落ちる→制御バルブ（アクチュエーター）か圧力配管の問題。配管亀裂はよくある原因。",
+      result_wrong:"シャフト遊び・ECU・インジェクターは別の系統。指令正常で実圧低下は制御系・配管を診る。"},
+    {question:"インタークーラー前の細い圧力配管に亀裂があった。どうする？",choices:[
+      {text:"配管を交換し、過給圧が安定して指令通りに出るかデータで確認する",correct:true},
+      {text:"配管に耐熱テープを巻いて応急処置する",correct:false},
+      {text:"配管の亀裂をシリコンで塞ぐ",correct:false},
+      {text:"そのままで様子を見る",correct:false}],
+      result_correct:"圧力配管は正規交換。修理後に指令通りの過給圧が安定して出るかデータで確認して完了。",
+      result_wrong:"テープやシリコン補修は剥がれるリスクが高く不適切。正規の配管交換が正しい対応。"}],
+    explanation:"ターボ断続抜けは過給圧実測記録→配管・アクチュエーター確認→配管交換→指令通りの圧力安定をデータ確認。"},
+
+  {id:248,tier:"親方級",symptom:"エンジンが暖機した後にのみ、O2センサーが長時間オープンループに留まり燃調が安定しない",steps:[
+    {question:"暖機後にO2がオープンループのまま。最初は？",choices:[
+      {text:"O2センサーヒーターの抵抗と通電をデータで確認する",correct:true},
+      {text:"O2センサーをすぐ交換する",correct:false},
+      {text:"インジェクターの噴射量を確認する",correct:false},
+      {text:"触媒の劣化を確認する",correct:false}],
+      result_correct:"暖機後でもオープンループならO2がフィードバック条件を満たしていない。まずヒーター回路の通電を確認。",
+      result_wrong:"即交換や別系統確認より、なぜクローズドループに入れないかのデータ確認が先。"},
+    {question:"ヒーター回路の通電は正常。O2の応答波形を見ると、全域で出力が0.1V付近に張り付いている。次は？",choices:[
+      {text:"上流排気系のエア漏れを点検し、O2が誤検知していないか確認する",correct:true},
+      {text:"O2センサーを交換する",correct:false},
+      {text:"燃圧を上げる",correct:false},
+      {text:"ECUの学習をリセットする",correct:false}],
+      result_correct:"出力が低位固定はO2の誤検知（排気漏れで外気が混入し常に薄く見える）が典型。排気系を点検する。",
+      result_wrong:"ヒーターが正常でも出力が張り付く場合、排気漏れによる誤検知が見落とされやすい。"},
+    {question:"排気マニホールドのガスケットが抜けており外気が混入していた。どう対処する？",choices:[
+      {text:"ガスケットを交換し、O2がクローズドループで安定して動作するか確認する",correct:true},
+      {text:"O2センサーも念のため同時に交換する",correct:false},
+      {text:"ガスケットは後回しにしてO2だけ交換する",correct:false},
+      {text:"排気漏れ部分を溶接で塞ぐ",correct:false}],
+      result_correct:"原因はガスケット抜け。交換後にO2がクローズドループに入るかデータで確認して完了。",
+      result_wrong:"O2自体は正常なので交換不要。ガスケットを直せば自然にクローズドループに入る。"}],
+    explanation:"暖機後オープンループはO2ヒーター確認→排気漏れ誤検知を疑い→ガスケット修理→クローズドループ安定確認。"},
+
+  {id:249,tier:"親方級",symptom:"アイドルは安定しているが、中間加速でエンジンがもたつく。スキャンするとP0011が断続的に記録",steps:[
+    {question:"P0011（吸気カム進角過多）が断続的に出てもたつく。最初は？",choices:[
+      {text:"アイドル時と加速時のカム位相実データを比較し、指令への追従性を確認する",correct:true},
+      {text:"カムシャフトをすぐ交換する",correct:false},
+      {text:"OCVをすぐ交換する",correct:false},
+      {text:"オイルを交換して様子を見る",correct:false}],
+      result_correct:"断続的なP0011はOCVの部分詰まりによる追従遅れが典型。アイドル・加速でのデータを比較して切り分ける。",
+      result_wrong:"即交換は高額・誤診リスク。まず追従データで詰まりか機械的不良かを判断する。"},
+    {question:"加速中だけカム位相の追従が遅れることを確認。次は？",choices:[
+      {text:"OCVを取り外してスラッジの堆積と通路の詰まりを点検する",correct:true},
+      {text:"タイミングチェーンの伸びを確認する",correct:false},
+      {text:"ECUを交換する",correct:false},
+      {text:"オイルを高粘度に替えて油圧を稼ぐ",correct:false}],
+      result_correct:"加速時だけの追従遅れはOCV油路詰まりが高負荷時だけ露呈する典型。取り外して点検する。",
+      result_wrong:"チェーン伸び・ECU・粘度変更は別の原因。OCV詰まりの確認が正しい次のステップ。"},
+    {question:"OCV内部にスラッジ堆積があった。どうする？",choices:[
+      {text:"OCVを交換し、加速でカム位相が指令通りに追従するかデータで確認する",correct:true},
+      {text:"OCVを清掃して再使用する",correct:false},
+      {text:"エンジンフラッシングだけして様子を見る",correct:false},
+      {text:"スラッジを除去してOCVを元に戻す",correct:false}],
+      result_correct:"詰まりが確認されたOCVは交換。加速時の追従データで正常化を確認して完了。",
+      result_wrong:"OCV清掃は精密部品のため変形リスクがあり推奨しない。交換後のデータ確認が正しい手順。"}],
+    explanation:"断続P0011はアイドル・加速でのデータ比較→OCV詰まり確認→OCV交換→加速での位相追従データ確認。"},
+
+  {id:250,tier:"親方級",symptom:"複数のセンサーが同時に誤った値を示し、ECUが燃調・点火を誤制御する。明確な単一コードなし",steps:[
+    {question:"複数センサー同時異常・コード散発。最初は？",choices:[
+      {text:"共通の電源電圧とグラウンド電位を実測し、センサー基準電圧の安定を確認する",correct:true},
+      {text:"各センサーを順番に交換する",correct:false},
+      {text:"ECUを交換する",correct:false},
+      {text:"バッテリーをすぐ交換する",correct:false}],
+      result_correct:"複数センサー同時異常は単一センサー不良では説明できない。共通要因の電源・グラウンドを実測するのが鉄則。",
+      result_wrong:"個別センサー交換・ECU交換では共通原因のグラウンド不良を解決できない。"},
+    {question:"センサーの基準5V供給は正常だが、グラウンド電位が0.4V以上浮いている。次は？",choices:[
+      {text:"エンジン・ボディグラウンドのポイントを全て点検し、腐食・接触不良を探す",correct:true},
+      {text:"グラウンドをバッテリーマイナスに直結する",correct:false},
+      {text:"ECU本体のグラウンドだけ増し締めする",correct:false},
+      {text:"配線を全引き直しする",correct:false}],
+      result_correct:"グラウンド浮きは腐食・緩みが原因。エンジンとボディの各グラウンドポイントを順に点検して不良箇所を特定。",
+      result_wrong:"直結や一箇所のみ増し締めでは根本の腐食ポイントが残る。全ポイントを点検して不良を特定する。"},
+    {question:"エンジンブロックのアースポイントに腐食があった。どう対処する？",choices:[
+      {text:"腐食を除去して接続を確実にし、全センサーの値が正常化するか確認する",correct:true},
+      {text:"腐食の上から防錆スプレーを吹いてボルトを締める",correct:false},
+      {text:"アースポイントを別の場所に移設する",correct:false},
+      {text:"腐食部分は無視してECUを交換する",correct:false}],
+      result_correct:"腐食を完全除去→確実な接続→全センサー値の正常化をデータで確認。グラウンド不良は完全除去が原則。",
+      result_wrong:"防錆スプレーだけでは接触抵抗が残る。腐食は完全に除去してから接続する。"}],
+    explanation:"複数センサー同時異常はグラウンド電位実測→腐食ポイント特定→腐食除去・接続確実化→全センサー正常化確認。"}
 ];
 
 const HI_KEY = "seibishi_highscore_v2";
@@ -6480,7 +6601,7 @@ const TIER_POOL = {
   "見習い":[1,3,5,7,11,12,13,14,15,16,31,32,33,34,35,36,37,38,39,40,76,77,78,79,80,96,97,98,99,100,116,117,118,119,120,136,137,138,139,140,156,157,158,159,160,176,177,178,179,180,196,197,198,199,200,216,217,218,219,220,236,237,238,239,240,241,242,243,244,245],
   "一人前":[4,6,17,18,19,20,21,22,23,24,41,42,43,44,45,46,47,48,49,50,81,82,83,84,85,101,102,103,104,105,121,122,123,124,125,141,142,143,144,145,161,162,163,164,165,181,182,183,184,185,201,202,203,204,205,221,222,223,224,225],
   "整備主任":[2,8,9,10,25,26,27,28,29,30,51,52,53,54,55,56,57,58,59,60,86,87,88,89,90,106,107,108,109,110,126,127,128,129,130,146,147,148,149,150,166,167,168,169,170,186,187,188,189,190,206,207,208,209,210,226,227,228,229,230],
-  "親方級":[61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,91,92,93,94,95,111,112,113,114,115,131,132,133,134,135,151,152,153,154,155,171,172,173,174,175,191,192,193,194,195,211,212,213,214,215,231,232,233,234,235]
+  "親方級":[61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,91,92,93,94,95,111,112,113,114,115,131,132,133,134,135,151,152,153,154,155,171,172,173,174,175,191,192,193,194,195,211,212,213,214,215,231,232,233,234,235,246,247,248,249,250]
 };
 const TOTAL_CASES = CASES_PER_TIER * TIER_NAMES.length; // 1プレイの総数(30)
 const idIndex = {}; cases.forEach((c,i)=>{ idIndex[c.id]=i; });
@@ -6569,7 +6690,7 @@ function setHi(v){ try{ localStorage.setItem(HI_KEY, String(v)); }catch(e){} }
 
 // ===== 出題のかぶり対策：直近に出した症例を覚えて、なるべく避ける =====
 const SEEN_KEY = "seibishi_recent_v1";
-const SEEN_CAP = 80;   // 直近この件数は記憶し、再出題を避ける（全115症例中）
+const SEEN_CAP = 80;   // 直近この件数は記憶し、再出題を避ける（全250症例中）
 function getSeen(){ try{ return JSON.parse(localStorage.getItem(SEEN_KEY)||"[]")||[]; }catch(e){ return []; } }
 function setSeen(a){ try{ localStorage.setItem(SEEN_KEY, JSON.stringify(a)); }catch(e){} }
 // 級のプールから、最近出していない症例を優先してCASES_PER_TIER件を抽選
@@ -6744,7 +6865,12 @@ const IMG_ALIAS = {
   216:61, 217:27, 218:29, 219:14, 220:30,
   221:28, 222:2,  223:10, 224:28, 225:5,
   226:17, 227:65, 228:12, 229:28, 230:71,
-  231:63, 232:68, 233:75, 234:34, 235:74
+  231:63, 232:68, 233:75, 234:34, 235:74,
+  // 見習い追加分（236-245）
+  236:36, 237:39, 238:11, 239:15, 240:37,
+  241:14, 242:32, 243:29, 244:16, 245:5,
+  // 親方級追加分（246-250）
+  246:22, 247:57, 248:51, 249:52, 250:74
 };
 // img/<症例ID>.png(jpg/jpeg/webp) があれば写真を表示、無ければSVGにフォールバック
 function setSceneImage(id){
@@ -7251,10 +7377,10 @@ const TRIVIA = [
   {tag:"🔧 整備雑学",text:"エンジンオイルの粘度表示「5W-30」の「W」はWinter（冬）の略。左の数字が小さいほど低温に強く、右の数字が大きいほど高温でも油膜が厚い。"},
   {tag:"🔧 整備雑学",text:"ブレーキフルードは水分を吸収する性質がある。2年放置すると沸点が大幅に下がり、長い下り坂でブレーキが効かなくなる「べーパーロック」のリスクが上がる。"},
   {tag:"🔧 整備雑学",text:"タイヤの空気は自然に1ヶ月で約0.1〜0.2barずつ減る。急に減った場合は必ずパンクや漏れを疑う。規定圧の管理だけで燃費が5%前後変わることがある。"},
-  {tag:"🔧 整備雑学",text:"バッテリーを交換すると、エンジンのECUが学習したアイドリングや燃調のデータがリセットされる。しばらく走り込むことで自動的に再学習して安定する。"},
-  {tag:"🔧 整備雑学",text:"エアコンのガスは正常な車では一切減らない。減っていたら必ずどこかに漏れがある。補充だけを繰り返す業者は、根本原因を直していない証拠。"},
+  {tag:"🔧 整備雑学",text:"ウォーターポンプは冷却水を循環させるポンプ。寿命はタイミングベルトと同じ10万km前後で、ベルト交換時に一緒に替えるのが工賃節約の鉄則。"},
+  {tag:"🔧 整備雑学",text:"ハイブリッド車の駆動用バッテリーは12Vの補機バッテリーとは別物。補機バッテリーが上がると、メインバッテリーが満充電でもエンジンすらかからない。"},
   {tag:"🔧 整備雑学",text:"プラグの寿命は普通プラグで約2万km、イリジウムプラグで10万km。汚れや消耗を放置すると燃費悪化・始動不良・失火の原因になる。"},
-  {tag:"🔧 整備雑学",text:"ATF（オートマオイル）は「無交換で一生もつ」とカタログに書かれていることがあるが、現場では4〜6万kmで劣化による変速不良が起きやすい。定期交換が無難。"},
+  {tag:"🔧 整備雑学",text:"パワーステアリングは電動（EPAS）と油圧式の2種類。油圧式はリザーバータンクのフルードが漏れると一気に重くなる。電動式はほぼメンテナンスフリー。"},
   {tag:"🔧 整備雑学",text:"タイヤのひびわれはゴムが酸化・劣化した証拠。紫外線・オゾン・長期保管が主な原因で、溝が残っていてもひびが深ければ走行中にバーストする危険がある。"},
   {tag:"🔧 整備雑学",text:"エンジンルームの「甘い匂い」は冷却水（クーラント）の漏れサイン。「焦げた油臭」はオイル漏れ。匂いで異常を早期発見できる。"},
 
@@ -7607,31 +7733,51 @@ function initGlobalRegBox(){
   if(bestScore <= 0) return; // スコアなければ非表示
   const box = $("globalRegBox");
   if(!box) return;
-  // seibishi_player_name → なければローカルランキングの名前 → なければ空
   const savedName = localStorage.getItem("seibishi_player_name") ||
     (()=>{ try{ const r=getRanking(); return r.length?r[0].n:""; }catch(e){ return ""; } })();
-  const ni = $("globalRegName");
-  if(ni) ni.value = savedName;
-  box.style.display = "";
-  $("globalRegBtn").addEventListener("click", ()=>{
-    const name = (ni ? ni.value.trim() : "") || "名無し";
-    try{ localStorage.setItem("seibishi_player_name", name); }catch(e){}
-    const btn = $("globalRegBtn"), res = $("globalRegResult");
-    if(btn) btn.disabled = true;
-    if(res) res.textContent = "送信中…";
-    fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+bestScore)
-      .then(r=>r.json())
-      .then(d=>{
-        if(d.ok){
-          if(res) res.textContent = "✅ 登録完了！"+(d.rank>0?" 🏆"+d.rank+"位":"");
-          fetchGlobalRanking();
-        } else {
-          if(res) res.textContent = "⚠ 登録失敗";
-          if(btn) btn.disabled = false;
-        }
-      })
-      .catch(()=>{ if(res) res.textContent = "⚠ 通信エラー"; if(btn) btn.disabled = false; });
-  });
+
+  if(savedName){
+    // 名前保存済み → 自動送信（ボタンなし）
+    box.style.display = "";
+    box.innerHTML = `<div class="global-auto-status">🌐 <b>${escapeHtml(savedName)}</b> でランキング送信中…</div>`;
+    setTimeout(()=>{
+      fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(savedName)+"&score="+bestScore)
+        .then(r=>r.json())
+        .then(d=>{
+          if(d.ok){
+            box.innerHTML=`<div class="global-auto-status">✅ ${escapeHtml(savedName)} のベストスコアを全国登録しました`+(d.rank>0?` 🏆${d.rank}位`:"")+"</div>";
+            fetchGlobalRanking();
+          } else {
+            box.style.display="none";
+          }
+        })
+        .catch(()=>{ box.style.display="none"; });
+    }, 800);
+  } else {
+    // 初回 → 名前入力UI
+    const ni = $("globalRegName");
+    if(ni) ni.value = "";
+    box.style.display = "";
+    $("globalRegBtn").addEventListener("click", ()=>{
+      const name = (ni ? ni.value.trim() : "") || "名無し";
+      try{ localStorage.setItem("seibishi_player_name", name); }catch(e){}
+      const btn = $("globalRegBtn"), res = $("globalRegResult");
+      if(btn) btn.disabled = true;
+      if(res) res.textContent = "送信中…";
+      fetch(GAS_URL+"?action=submit&name="+encodeURIComponent(name)+"&score="+bestScore)
+        .then(r=>r.json())
+        .then(d=>{
+          if(d.ok){
+            if(res) res.textContent = "✅ 登録完了！"+(d.rank>0?" 🏆"+d.rank+"位":"");
+            fetchGlobalRanking();
+          } else {
+            if(res) res.textContent = "⚠ 登録失敗";
+            if(btn) btn.disabled = false;
+          }
+        })
+        .catch(()=>{ if(res) res.textContent = "⚠ 通信エラー"; if(btn) btn.disabled = false; });
+    });
+  }
 }
 
 function renderGlobalRanking(data, elIds){
