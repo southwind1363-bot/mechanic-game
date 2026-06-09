@@ -6956,6 +6956,8 @@ function renderStep(){
     const btn = document.createElement("button");
     btn.className = "choice";
     btn.innerHTML = '<span class="bullet">'+LETTERS[i]+'</span><span>'+escapeHtml(ch.text)+'</span>';
+    const _answerOnce=(e)=>{ if(e.type==="touchend") e.preventDefault(); chooseAnswer(i); };
+    btn.addEventListener("touchend", _answerOnce, {once:true, passive:false});
     btn.addEventListener("click", ()=>chooseAnswer(i));
     box.appendChild(btn);
   });
@@ -7509,10 +7511,12 @@ function showTrivia(onClose){
 
 function showOyakata(correct){
   const o=$("oyakata"); if(!o) return;
+  clearTimeout(oyaTimer);
+  // trivia を含む全クラスをリセット（pointer-events:all が残るのを防ぐ）
+  o.classList.remove("show","trivia","angry","happy"); void o.offsetWidth;
   const id = correct ? HAPPY_BOSS[Math.floor(Math.random()*HAPPY_BOSS.length)] : bossForCase(curCase());
   const b = BOSS[id] || {name:"親方",praise:"ええぞ！",scold:"よう見んかい！"};
   $("oyaBubble").innerHTML = '<b class="oya-name">'+b.name+'</b>'+escapeHtml(correct?b.praise:b.scold);
-  o.classList.remove("show","angry","happy"); void o.offsetWidth;
   o.classList.add("show", correct?"happy":"angry");
   const oimg=$("oyaImg"), oface=o.querySelector(".oya-face");
   if(oimg&&oface){
@@ -7520,8 +7524,8 @@ function showOyakata(correct){
     oimg.onerror=()=>{ oimg.style.display="none"; oface.style.display=""; };
     oimg.src = "oya/"+id+".png";
   }
-  clearTimeout(oyaTimer);
-  oyaTimer = setTimeout(()=>o.classList.remove("show"), 2400);
+  // タイマーでも全クラスを除去（show だけ消すと trivia が残るケースがあった）
+  oyaTimer = setTimeout(()=>o.classList.remove("show","trivia","angry","happy"), 2400);
 }
 function hideOyakata(){ clearTimeout(oyaTimer); const o=$("oyakata"); if(o) o.classList.remove("show","trivia","angry","happy"); }
 
@@ -7547,6 +7551,8 @@ function beep(freq,dur,type,vol,delay){
   g.gain.exponentialRampToValueAtTime(vol||0.18,t+0.012);
   g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
   o.start(t); o.stop(t+dur+0.03);
+  // 停止後にノードを切断してGCを促進（モバイルでのメモリ蓄積防止）
+  o.addEventListener("ended",()=>{ try{ o.disconnect(); g.disconnect(); }catch(e){} },{once:true});
 }
 function sndCorrect(){ beep(660,0.12,"triangle",0.22); beep(990,0.16,"triangle",0.18,0.07); }
 function sndWrong(){ beep(196,0.2,"sawtooth",0.2); beep(146,0.26,"sawtooth",0.18,0.06); }
@@ -7604,6 +7610,7 @@ function musNote(freq,dur,vol,type){
   o.connect(g); g.connect(a.destination);
   g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
   o.start(t); o.stop(t+dur+0.03);
+  o.addEventListener("ended",()=>{ try{ o.disconnect(); g.disconnect(); }catch(e){} },{once:true});
 }
 function startMusic(){
   if(musicTimer || !soundOn) return; ensureAudio(); musicStep=0;
@@ -7746,7 +7753,14 @@ $("xShareBtn").addEventListener("click", shareToX);
 $("overTierBtn").addEventListener("click", retryTier);
 $("overRestartBtn").addEventListener("click", startGame);
 $("tierNextBtn").addEventListener("click", continueNextTier);
-$("nextBtn").addEventListener("click", nextStep);
+// nextBtn：touchend で即応答（click だと 300ms 遅れる）
+(()=>{
+  const nb=$("nextBtn");
+  let _nbBusy=false;
+  const _doNext=(e)=>{ if(_nbBusy||!nb.classList.contains("show")) return; _nbBusy=true; if(e.type==="touchend") e.preventDefault(); nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; }); };
+  nb.addEventListener("touchend", _doNext, {passive:false});
+  nb.addEventListener("click", _doNext);
+})();
 $("soundBtn").addEventListener("click", toggleSound);
 $("toolTester").addEventListener("click", useTester);
 $("toolHint").addEventListener("click", useHint);
