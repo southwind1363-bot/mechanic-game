@@ -6967,9 +6967,16 @@ function renderStep(){
     const btn = document.createElement("button");
     btn.className = "choice";
     btn.innerHTML = '<span class="bullet">'+LETTERS[i]+'</span><span>'+escapeHtml(ch.text)+'</span>';
-    const _answerOnce=(e)=>{ if(e.type==="touchend") e.preventDefault(); chooseAnswer(i); };
-    btn.addEventListener("touchend", _answerOnce, {once:true, passive:false});
-    btn.addEventListener("click", ()=>chooseAnswer(i));
+    let _tsX=0, _tsY=0;
+    btn.addEventListener("touchstart", (e)=>{ _tsX=e.touches[0].clientX; _tsY=e.touches[0].clientY; }, {passive:true});
+    btn.addEventListener("touchend", (e)=>{
+      const dx=Math.abs(e.changedTouches[0].clientX-_tsX);
+      const dy=Math.abs(e.changedTouches[0].clientY-_tsY);
+      if(dx>8||dy>8) return; // スクロール判定：8px以上動いたら無視
+      e.preventDefault(); // 合成clickを止める
+      chooseAnswer(i);
+    }, {passive:false});
+    btn.addEventListener("click", ()=>chooseAnswer(i)); // PC用
     box.appendChild(btn);
   });
   // スマホ「次へ」タップ貫通防止：新ボタン描画後400ms間は回答受付を無効化
@@ -7769,13 +7776,19 @@ $("xShareBtn").addEventListener("click", shareToX);
 $("overTierBtn").addEventListener("click", retryTier);
 $("overRestartBtn").addEventListener("click", startGame);
 $("tierNextBtn").addEventListener("click", continueNextTier);
-// nextBtn：touchend で即応答（click だと 300ms 遅れる）
+// nextBtn：スクロール誤爆防止 + 即応答
 (()=>{
   const nb=$("nextBtn");
-  let _nbBusy=false;
-  const _doNext=(e)=>{ if(_nbBusy||!nb.classList.contains("show")) return; _nbBusy=true; if(e.type==="touchend") e.preventDefault(); nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; }); };
-  nb.addEventListener("touchend", _doNext, {passive:false});
-  nb.addEventListener("click", _doNext);
+  let _nbBusy=false, _tsX=0, _tsY=0;
+  nb.addEventListener("touchstart", (e)=>{ _tsX=e.touches[0].clientX; _tsY=e.touches[0].clientY; }, {passive:true});
+  nb.addEventListener("touchend", (e)=>{
+    if(_nbBusy||!nb.classList.contains("show")) return;
+    const dx=Math.abs(e.changedTouches[0].clientX-_tsX);
+    const dy=Math.abs(e.changedTouches[0].clientY-_tsY);
+    if(dx>8||dy>8) return; // スクロール判定：無視
+    _nbBusy=true; e.preventDefault(); nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; });
+  }, {passive:false});
+  nb.addEventListener("click", (e)=>{ if(_nbBusy||!nb.classList.contains("show")) return; _nbBusy=true; nextStep(); requestAnimationFrame(()=>{ _nbBusy=false; }); });
 })();
 $("soundBtn").addEventListener("click", toggleSound);
 $("toolTester").addEventListener("click", useTester);
