@@ -847,6 +847,7 @@
     <div class="hi-row">到達 <b id="overReach">-</b> ・ 合格 <b id="overPassed">0</b> 症例</div>
     <div id="overRank" class="rank-list"></div>
     <div id="globalSubmitBoxOver" class="name-submit-box" style="display:none"></div>
+    <div id="globalRankOver" class="rank-list"></div>
     <div id="weaknessOver" class="weakness-box" style="display:none"></div>
     <button class="big-btn" id="overTierBtn">この級からやり直す ▶</button>
     <button class="ghost-btn" id="overRestartBtn">最初からやり直す</button>
@@ -7883,7 +7884,7 @@ function renderGlobalRanking(data, elIds){
 }
 
 function fetchGlobalRanking(){
-  const ids = ["globalRankStart","globalRankFinal"];
+  const ids = ["globalRankStart","globalRankFinal","globalRankOver"];
   const clear = ()=>{ ids.forEach(id=>{ const e=$(id); if(e) e.innerHTML=""; }); };
   const timer = setTimeout(clear, 8000); // 8秒でタイムアウト
   fetch(GAS_URL+"?action=get")
