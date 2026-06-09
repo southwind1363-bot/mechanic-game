@@ -162,6 +162,7 @@
     cursor:pointer;
     display:flex;align-items:flex-start;gap:11px;
     transition:transform .12s ease, border-color .15s, background .15s, box-shadow .15s;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
   }
   .choice .bullet{
     flex:0 0 auto;width:26px;height:26px;border-radius:9px;
@@ -198,6 +199,7 @@
     font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:.02em;
     box-shadow:0 8px 24px rgba(53,230,255,.30),0 0 0 1px rgba(120,200,255,.25) inset;
     transition:transform .1s,filter .15s,box-shadow .15s;display:none;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;
   }
   .next-btn.show{display:block;animation:slideIn .3s ease;}
   .next-btn:hover{filter:brightness(1.08);box-shadow:0 10px 30px rgba(139,107,255,.45),0 0 0 1px rgba(120,200,255,.35) inset;}
@@ -347,7 +349,7 @@
   .trivia-header::before{content:"";display:block;width:4px;height:1.1em;background:var(--orange);border-radius:2px;flex-shrink:0;}
   .trivia-tag{display:inline-block;font-size:.75rem;font-weight:900;letter-spacing:.06em;padding:3px 10px;border-radius:20px;margin-bottom:10px;background:rgba(255,178,61,.18);color:#a05000;border:1.5px solid rgba(255,178,61,.5);}
   .trivia-text{font-size:.95rem;font-weight:600;line-height:1.75;color:#1a1c1f;}
-  .trivia-next-btn{display:block;width:100%;margin-top:14px;padding:11px 0;background:var(--orange);color:#1a1c1f;border:none;border-radius:10px;font-size:.9rem;font-weight:900;cursor:pointer;letter-spacing:.04em;}
+  .trivia-next-btn{display:block;width:100%;margin-top:14px;padding:11px 0;background:var(--orange);color:#1a1c1f;border:none;border-radius:10px;font-size:.9rem;font-weight:900;cursor:pointer;letter-spacing:.04em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   .trivia-next-btn:active{opacity:.8;}
   #overScreen .big-btn{margin-bottom:8px;}
   /* ===== アーケード演出（スコア/コンボ/効果音） ===== */
@@ -6726,7 +6728,9 @@ function resumeGame(){
   items=Object.assign({tester:0,hint:0,time:0}, d.items||{tester:1,hint:1,time:1});
   curList=(d.listIds||[]).map(id=>idIndex[id]).filter(x=>x!=null);
   if(!curList.length){ curList = drawTier(TIER_NAMES[tierIdx]); posInTier=0; }
-  endFever(); updateScoreHud(); renderWage(); renderHeat(); ensureAudio(); startMusic();
+  endFever(); updateScoreHud(); renderWage(); renderHeat();
+  // AudioContext はサスペンドを解除してから BGM を開始（非同期対応）
+  if(soundOn){ const _a=ensureAudio(); if(_a&&_a.state==="suspended"){ _a.resume().then(()=>{ startMusic(); }).catch(()=>{}); } else { startMusic(); } }
   hideAllScreens(); gameScreen.classList.remove("hidden");
   $("pauseBtn").style.display="";
   loadCase();   // 中断した症例は最初のステップから再開
@@ -7495,10 +7499,12 @@ function showTrivia(onClose){
     oimg.src="oya/1.png";
   }
   const btn=$("triviaNextBtn");
-  if(btn) btn.addEventListener("click",()=>{
-    o.classList.remove("show","trivia");
-    onClose();
-  },{once:true});
+  if(btn){
+    let _triviaDone=false;
+    const _triviaClose=(e)=>{ if(_triviaDone) return; _triviaDone=true; e.preventDefault(); o.classList.remove("show","trivia","angry","happy"); onClose(); };
+    btn.addEventListener("touchend", _triviaClose, {once:true, passive:false});
+    btn.addEventListener("click", _triviaClose, {once:true});
+  }
 }
 
 function showOyakata(correct){
@@ -7517,17 +7523,22 @@ function showOyakata(correct){
   clearTimeout(oyaTimer);
   oyaTimer = setTimeout(()=>o.classList.remove("show"), 2400);
 }
-function hideOyakata(){ clearTimeout(oyaTimer); const o=$("oyakata"); if(o) o.classList.remove("show"); }
+function hideOyakata(){ clearTimeout(oyaTimer); const o=$("oyakata"); if(o) o.classList.remove("show","trivia","angry","happy"); }
 
 // ===== 効果音（WebAudio・オフライン生成） =====
 let actx = null;
 function ensureAudio(){
   if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ actx=null; } }
-  if(actx && actx.state==="suspended") actx.resume();
+  if(actx && actx.state==="suspended"){ actx.resume().catch(()=>{}); }
   return actx;
 }
+// ページがバックグラウンドから復帰したとき・タップ時に AudioContext を再開する
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ ensureAudio(); if(soundOn && !musicTimer){ startMusic(); } } });
+function _unlockAudioOnce(){ ensureAudio(); document.removeEventListener("touchstart", _unlockAudioOnce, true); document.removeEventListener("click", _unlockAudioOnce, true); }
+document.addEventListener("touchstart", _unlockAudioOnce, true);
+document.addEventListener("click", _unlockAudioOnce, true);
 function beep(freq,dur,type,vol,delay){
-  if(!soundOn) return; const a=ensureAudio(); if(!a) return;
+  if(!soundOn) return; const a=ensureAudio(); if(!a||a.state==="suspended") return;
   const t=a.currentTime+(delay||0);
   const o=a.createOscillator(), g=a.createGain();
   o.type=type||"sine"; o.frequency.setValueAtTime(freq,t);
@@ -7587,7 +7598,7 @@ let musicTimer=null, musicStep=0;
 const MUS_MEL =[523,659,784,659,587,659,784,880, 440,523,659,523,494,587,659,587, 349,440,523,659,587,523,440,392, 392,494,587,784,659,587,494,392];
 const MUS_BASS=[131,0,196,0,165,0,196,0, 110,0,165,0,147,0,165,0, 87,0,131,0,110,0,131,0, 98,0,147,0,123,0,98,0];
 function musNote(freq,dur,vol,type){
-  if(!soundOn||!freq) return; const a=ensureAudio(); if(!a) return;
+  if(!soundOn||!freq) return; const a=ensureAudio(); if(!a||a.state==="suspended") return;
   const t=a.currentTime; const o=a.createOscillator(), g=a.createGain();
   o.type=type||"triangle"; o.frequency.setValueAtTime(freq,t);
   o.connect(g); g.connect(a.destination);
