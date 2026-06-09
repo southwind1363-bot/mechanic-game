@@ -6662,15 +6662,28 @@ function recordScore(){
 function renderRanking(elId){
   const el=$(elId); if(!el) return;
   const list=getRanking();
-  if(!list.length){ el.innerHTML='<div class="rank-empty">まだ記録なし。1位を狙え！</div>'; return; }
-  el.innerHTML='<div class="rank-head">🏅 ハイスコアランキング TOP5</div>'+list.map((r,i)=>
-    '<div class="rank-row'+(r.s===lastRankedScore?' me':'')+'">'+
-      '<span class="rk">'+(i+1)+'</span>'+
-      '<span class="rn">'+escapeHtml(r.n)+'</span>'+
-      '<span class="rs">'+r.s.toLocaleString()+'</span>'+
-      '<span class="rc">x'+r.c+'</span>'+
-      '<span class="rd">'+escapeHtml(r.d||"")+'</span>'+
-    '</div>').join('');
+  let rows='';
+  for(let i=0;i<5;i++){
+    const r=list[i];
+    if(r){
+      rows+='<div class="rank-row'+(r.s===lastRankedScore?' me':'')+'">'+
+        '<span class="rk">'+(i+1)+'</span>'+
+        '<span class="rn">'+escapeHtml(r.n)+'</span>'+
+        '<span class="rs">'+r.s.toLocaleString()+'</span>'+
+        '<span class="rc">x'+(r.c||0)+'</span>'+
+        '<span class="rd">'+escapeHtml(r.d||"")+'</span>'+
+      '</div>';
+    } else {
+      rows+='<div class="rank-row" style="opacity:.35">'+
+        '<span class="rk">'+(i+1)+'</span>'+
+        '<span class="rn">---</span>'+
+        '<span class="rs">-</span>'+
+        '<span class="rc"></span>'+
+        '<span class="rd"></span>'+
+      '</div>';
+    }
+  }
+  el.innerHTML='<div class="rank-head">🏅 ハイスコアランキング TOP5</div>'+rows;
 }
 function curCase(){ return cases[curList[posInTier]]; }
 
@@ -7126,7 +7139,8 @@ function gameOver(){
   // ★先に画面とボタンを表示してから記録（記録で失敗しても操作不能にならない）
   overScreen.classList.remove("hidden");
   try{ sndOver(); }catch(e){}
-  try{ recordScore(); renderRanking("overRank"); renderRanking("startRank"); }catch(e){}
+  try{ recordScore(); }catch(e){}
+  try{ renderRanking("overRank"); renderRanking("startRank"); }catch(e){}
   try{ initGlobalSubmit(score,"globalSubmitBoxOver"); fetchGlobalRanking(); }catch(e){}
   try{ renderWeakness("weaknessOver"); }catch(e){}
 }
@@ -7155,7 +7169,8 @@ function endGame(){
   $("finalCombo").textContent = bestCombo;
   $("hiScoreVal").textContent = sHi.toLocaleString();
   try{ stopMusic(); sndClear(); }catch(e){}
-  try{ recordScore(); renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
+  try{ recordScore(); }catch(e){}
+  try{ renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
   // グローバルランキング自動登録
   try{ initGlobalSubmit(score,"globalSubmitBox"); fetchGlobalRanking(); }catch(e){}
 
