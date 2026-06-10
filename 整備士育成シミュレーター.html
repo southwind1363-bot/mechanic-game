@@ -7002,6 +7002,7 @@ function retryTier(){
 }
 
 function loadCase(){
+  triviaOpen = false;   // 念のため豆知識ロックを解除
   stepIdx = 0;
   caseFailed = false;
   caseTimedOut = false;
@@ -7247,6 +7248,7 @@ function showNextButton(){
 }
 
 function nextStep(){
+  if(triviaOpen) return;   // 豆知識表示中はメイン次へボタンを無効化（二重進行防止）
   if(pendingGameOver){ gameOver(); return; }
   if(caseTimedOut){ finishCase(); return; }   // 時間切れ症例は残ステップへ進まず結果へ
   const c = curCase();
@@ -7680,10 +7682,14 @@ const TRIVIA = [
   {tag:"💡 現場の技",text:"バッテリーのターミナルに薄くグリスを塗ると腐食を数年単位で予防できる。作業時間はわずか1分。お客様が喜ぶ「ひと手間」の典型例。"}
 ];
 let triviaUsed = new Set();
+let triviaOpen = false;   // 豆知識表示中は次へボタンでの再進行を禁止
 
 function showTrivia(onClose){
   hideOyakata();
   clearTimeout(oyaTimer);
+  // 豆知識中はメインの「次へ」を無効化（二重進行＝級飛び/無限豆知識/二重加点の防止）
+  triviaOpen = true;
+  const _nb=$("nextBtn"); if(_nb) _nb.classList.remove("show");
   // 全件使い切ったらリセット
   if(triviaUsed.size >= TRIVIA.length) triviaUsed.clear();
   let idx;
@@ -7691,7 +7697,7 @@ function showTrivia(onClose){
   triviaUsed.add(idx);
   const item = TRIVIA[idx];
   const o = $("oyakata"), bubble = $("oyaBubble");
-  if(!o||!bubble) return onClose();
+  if(!o||!bubble){ triviaOpen=false; return onClose(); }
   bubble.innerHTML =
     '<div class="trivia-header">💡 豆知識</div>'+
     '<span class="trivia-tag">'+item.tag+'</span>'+
@@ -7708,7 +7714,7 @@ function showTrivia(onClose){
   const btn=$("triviaNextBtn");
   if(btn){
     let _triviaDone=false;
-    const _triviaClose=(e)=>{ if(_triviaDone) return; _triviaDone=true; e.preventDefault(); o.classList.remove("show","trivia","angry","happy"); onClose(); };
+    const _triviaClose=(e)=>{ if(_triviaDone) return; _triviaDone=true; e.preventDefault(); triviaOpen=false; o.classList.remove("show","trivia","angry","happy"); onClose(); };
     btn.addEventListener("touchend", _triviaClose, {once:true, passive:false});
     btn.addEventListener("click", _triviaClose, {once:true});
   }
