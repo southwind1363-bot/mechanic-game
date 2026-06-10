@@ -2274,18 +2274,18 @@ const cases = [
       {text:"誤作動が多い部位を先に疑う",correct:false}],
       result_correct:"多系統が同時なら共通の電源/接地が筆頭。個別追いは遠回り。",
       result_wrong:"個別に追うと泥沼。まず共通項（電源・接地）を疑うのが定石。"},
-    {question:"どう確認を進める？",choices:[
+    {question:"共通の電源・接地が怪しい。どう確認する？",choices:[
       {text:"始動時の電圧降下を測定する",correct:true},
       {text:"無負荷の安定電圧を測定する",correct:false},
       {text:"各部の暗電流を測定する",correct:false},
       {text:"主要ヒューズの導通を測定する",correct:false}],
       result_correct:"クランキング等の負荷時に電圧降下を見れば接地/電源の弱点が出る。",
       result_wrong:"静的測定や暗電流では動的な電圧降下を見逃す。負荷時の実測が要。"},
-    {question:"どう対処する？",choices:[
+    {question:"負荷時に電圧降下が出た。どう対処する？",choices:[
       {text:"弱った接地と電源を修復し全消灯を確認する",correct:true},
-      {text:"各ユニットを個別に交換して作動と数値を確認する",correct:false},
-      {text:"通信ラインを引き直して直す",correct:false},
-      {text:"電圧を昇圧して補う",correct:false}],
+      {text:"各ユニットを個別に交換して動作を確認する",correct:false},
+      {text:"通信ラインを全て引き直して直す",correct:false},
+      {text:"システム電圧を昇圧して誤作動を補う",correct:false}],
       result_correct:"共通の接地/電源を直せば複数警告が一括で消える。",
       result_wrong:"一括交換や小細工は再発。根（電源・接地）を直し全消灯を確認。"}],
     explanation:"多系統同時の警告は共通の電源/接地を疑い、負荷時の電圧降下で特定→修復して全消灯を確認する。"},
@@ -2297,14 +2297,14 @@ const cases = [
       {text:"バッテリーの劣化を疑って調べる",correct:false}],
       result_correct:"不定期・多系統のチラつきは共通アースの接触不良が筆頭。",
       result_wrong:"灯火交換や発電増では直らない。共通の接地を疑うのが先。"},
-    {question:"どう再現・確認する？",choices:[
+    {question:"共通アースの接触不良が濃厚。どう再現する？",choices:[
       {text:"アース点を揺らし症状の変化を見る",correct:true},
       {text:"各機器の消費電流を測る",correct:false},
       {text:"充電電圧の推移を記録して傾向を見る",correct:false},
       {text:"室内配線の被覆を調べる",correct:false}],
       result_correct:"接地点を揺動させ症状が変われば接触不良が確定に近い。",
       result_wrong:"闇雲な交換や部分点検では間欠不良を捕まえられない。"},
-    {question:"どう対処する？",choices:[
+    {question:"アースを揺らすと症状が変化した。どう対処する？",choices:[
       {text:"腐食したアース点を清掃と増し締めする",correct:true},
       {text:"アース線を増設して足す",correct:false},
       {text:"オルタを交換して発電を補う",correct:false},
@@ -2320,18 +2320,18 @@ const cases = [
       {text:"点火の進角量を確認する",correct:false}],
       result_correct:"高負荷でのみ振れるなら、その領域の燃圧/噴射の実力を測るのが筋。",
       result_wrong:"アイドルだけ見ても高負荷の不調は出ない。負荷時の実測が要。"},
-    {question:"何を点検する？",choices:[
+    {question:"高負荷時の燃圧・噴射を実測した。次に何を点検？",choices:[
       {text:"燃料ポンプの吐出と電源電圧を負荷時に見る",correct:true},
       {text:"残量センダーの抵抗を点検して原因を切り分ける",correct:false},
       {text:"O2の応答速度を点検する",correct:false},
       {text:"吸気温センサーの値を点検する",correct:false}],
       result_correct:"高負荷で吐出が垂れる＝ポンプ能力/電源不足。負荷時に確認する。",
       result_wrong:"無負荷観察や全交換、リセットでは原因に届かない。"},
-    {question:"どう対処する？",choices:[
+    {question:"高負荷でポンプ吐出が垂れていた。どう対処する？",choices:[
       {text:"能力不足のポンプ系を直し補正の収束を見る",correct:true},
-      {text:"燃圧レギュレータを交換して作動と数値を確認する",correct:false},
-      {text:"燃料フィルタを交換する",correct:false},
-      {text:"インジェクタを洗浄する",correct:false}],
+      {text:"燃圧レギュレータを交換して動作を確認する",correct:false},
+      {text:"燃料フィルタを交換して様子を見る",correct:false},
+      {text:"インジェクタを洗浄して様子を見る",correct:false}],
       result_correct:"ポンプ/電源を正し、高負荷でも補正が収束すれば完治。",
       result_wrong:"部分対策や固定では再発。能力不足の根を直し収束を確認。"}],
     explanation:"高負荷でのみ補正が振れるのは燃料供給能力の不足。負荷時の燃圧/吐出を実測→ポンプ系を直し収束を確認。"},
@@ -2339,18 +2339,18 @@ const cases = [
     {question:"カム位相が指令に追従しない。最初は？",choices:[
       {text:"指令位相と実位相の追従をデータで比較する",correct:true},
       {text:"点火二次の波形を確認する",correct:false},
-      {text:"噴射量と燃圧を確認する",correct:false},
+      {text:"噴射量と燃圧の異常を確認する",correct:false},
       {text:"スロットル開度学習を確認して結果を確かめる",correct:false}],
       result_correct:"追従の可否は指令vs実位相の比較が核心。",
       result_wrong:"プラグや燃料、開度だけでは位相異常は判別できない。"},
-    {question:"何を確認する？",choices:[
-      {text:"油圧とOCVを確認する",correct:true},
+    {question:"指令と実位相のズレを確認した。次は何を点検？",choices:[
+      {text:"油圧とOCVの固着を確認する",correct:true},
       {text:"カムの摩耗量を測定する",correct:false},
       {text:"タイベルの張力を点検する",correct:false},
       {text:"点火時期のずれを点検する",correct:false}],
       result_correct:"VVTは油圧とOCVが要。固着や油圧不足を確認する。",
       result_wrong:"カム交換やリプロは早計。油圧/OCVの作動確認が先。"},
-    {question:"どう対処する？",choices:[
+    {question:"油圧かOCVが怪しい。どう対処する？",choices:[
       {text:"油圧不足かOCV固着かを切り分ける",correct:true},
       {text:"カムスプロケットを交換して作動を確認する",correct:false},
       {text:"硬い油で油圧を稼ぐ",correct:false},
@@ -2366,14 +2366,14 @@ const cases = [
       {text:"O2センサーの応答を確認する",correct:false}],
       result_correct:"直噴特有の吸気バルブ堆積を内視鏡で直接確認するのが要。",
       result_wrong:"コイルやポンプ、O2では直噴の堆積を見落とす。"},
-    {question:"次にどうする？",choices:[
+    {question:"吸気バルブに堆積を確認した。次にどうする？",choices:[
       {text:"堆積の程度を見て物理清浄の要否を判断する",correct:true},
       {text:"圧縮圧力を測って判断する",correct:false},
       {text:"プラグ番手の適合を確認して原因を切り分ける",correct:false},
-      {text:"燃圧の保持を確認する",correct:false}],
+      {text:"燃圧の保持状態を確認する",correct:false}],
       result_correct:"直噴の堆積は燃料添加剤が届かない。程度を見て物理清浄を判断。",
       result_wrong:"添加剤頼みや部分測定では低速失火は消えない。"},
-    {question:"どう除去する？",choices:[
+    {question:"堆積が多いと判明。どう除去する？",choices:[
       {text:"ウォルナット等で物理的に除去する",correct:true},
       {text:"添加剤で堆積除去を試す",correct:false},
       {text:"アイドル学習をやり直す",correct:false},
