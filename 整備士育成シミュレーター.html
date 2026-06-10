@@ -2382,21 +2382,21 @@ const cases = [
       result_wrong:"回転上げや予防交換は対症療法。堆積の物理除去が本筋。"}],
     explanation:"直噴の冷間始動不良/低速失火は吸気バルブ堆積。内視鏡で確認→程度判断→物理清浄で除去する。"},
   {id:66,tier:"ウルトラ級",symptom:"特定気筒が失火。点火も燃料も替えたが直らない",steps:[
-    {question:"点火/燃料を替えても単気筒失火が直らない。",choices:[
+    {question:"電装を替えても単気筒失火が直らない。最初は？",choices:[
       {text:"その気筒の圧縮とリークダウンを測る",correct:true},
       {text:"点火二次の波形を確認して結果を確かめる",correct:false},
       {text:"噴射量と噴霧を確認する",correct:false},
       {text:"隣気筒のデータと比較する",correct:false}],
       result_correct:"電装を替えて直らぬ単気筒失火は機械系（圧縮）を疑う。",
       result_wrong:"同じ電装の再交換や増量では機械的不良に届かない。"},
-    {question:"どう特定する？",choices:[
+    {question:"圧縮の低い気筒を発見。どう特定する？",choices:[
       {text:"リークダウンで漏れの行き先を特定する",correct:true},
       {text:"全体の点火時期を確認して結果を確かめる",correct:false},
       {text:"燃圧の保持を確認する",correct:false},
       {text:"プラグ穴から内部を覗く",correct:false}],
       result_correct:"漏れ先（吸気/排気/隣気筒/オイル）でバルブ/ガスケット/リングを切り分け。",
       result_wrong:"全体タイミングや増圧は無関係。漏れの行き先特定が核心。"},
-    {question:"どう進める？",choices:[
+    {question:"漏れの行き先を特定した。どう進める？",choices:[
       {text:"損傷部の整備方針と費用を提示する",correct:true},
       {text:"その気筒のコイルを再交換して作動を確認する",correct:false},
       {text:"燃料添加剤で回復を試す",correct:false},
@@ -2412,14 +2412,14 @@ const cases = [
       {text:"触媒の暖機温度を確認する",correct:false}],
       result_correct:"触媒交換で再発＝上流に劣化要因。燃調/失火を確認する。",
       result_wrong:"触媒やO2の再交換は再発する。上流原因の確認が先。"},
-    {question:"どう特定する？",choices:[
+    {question:"上流に劣化要因がありそう。どう特定する？",choices:[
       {text:"空燃比と失火カウントの実データで特定する",correct:true},
       {text:"触媒前後の温度差を比較して左右差を確かめる",correct:false},
-      {text:"排気背圧を測定する",correct:false},
-      {text:"燃料の銘柄差を確認する",correct:false}],
+      {text:"排気の背圧を測定して確認する",correct:false},
+      {text:"燃料の銘柄差を確認して比べる",correct:false}],
       result_correct:"実データで燃調ズレ/失火が触媒を焼いていないか特定する。",
       result_wrong:"温度のみや燃料変更では上流原因を絞れない。"},
-    {question:"どう進める？",choices:[
+    {question:"燃調ズレ/失火が判明。どう進める？",choices:[
       {text:"燃調と点火を修理後に触媒を判断する",correct:true},
       {text:"触媒をもう一度交換して作動を確認する",correct:false},
       {text:"下流O2を交換する",correct:false},
@@ -2435,18 +2435,18 @@ const cases = [
       {text:"各コードの発生時刻を比べる",correct:false}],
       result_correct:"一見無関係でも共通の接地/電源や直近作業が根のことが多い。",
       result_wrong:"個別対応はコスト過大。共通項の洗い出しが先。"},
-    {question:"どう確認する？",choices:[
+    {question:"共通の接地/電源が怪しい。どう確認する？",choices:[
       {text:"共通負荷時に各症状が連動するか確認する",correct:true},
       {text:"全部位の配線を順に点検して原因を切り分ける",correct:false},
       {text:"疑わしい部品を一つずつ外す",correct:false},
       {text:"バッテリーを替えて確認する",correct:false}],
       result_correct:"ある接地を負荷すると複数症状が同時に動く＝共通根の証拠。",
       result_wrong:"引き直しや順次取り外しは非効率。連動性の確認が近道。"},
-    {question:"どう対処する？",choices:[
+    {question:"症状が連動＝共通根と判明。どう対処する？",choices:[
       {text:"共通根を一点修復し全症状の消失を確認する",correct:true},
-      {text:"各症状を個別に修理する",correct:false},
-      {text:"症状ごとに別日で対応する",correct:false},
-      {text:"最も派手な症状から直す",correct:false}],
+      {text:"各症状を個別に切り分けて修理する",correct:false},
+      {text:"症状ごとに別日に分けて対応する",correct:false},
+      {text:"最も派手な症状から順に直す",correct:false}],
       result_correct:"共通の接地等を直せば複数症状が一括で消える。",
       result_wrong:"個別交換は無駄。共通根を直し全症状の消失を確認。"}],
     explanation:"無関係に見える複数不具合は共通の接地/電源/直近作業を疑い、連動性を確認→共通根を一点修復する。"},
@@ -2454,22 +2454,22 @@ const cases = [
     {question:"HVバッテリー警告で出力低下。最初は？",choices:[
       {text:"ブロック間電圧と内部抵抗をデータで確認する",correct:true},
       {text:"12V補機の電圧を確認して原因を切り分けて直す",correct:false},
-      {text:"タイヤや空気圧を確認する",correct:false},
-      {text:"充電器で満充電にする",correct:false}],
+      {text:"タイヤと空気圧の状態を確認する",correct:false},
+      {text:"充電器で満充電にして様子を見る",correct:false}],
       result_correct:"出力低下はブロック劣化が筆頭。電圧バラつき/内部抵抗を確認。",
       result_wrong:"12Vやタイヤ、放置では駆動電池の劣化は判別できない。"},
-    {question:"どう絞る？",choices:[
+    {question:"ブロック電圧にバラつき。どう絞る？",choices:[
       {text:"劣化ブロックを特定し温度も確認する",correct:true},
       {text:"全モジュールの外観を点検して原因を絞る",correct:false},
       {text:"走行充電で回復を見る",correct:false},
       {text:"冷却ファンの作動を点検する",correct:false}],
       result_correct:"特定ブロックの電圧落ちと温度異常を確認し犯人を絞る。",
       result_wrong:"全交換や自己流放電は危険・過剰。特定が先。"},
-    {question:"どう対処する？",choices:[
+    {question:"劣化ブロックを特定。どう対処する？",choices:[
       {text:"有資格者がブロック交換とリビルトを判断する",correct:true},
-      {text:"全モジュールを交換する",correct:false},
-      {text:"走行充電で容量を回復する",correct:false},
-      {text:"補機12Vを大容量化する",correct:false}],
+      {text:"全モジュールをまとめて交換する",correct:false},
+      {text:"走行充電で容量回復を試みる",correct:false},
+      {text:"補機12Vを大容量品に替える",correct:false}],
       result_correct:"高電圧作業の有資格者が交換/リビルトの可否を安全に判断。",
       result_wrong:"予防交換や自己流回復は不可。資格者が判断する。"}],
     explanation:"HV出力低下はブロック電圧/内部抵抗→劣化ブロック特定→有資格者が交換/リビルトを判断する。"},
@@ -2481,18 +2481,18 @@ const cases = [
       {text:"各コードを別々に追う",correct:false}],
       result_correct:"別系統が同時＝共有入力（車速/電源/通信）の異常を疑う。",
       result_wrong:"各本体の交換は早計。共有要素の洗い出しが先。"},
-    {question:"どこを点検する？",choices:[
+    {question:"共有入力の異常が疑わしい。どこを点検？",choices:[
       {text:"車速信号源とCANと電源の共有点を点検する",correct:true},
       {text:"タイヤ4本の状態を点検する",correct:false},
       {text:"ステアリング機構を点検する",correct:false},
       {text:"関連ヒューズの導通を点検して原因を切り分ける",correct:false}],
       result_correct:"車速や電源/通信の共有点に不良があれば両系が同時に警告する。",
       result_wrong:"タイヤ交換や分解は無関係。共有点の点検が核心。"},
-    {question:"どう対処する？",choices:[
+    {question:"共有点に不良を確認。どう対処する？",choices:[
       {text:"共有部の不良を特定し両警告の消灯を確認する",correct:true},
       {text:"両ユニットを一括交換して作動と数値を確認する",correct:false},
-      {text:"関連ヒューズを増設する",correct:false},
-      {text:"片方ずつ別日で対応する",correct:false}],
+      {text:"関連ヒューズを増設して補う",correct:false},
+      {text:"片方ずつ別日に分けて対応する",correct:false}],
       result_correct:"共有部（車速/電源/通信）を直せば両系の警告が一括で消える。",
       result_wrong:"一括交換や増設は無駄。共有部を直し両消灯を確認。"}],
     explanation:"ABSとEPSの同時警告は共有入力（車速/電源/通信）を疑い、共有点を特定→直して両警告の消灯を確認。"},
