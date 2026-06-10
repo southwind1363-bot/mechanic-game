@@ -6186,21 +6186,21 @@ const cases = [
   // ===== 親方級追加（ID 231〜235）=====
   {id:231,tier:"親方級",symptom:"複数の警告灯が同時点灯。スキャンツールがECUに繋がらない",steps:[
     {question:"まず何を確認しますか？",choices:[
-      {text:"OBD2の電源ピン（バッテリー電圧）とCAN HI/LOの電圧・抵抗を測定する",correct:true},
+      {text:"OBD2電源ピンとCAN HI/LOの電圧・抵抗を測定する",correct:true},
       {text:"各ECUを順番に交換して通信回復を確認する",correct:false},
-      {text:"メインヒューズとリレーボックスを交換する",correct:false},
+      {text:"メインヒューズとリレーボックスを交換して確認する",correct:false},
       {text:"データリンクコネクターを交換して通信を回復させる",correct:false}],
       result_correct:"OBD2の16番（+12V）は正常。CAN HI-LO間の抵抗が∞Ω。CANバスの断線を確認。",
       result_wrong:"スキャンツールが繋がらないのは通信ライン自体の問題。まずCAN HI/LOの電圧と抵抗を測定する。"},
     {question:"CANバスが断線している。どう特定しますか？",choices:[
-      {text:"ワイヤハーネス図でCAN H/Lのルートをたどりセグメントごとに抵抗を測定する",correct:true},
+      {text:"ハーネス図でCAN H/Lをたどりセグメント毎に抵抗を測る",correct:true},
       {text:"ボディハーネス一式を交換して通信を回復させる",correct:false},
       {text:"全ECUを取り外してCANを単純化して最後に残ったものを原因とする",correct:false},
       {text:"ゲートウェイECUのファームウェアを更新して解決する",correct:false}],
       result_correct:"エンジンルームのジョイントコネクターでCAN Hの断線を確認。ハーネス挟み込みが原因。",
       result_wrong:"CANバス断線はハーネス図でセグメントを絞り、抵抗測定で特定するのが正しい手順。"},
     {question:"断線修理後の確認は？",choices:[
-      {text:"全ECUとの通信確立・各システムの正常動作・コード消去を確認する",correct:true},
+      {text:"全ECUの通信確立・各系統動作・コード消去を確認する",correct:true},
       {text:"スキャンツールが繋がれば修理完了とする",correct:false},
       {text:"警告灯が消えれば全システムは正常と判断する",correct:false},
       {text:"エンジンを始動して走行可能なら引き渡す",correct:false}],
@@ -6223,23 +6223,23 @@ const cases = [
       result_correct:"高回転でコイル二次電圧が急落。コイルの絶縁劣化で高負荷時にエネルギーがリークしていた。",
       result_wrong:"燃圧の微小変動や吸気温センサーのわずかなずれは高回転失火の主因にはならない。コイル二次電圧の急落が決定的。"},
     {question:"点火コイル交換後の確認は？",choices:[
-      {text:"実走行で4,000rpm超の高回転域まで確認して失火消失を検証する",correct:true},
+      {text:"実走行で4000rpm超の高回転域まで確認する",correct:true},
       {text:"アイドルが安定すれば高回転は問題ないと判断する",correct:false},
-      {text:"コードが消えれば修理完了とする",correct:false},
+      {text:"コードが消えれば修理完了と判断する",correct:false},
       {text:"スキャンツールで瞬時失火カウントが0になれば完成とする",correct:false}],
       result_correct:"実走行で4,000rpmを超えてもスムーズに吹け上がり、失火消失を確認した。",
       result_wrong:"高回転の症状は高回転で確認しないと再発を見逃す。必ず実走行で高回転域まで確認する。"}],
     explanation:"高回転のみ失火は点火コイルの高負荷時容量不足が多い。コイル二次電圧波形で確認→交換→実走行高回転域で失火消失確認。"},
   {id:233,tier:"親方級",symptom:"ターボ車で加速力が低下。過給圧が規定値に達しない",steps:[
     {question:"まず何を確認しますか？",choices:[
-      {text:"スキャンツールで過給圧と目標値の差を確認し吸気系のリークを点検する",correct:true},
+      {text:"過給圧と目標値の差を確認し吸気系のリークを点検する",correct:true},
       {text:"ターボチャージャーを分解してタービンブレードを点検する",correct:false},
       {text:"インタークーラーを清掃して過給効率を回復させる",correct:false},
       {text:"ウェイストゲートバルブをすぐに交換する",correct:false}],
       result_correct:"過給圧が目標より30%低い。吸気系に煙注入してインタークーラーホース接合部から漏れを発見。",
       result_wrong:"過給圧不足はまず吸気系リークを疑う。分解や部品交換は原因特定後。"},
     {question:"ホースのリークを修理した。まだ過給圧が低い。次は？",choices:[
-      {text:"ウェイストゲートアクチュエーターと制御バキュームをチェックする",correct:true},
+      {text:"WGアクチュエーターと制御バキュームを点検する",correct:true},
       {text:"ターボを新品に交換して過給圧を回復させる",correct:false},
       {text:"ECUのブーストマップをリセットして再学習させる",correct:false},
       {text:"エンジン内部のフリクションを確認してホットテストをする",correct:false}],
@@ -6249,7 +6249,7 @@ const cases = [
       {text:"実走行で全開加速時の過給圧が規定値に達するか確認する",correct:true},
       {text:"アイドルで過給圧計が動けば問題ないと判断する",correct:false},
       {text:"スキャンツールの目標値と実測値の差が縮まれば完成とする",correct:false},
-      {text:"お客様に全開加速での確認を任せる",correct:false}],
+      {text:"お客様に全開加速での確認をすべて任せる",correct:false}],
       result_correct:"実走行全開加速で過給圧が規定値に達し、加速力が正常に回復したことを確認した。",
       result_wrong:"過給圧の確認は実走行の全開加速域でしか正確に判断できない。アイドルや数値だけでは不十分。"}],
     explanation:"ターボ過給圧不足は吸気系リーク確認→ウェイストゲート動作確認の順で診断。修理後は実走行全開加速で規定過給圧達成を確認する。"},
@@ -6269,7 +6269,7 @@ const cases = [
       result_correct:"燃料ポンプの電流が規定より20%高く、フィルターに詰まりあり。ポンプが過負荷で劣化していた。",
       result_wrong:"燃圧低下は燃料ポンプだけでなくフィルター詰まりも原因になる。電流・電圧・フィルターをセットで確認する。"},
     {question:"フィルター交換とポンプ交換後の確認は？",choices:[
-      {text:"高負荷・高速走行を再現して燃圧が維持されることと症状消失を確認する",correct:true},
+      {text:"高負荷走行を再現して燃圧維持と症状消失を確認する",correct:true},
       {text:"アイドルで燃圧が規定値なら修理完了とする",correct:false},
       {text:"エンジン始動して燃圧計を目視するだけでよい",correct:false},
       {text:"お客様に高速道路での確認を任せる",correct:false}],
@@ -6278,8 +6278,8 @@ const cases = [
     explanation:"高負荷時のみのもたつきは燃圧の高負荷時低下を疑う。高負荷条件での燃圧測定→ポンプ電流・フィルター確認→交換→高負荷走行で確認。"},
   {id:235,tier:"親方級",symptom:"P0016とP0017が同時記録。アイドル不安定でパワーが出ない",steps:[
     {question:"P0016/17（クランク対カム位相異常）が出ている。まず何を確認しますか？",choices:[
-      {text:"エンジンオイルの劣化・油圧とVVT制御ソレノイドの動作を確認する",correct:true},
-      {text:"タイミングチェーンを直ちに交換する",correct:false},
+      {text:"オイルの劣化・油圧とVVTソレノイドの動作を確認する",correct:true},
+      {text:"タイミングチェーンを直ちに一式交換する",correct:false},
       {text:"カムシャフトセンサーを左右交換して位相ずれを確認する",correct:false},
       {text:"クランクシャフトセンサーを交換して信号を安定させる",correct:false}],
       result_correct:"オイルが酷く汚れており油圧が低め。VVTソレノイドのフィルターにスラッジが詰まっていた。",
@@ -6292,7 +6292,7 @@ const cases = [
       result_correct:"ソレノイドフィルター清掃後に動作電流が正常値に回復。スラッジが詰まって動作不良だった。",
       result_wrong:"ソレノイドを交換だけしても根本原因（スラッジ）が残る。取り外して確認・清掃が先。オイル交換だけでは詰まりは解消しない。"},
     {question:"ソレノイド清掃・オイル交換後の確認は？",choices:[
-      {text:"カムとクランクの位相がリアルタイムで一致するかスキャンツールで確認する",correct:true},
+      {text:"カムとクランクの位相が一致するかスキャンで確認する",correct:true},
       {text:"コードを消去してエンジンをかけ直せば完成とする",correct:false},
       {text:"アイドルが安定すれば位相は正常と判断する",correct:false},
       {text:"一週間後に再来店してコードが再記録されるか確認する",correct:false}],
