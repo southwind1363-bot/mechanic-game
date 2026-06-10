@@ -2504,37 +2504,37 @@ const cases = [
       {text:"点火時期の進角を確認する",correct:false}],
       result_correct:"漏れ/MAFが無いなら燃圧低下や上流排気漏れ（誤検知）を疑う。",
       result_wrong:"MAF再清掃やO2交換は堂々巡り。燃圧/排気漏れの確認へ。"},
-    {question:"どう絞る？",choices:[
+    {question:"燃圧と排気漏れを確認。どう絞る？",choices:[
       {text:"補正の回転と負荷別の傾向を読む",correct:true},
       {text:"インジェクタの噴霧を点検して原因を絞る",correct:false},
       {text:"タンク内ポンプの圧を点検する",correct:false},
       {text:"触媒の詰まりを点検する",correct:false}],
       result_correct:"補正が全域か特定領域かで燃圧/インジェクタ/漏れを切り分け。",
       result_wrong:"全交換やリセットは当てずっぽう。傾向分析で原因を絞る。"},
-    {question:"どう対処する？",choices:[
+    {question:"補正の傾向を読んだ。どう対処する？",choices:[
       {text:"燃圧不足かインジェクタ詰まりかを特定する",correct:true},
       {text:"O2を交換して補正を取り直す",correct:false},
-      {text:"学習を濃いめに直す",correct:false},
-      {text:"燃圧を一律で上げる",correct:false}],
+      {text:"学習を濃いめに固定して直す",correct:false},
+      {text:"燃圧を一律で上げて薄さを補う",correct:false}],
       result_correct:"燃圧低下か噴射不足かを特定し該当を直せば薄さが解消。",
       result_wrong:"固定や予防交換、添加剤では根本が残る。特定して直す。"}],
     explanation:"漏れ/MAFが無いP0171は燃圧と上流排気漏れ→補正の傾向分析→燃圧不足/噴射詰まりを特定して直す。"},
   {id:72,tier:"ウルトラ級",symptom:"始動性が悪く失火。チェーン伸び/歯飛びの疑い",steps:[
     {question:"始動不良＋失火、チェーン疑い。最初は？",choices:[
       {text:"クランクとカム信号の相関をオシロで確認する",correct:true},
-      {text:"点火プラグの状態を確認して原因を切り分けて直す",correct:false},
-      {text:"圧縮圧力を測定する",correct:false},
-      {text:"燃圧の保持を確認する",correct:false}],
+      {text:"点火プラグの状態を確認して切り分ける",correct:false},
+      {text:"各気筒の圧縮圧力を測定する",correct:false},
+      {text:"始動時の燃圧の保持を確認する",correct:false}],
       result_correct:"チェーン伸び/歯飛びは両信号の相関ズレに現れる。波形で確認。",
       result_wrong:"プラグや増圧、単独測定ではタイミングずれは判別できない。"},
-    {question:"どう切り分ける？",choices:[
+    {question:"信号相関にずれを確認。どう切り分ける？",choices:[
       {text:"ずれ量と再現性から伸びと歯飛びを切り分ける",correct:true},
       {text:"テンショナーの油圧を点検する",correct:false},
-      {text:"カム角センサーの信号を点検して原因を切り分ける",correct:false},
-      {text:"バルブ隙間を点検する",correct:false}],
+      {text:"カム角センサーの信号を点検して切り分ける",correct:false},
+      {text:"バルブ隙間の異常を点検する",correct:false}],
       result_correct:"ずれ量と再現性で伸び（連続）か歯飛び（段）かを切り分ける。",
       result_wrong:"部品単発交換や無関係点検では切り分けにならない。"},
-    {question:"どう対処する？",choices:[
+    {question:"チェーン伸び/歯飛びと判明。どう対処する？",choices:[
       {text:"チェーン一式を交換しタイミングを正す",correct:true},
       {text:"テンショナーを交換して作動と数値を確認する",correct:false},
       {text:"スプロケットを交換する",correct:false},
@@ -2550,18 +2550,18 @@ const cases = [
       {text:"タンク内圧の変化を確認する",correct:false}],
       result_correct:"ラージ/スモールでアプローチが変わる。まずコードを確認。",
       result_wrong:"いきなり部品交換は当て物。漏れの大小の把握が先。"},
-    {question:"どう特定する？",choices:[
+    {question:"漏れの大小を把握。どう特定する？",choices:[
       {text:"スモークテストで漏れ箇所を可視化する",correct:true},
       {text:"燃料の蒸発臭を辿って探す",correct:false},
       {text:"配管の折れを目視で探す",correct:false},
       {text:"パージ弁を先に交換して作動と数値を確認する",correct:false}],
       result_correct:"スモークテストで微少漏れも可視化し位置を特定する。",
       result_wrong:"全交換や添加剤、先行交換では微少漏れを特定できない。"},
-    {question:"どう対処する？",choices:[
+    {question:"スモークで漏れ箇所を特定。どう対処する？",choices:[
       {text:"漏れ部を修理し再検査で漏れ無しを確認する",correct:true},
       {text:"パージ弁を予防交換して作動と数値を確認する",correct:false},
-      {text:"給油キャップを交換する",correct:false},
-      {text:"配管を一括で交換する",correct:false}],
+      {text:"給油キャップを点検せず交換する",correct:false},
+      {text:"配管を点検せず一括交換する",correct:false}],
       result_correct:"漏れ部を直し、モニタ再走行/再検査で漏れ無しを確認。",
       result_wrong:"予防交換や部分対応は再発。漏れ部の修理が本筋。"}],
     explanation:"EVAPは大小の判別→スモークテストで漏れ可視化→漏れ部を修理し再検査で確認する。"},
@@ -2569,15 +2569,15 @@ const cases = [
     {question:"走行中に充電電圧が上下、電池も弱る。最初は？",choices:[
       {text:"充電電圧の指令値と実値をデータで比較する",correct:true},
       {text:"バッテリーの劣化を点検して原因を切り分ける",correct:false},
-      {text:"オルタを交換して確認する",correct:false},
-      {text:"端子の腐食を点検する",correct:false}],
+      {text:"オルタを点検せず交換して確認する",correct:false},
+      {text:"端子の腐食を点検して磨く",correct:false}],
       result_correct:"制御式充電は指令vs実値で制御異常か発電異常かを切り分け。",
       result_wrong:"即交換や端子清掃だけでは変動の原因に届かない。"},
-    {question:"何を測る？",choices:[
+    {question:"指令と実値を比較した。何を測る？",choices:[
       {text:"オルタのリップルとB端子の電圧降下を測る",correct:true},
-      {text:"ベルトの張りを点検する",correct:false},
+      {text:"ベルトの張りと滑りを点検する",correct:false},
       {text:"関連ヒューズの導通を点検して原因を切り分ける",correct:false},
-      {text:"アイドル電圧を点検する",correct:false}],
+      {text:"アイドル時の電圧を点検する",correct:false}],
       result_correct:"ダイオード劣化（リップル）や配線降下で電圧が暴れる。実測する。",
       result_wrong:"ベルトやヒューズ、回転だけでは整流/配線不良を見逃す。"},
     {question:"どう対処する？",choices:[
@@ -2591,19 +2591,19 @@ const cases = [
   {id:75,tier:"ウルトラ級",symptom:"明確な不調があるのに故障コードが出ない",steps:[
     {question:"不調が明確なのにコードが出ない。最初は？",choices:[
       {text:"再現時のフリーズとライブデータを記録する",correct:true},
-      {text:"関連部品を予防交換する",correct:false},
+      {text:"関連部品をまとめて予防交換する",correct:false},
       {text:"直近の整備箇所を点検して不良箇所を切り分ける",correct:false},
-      {text:"各センサーの抵抗を測る",correct:false}],
+      {text:"各センサーの抵抗を順に測る",correct:false}],
       result_correct:"コード未設定でも不調は数値に出る。再現時のデータを取る。",
       result_wrong:"初期化や予防交換、思い込み点検は原因を消すだけ。"},
-    {question:"どう絞る？",choices:[
+    {question:"再現時のデータを記録。どう絞る？",choices:[
       {text:"症状再現の条件を揃え数値の異常を切り分ける",correct:true},
-      {text:"外観の目視で判断する",correct:false},
-      {text:"各センサーを順に交換する",correct:false},
-      {text:"燃圧と点火を個別に点検して不良箇所を切り分ける",correct:false}],
+      {text:"外観の目視だけで原因を判断する",correct:false},
+      {text:"各センサーを順に交換して見る",correct:false},
+      {text:"燃圧と点火を個別に点検して切り分ける",correct:false}],
       result_correct:"症状が出る条件でライブ値を比較し、外れた系統を絞る。",
       result_wrong:"目視や総交換、添加剤では未コードの異常を捕まえられない。"},
-    {question:"どう対処する？",choices:[
+    {question:"外れた数値の系統を発見。どう対処する？",choices:[
       {text:"外れた数値の系統を特定して修理する",correct:true},
       {text:"関連を一括で交換して作動と数値を確認する",correct:false},
       {text:"直近作業を疑い元へ戻す",correct:false},
