@@ -4797,116 +4797,116 @@ const cases = [
       result_wrong:"希釈やサーモレス、センサーのみ交換は不適切。"}],
     explanation:"P0128は実水温/サーモ開弁→開弁温度/固着→規定サーモへ交換しエア抜きする。"},
   {id:171,tier:"親方級",symptom:"アイドル振動がひどく走行中もガタつく。スキャンするとP0301（1番気筒失火）とP0171（燃調希薄）が同時に記録",steps:[
-    {question:"最初は？",choices:[
+    {question:"P0301とP0171が同時。最初は？",choices:[
       {text:"1番の吸気漏れが共通原因か確認する",correct:true},
       {text:"1番のコイルを先に疑う",correct:false},
       {text:"触媒の劣化を先に疑う",correct:false},
       {text:"全体の燃圧を確認して原因を切り分ける",correct:false}],
       result_correct:"1番付近の吸気漏れなら失火と薄さを同時に説明できる。",
       result_wrong:"触媒/全交換/ポンプは両立する原因に届かない。"},
-    {question:"何を点検する？",choices:[
+    {question:"1番付近の漏れが共通原因か。何を点検？",choices:[
       {text:"1番のインマニとシール漏れを点検する",correct:true},
       {text:"1番の圧縮を点検する",correct:false},
       {text:"1番の噴射量を点検する",correct:false},
       {text:"1番の点火二次を点検して原因を切り分ける",correct:false}],
       result_correct:"1番固有の二次エア源(シール漏れ等)を点検する。",
       result_wrong:"別々交換や全体調整、消去は共通原因を外す。"},
-    {question:"どう対処する？",choices:[
+    {question:"1番の二次エア源を特定。どう対処する？",choices:[
       {text:"共通の漏れを直し失火と補正の回復を確認する",correct:true},
-      {text:"1番の全部品を交換する",correct:false},
-      {text:"先に触媒を交換する",correct:false},
-      {text:"補正をリセットして見る",correct:false}],
+      {text:"1番の全部品をまとめて交換する",correct:false},
+      {text:"先に触媒を交換して様子を見る",correct:false},
+      {text:"学習補正をリセットして見る",correct:false}],
       result_correct:"共通の漏れを直せば失火も薄さも同時に収まる。",
       result_wrong:"触媒先行や全交換、基準緩めは再発。共通原因を直す。"}],
     explanation:"P0301とP0171同時は1番付近の共通原因(吸気/シール漏れ)→点検→直して失火と補正の回復を確認する。"},
   {id:172,tier:"親方級",symptom:"アイドルがハンチングし、複数の軽微コードが同時に出る",steps:[
-    {question:"最初は？",choices:[
+    {question:"ハンチング＋複数軽微コード。最初は？",choices:[
       {text:"共通電源と接地の電圧変動をデータで確認する",correct:true},
-      {text:"ISCの作動を先に疑う",correct:false},
+      {text:"ISCの作動を先に疑って点検する",correct:false},
       {text:"各コードの部品を個別に追う",correct:false},
-      {text:"ECUの故障を疑う",correct:false}],
+      {text:"ECUの故障を疑って交換する",correct:false}],
       result_correct:"複数系の軽微コード＋不安定は電源/接地の揺らぎが筆頭。",
       result_wrong:"ISC交換や個別交換、初期化は共通原因に届かない。"},
-    {question:"何を測定する？",choices:[
+    {question:"電源/接地の揺らぎが怪しい。何を測定？",choices:[
       {text:"負荷時の接地電位と電圧降下を測定する",correct:true},
       {text:"各センサーを個別に点検して原因を切り分ける",correct:false},
       {text:"燃圧の保持を測定する",correct:false},
       {text:"点火時期の補正を確認する",correct:false}],
       result_correct:"負荷時の接地電位上昇/降下で多系統が揺らぐ。",
       result_wrong:"個別点検や燃圧/点火は共通の揺らぎを捉えない。"},
-    {question:"どう対処する？",choices:[
+    {question:"負荷時の接地電位変動を確認。どう対処？",choices:[
       {text:"接地と電源の不良を直し各症状の消失を確認する",correct:true},
-      {text:"軽微コードを順に消す",correct:false},
-      {text:"関連部品を一括交換する",correct:false},
-      {text:"ISCを予防交換する",correct:false}],
+      {text:"軽微コードを順に消して様子見",correct:false},
+      {text:"関連部品をまとめて一括交換する",correct:false},
+      {text:"ISCを点検せず予防交換する",correct:false}],
       result_correct:"共通の接地/電源を直せばハンチングと各コードが消える。",
       result_wrong:"消去や一括交換、言い訳は再発。共通根を直す。"}],
     explanation:"ハンチング＋複数軽微コードは共通電源/接地の揺らぎ→負荷時の接地電位/降下→直して各症状の消失を確認する。"},
   {id:173,tier:"親方級",symptom:"高負荷時にだけ失火する（点火エネルギー不足の疑い）",steps:[
-    {question:"最初は？",choices:[
+    {question:"高負荷時だけ失火。最初は？",choices:[
       {text:"高負荷時のみの失火か条件を切り分ける",correct:true},
       {text:"アイドルのデータを確認して結果を確かめる",correct:false},
       {text:"燃圧の保持を確認する",correct:false},
       {text:"O2の応答を確認する",correct:false}],
       result_correct:"高負荷でのみ＝高筒内圧で火花が飛びにくい点火系を疑う。",
       result_wrong:"アイドル観察や添加剤、O2は高負荷失火の主因でない。"},
-    {question:"何を点検する？",choices:[
+    {question:"点火系が怪しい。何を点検する？",choices:[
       {text:"ギャップと二次抵抗とコイルを点検する",correct:true},
       {text:"燃料ポンプの吐出を点検して原因を切り分ける",correct:false},
       {text:"触媒の詰まりを点検する",correct:false},
       {text:"吸気温の値を点検する",correct:false}],
       result_correct:"ギャップ過大や二次リーク/コイル劣化で高負荷時に失火。",
       result_wrong:"ポンプ/触媒/吸気温は高負荷点火失火の主因でない。"},
-    {question:"どう対処する？",choices:[
+    {question:"ギャップ/コイル劣化を確認。どう対処？",choices:[
       {text:"ギャップとプラグとコイルを整備して確認する",correct:true},
-      {text:"点火時期を大きく遅らせる",correct:false},
-      {text:"高オクタン燃料に替える",correct:false},
-      {text:"コイルを予防交換する",correct:false}],
+      {text:"点火時期を大きく遅らせて補う",correct:false},
+      {text:"高オクタン燃料に替えて試す",correct:false},
+      {text:"コイルを点検せず予防交換する",correct:false}],
       result_correct:"ギャップ調整やプラグ/コイル整備で高負荷でも失火が消える。",
       result_wrong:"遅角や回避、消去は対症療法。点火能力を直す。"}],
     explanation:"高負荷のみの失火は点火エネルギー不足。条件切り分け→ギャップ/二次抵抗/コイル→整備して高負荷で確認する。"},
   {id:174,tier:"親方級",symptom:"始動後に一瞬だけ回転が高く吹け上がり、すぐ落ち着く",steps:[
-    {question:"最初は？",choices:[
+    {question:"始動後一瞬だけ高回転。最初は？",choices:[
       {text:"冷間か暖機後かで挙動の差を確認する",correct:true},
       {text:"暖機後の挙動を確認する",correct:false},
       {text:"ISCの作動を確認する",correct:false},
       {text:"スロットル開度を確認して結果を確かめる",correct:false}],
       result_correct:"冷間のファストアイドルは正常域もある。冷暖の差を確認。",
       result_wrong:"即交換や点火操作の前に、正常な冷間制御か切り分ける。"},
-    {question:"何を確認する？",choices:[
+    {question:"冷暖の差を確認。次は何を確認？",choices:[
       {text:"全閉学習と冷間増量を確認する",correct:true},
       {text:"燃圧の保持を確認する",correct:false},
       {text:"EGRの作動を確認して原因を絞る",correct:false},
       {text:"O2の応答を確認する",correct:false}],
       result_correct:"学習ずれや温度センサー誤差で立上り回転が過大化する。",
       result_wrong:"燃圧/EGR/O2は冷間立上りの主因でない。"},
-    {question:"どう対処する？",choices:[
+    {question:"学習ずれ/温度誤差を確認。どう対処？",choices:[
       {text:"学習し直し温度センサーのずれを点検する",correct:true},
-      {text:"アイドル目標を下げる",correct:false},
+      {text:"アイドル目標回転を下げる",correct:false},
       {text:"ISCを予防交換して作動と数値を確認する",correct:false},
-      {text:"スロットルを交換する",correct:false}],
+      {text:"スロットルを点検せず交換する",correct:false}],
       result_correct:"学習し直しと温度センサー点検で立上りが適正化する。",
       result_wrong:"固定や予防交換、言い訳は誤り。学習/センサーを直す。"}],
     explanation:"始動後の一瞬高回転は冷暖の差→全閉学習/冷間増量(温度センサー)→学習し直しとセンサー点検をする。"},
   {id:175,tier:"親方級",symptom:"MIL(警告灯)は点くが、診断機にコードが保存されない",steps:[
-    {question:"最初は？",choices:[
+    {question:"MIL点灯だがコード未保存。最初は？",choices:[
       {text:"ペンディングとフリーズフレームを確認する",correct:true},
-      {text:"確定コードを優先して探す",correct:false},
+      {text:"確定コードを優先して先に探す",correct:false},
       {text:"ライブデータを先に記録する",correct:false},
-      {text:"ECUを初期化する",correct:false}],
+      {text:"ECUを初期化して様子を見る",correct:false}],
       result_correct:"確定前(ペンディング)に出る。ペンディングと発生時データを確認。",
       result_wrong:"問題なし扱いや予防交換、初期化は手掛かりを消す。"},
-    {question:"どう絞る？",choices:[
+    {question:"ペンディングを確認。どう絞る？",choices:[
       {text:"再現条件を揃えライブデータの異常を切り分ける",correct:true},
-      {text:"外観の目視で判断する",correct:false},
-      {text:"各センサーを順に交換する",correct:false},
-      {text:"暖機後のデータを確認する",correct:false}],
+      {text:"外観の目視だけで原因を判断する",correct:false},
+      {text:"各センサーを順に交換して見る",correct:false},
+      {text:"暖機後のデータだけを確認する",correct:false}],
       result_correct:"間欠なので再現条件でライブ値の外れを捕まえる。",
       result_wrong:"目視や総交換、放置では間欠を特定できない。"},
-    {question:"どう対処する？",choices:[
+    {question:"外れた系統を発見。どう対処する？",choices:[
       {text:"外れた系統を特定し修理して確定を待つ",correct:true},
-      {text:"関連を一括で交換する",correct:false},
-      {text:"直近作業を元へ戻す",correct:false},
+      {text:"関連部品を一括で交換する",correct:false},
+      {text:"直近作業を元へ戻して見る",correct:false},
       {text:"ペンディングを消して再走行して確認する",correct:false}],
       result_correct:"外れた系統を直し、再発しないことを確認する。",
       result_wrong:"球抜きや一括交換、言い訳は不適切。原因を特定し直す。"}],
