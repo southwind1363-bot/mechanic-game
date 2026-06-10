@@ -4339,23 +4339,23 @@ const cases = [
   {id:151,tier:"ウルトラ級",symptom:"EVの航続が急に短くなった（バッテリー劣化/BMS疑い）",steps:[
     {question:"EVの航続が急に短くなった。最初は？",choices:[
       {text:"駆動電池のSOHと使えるSOC幅を確認する",correct:true},
-      {text:"12Vの電圧を確認する",correct:false},
+      {text:"12V系の電圧と劣化を確認する",correct:false},
       {text:"タイヤの空気圧を確認して原因を切り分けて直す",correct:false},
-      {text:"充電器で満充電にする",correct:false}],
+      {text:"充電器で満充電にして様子を見る",correct:false}],
       result_correct:"航続急減はSOH低下/SOC幅縮小が筆頭。データで確認する。",
       result_wrong:"12Vやタイヤ、放置では駆動電池の劣化は判別できない。"},
-    {question:"どう絞る？",choices:[
+    {question:"SOH低下を確認。どう絞る？",choices:[
       {text:"セル電圧のバラつきと温度を点検する",correct:true},
       {text:"冷却水温を確認する",correct:false},
       {text:"充電器の出力を点検して原因を切り分ける",correct:false},
       {text:"走行充電で回復を見る",correct:false}],
       result_correct:"特定セルの劣化や温度異常で使用幅が狭まる。点検で絞る。",
       result_wrong:"自己流放電や全交換、運用回避は危険・無意味。点検が先。"},
-    {question:"どう対処する？",choices:[
+    {question:"劣化セルを特定。どう対処する？",choices:[
       {text:"有資格者が劣化セルの整備を判断する",correct:true},
       {text:"全モジュールを交換して作動を確認する",correct:false},
-      {text:"SOC上限を引き上げる",correct:false},
-      {text:"冷却系を強化する",correct:false}],
+      {text:"SOC上限を勝手に引き上げる",correct:false},
+      {text:"冷却系を強化して様子を見る",correct:false}],
       result_correct:"高電圧の有資格者がセル整備/交換の可否を安全に判断。",
       result_wrong:"冷却強化やSOC操作、放置は不適切。資格者が判断する。"}],
     explanation:"EV航続急減はSOH/SOC幅→セル電圧バラつき/温度→有資格者が劣化セル整備を判断する。"},
@@ -4367,18 +4367,18 @@ const cases = [
       {text:"冷却ファンの作動を確認して原因を切り分ける",correct:false}],
       result_correct:"駆動系過熱は冷却不良が筆頭。水量と専用ポンプ作動を確認。",
       result_wrong:"高額部品の即交換や運用回避は早計。冷却系の確認が先。"},
-    {question:"どう点検する？",choices:[
+    {question:"冷却不良が疑わしい。どう点検する？",choices:[
       {text:"高電圧の安全を確保し水温と流量を点検する",correct:true},
       {text:"冷却経路の詰まりを点検して原因を切り分ける",correct:false},
       {text:"ラジエータの汚れを点検する",correct:false},
-      {text:"サーモの開弁を点検する",correct:false}],
+      {text:"サーモの開弁温度を点検する",correct:false}],
       result_correct:"安全確保の上で駆動系の水温/流量と経路の詰まりを点検する。",
       result_wrong:"希釈や単品交換、走行継続は危険。安全確保と冷却点検が先。"},
-    {question:"どう対処する？",choices:[
+    {question:"水温/流量を点検。どう対処する？",choices:[
       {text:"冷却不良か過熱故障かを切り分けて処置する",correct:true},
       {text:"駆動ユニットを丸ごと交換して作動を確認する",correct:false},
-      {text:"冷却ファンを増設する",correct:false},
-      {text:"出力制限を解除する",correct:false}],
+      {text:"冷却ファンを増設して補う",correct:false},
+      {text:"出力制限を強制的に解除する",correct:false}],
       result_correct:"電動ポンプ/サーモ/経路の不良か、本体過熱かを切り分け処置。",
       result_wrong:"丸ごと交換やファン増設、制限解除は不適切。切り分けて処置。"}],
     explanation:"駆動系過熱は冷却水量/電動ポンプ→安全確保し水温/流量→冷却不良か過熱故障かを切り分け処置。"},
@@ -4390,14 +4390,14 @@ const cases = [
       {text:"各輪の車高を比較する",correct:false}],
       result_correct:"片側下がりは漏れ箇所の特定が第一。位置と漏れ音を切り分け。",
       result_wrong:"即交換や手上げ、共通部のコンプレッサ交換は無意味。"},
-    {question:"どう点検する？",choices:[
+    {question:"漏れ位置を絞る。どう点検する？",choices:[
       {text:"エアばねと配管とバルブを石鹸水で点検する",correct:true},
       {text:"コンプレッサの能力を点検して原因を切り分ける",correct:false},
       {text:"車高センサーの抵抗を点検する",correct:false},
       {text:"レベリングバルブを点検する",correct:false}],
       result_correct:"エアばねや配管継手、給排バルブの微少漏れを石鹸水で特定する。",
       result_wrong:"充填しのぎや全交換、センサー交換は的外れ。漏れ点検が核心。"},
-    {question:"どう対処する？",choices:[
+    {question:"漏れ箇所を特定。どう対処する？",choices:[
       {text:"漏れ箇所を特定し該当部を交換する",correct:true},
       {text:"全輪のエアばねを交換して作動を確認する",correct:false},
       {text:"コンプレッサを交換する",correct:false},
@@ -4413,14 +4413,14 @@ const cases = [
       {text:"両側のO2を比較する",correct:false}],
       result_correct:"薄い燃調が触媒を傷める。上流のP0171を先に正すのが筋道。",
       result_wrong:"触媒やO2先行、消去は再発する。上流の是正が先。"},
-    {question:"何を点検する？",choices:[
+    {question:"上流の薄さを先に是正。何を点検？",choices:[
       {text:"吸気漏れと燃圧で薄さの原因を特定する",correct:true},
-      {text:"触媒前後の温度を比較する",correct:false},
+      {text:"触媒前後の温度差を比較する",correct:false},
       {text:"マフラーの詰まりを確認して結果を確かめる",correct:false},
-      {text:"排気背圧を測定する",correct:false}],
+      {text:"排気の背圧を測定して確認する",correct:false}],
       result_correct:"二次エアや燃圧低下で薄くなる。原因を特定して是正する。",
       result_wrong:"添加剤やマフラー、リセットは的外れ。漏れ/燃圧を診る。"},
-    {question:"どう対処する？",choices:[
+    {question:"薄さの原因を特定。どう対処する？",choices:[
       {text:"薄さを直後に触媒の要否を再評価する",correct:true},
       {text:"先に触媒を交換して作動と数値を確認する",correct:false},
       {text:"下流O2を交換する",correct:false},
@@ -4436,14 +4436,14 @@ const cases = [
       {text:"端子の腐食を点検する",correct:false}],
       result_correct:"駐車中の上がりはまず暗電流を実測し基準超過かを把握する。",
       result_wrong:"即バッテリー/オルタ交換や端子外しは対症療法。実測が先。"},
-    {question:"どう探す？",choices:[
+    {question:"暗電流が基準超過。どう探す？",choices:[
       {text:"ヒューズを順に抜き電流が落ちる回路を探す",correct:true},
       {text:"各ヒューズの電流を順に測る",correct:false},
-      {text:"主要リレーの電流を測る",correct:false},
-      {text:"配線の漏れ電流を測る",correct:false}],
+      {text:"主要リレーの電流を順に測る",correct:false},
+      {text:"配線の漏れ電流を順に測る",correct:false}],
       result_correct:"ヒューズを順に抜き、電流が落ちた回路で犯人を絞り込む。",
       result_wrong:"補充電や引き直し、一括抜きは非効率。落ちる回路を探す。"},
-    {question:"どう対処する？",choices:[
+    {question:"電流が落ちる回路を発見。どう対処する？",choices:[
       {text:"残る負荷の回路を特定して修理する",correct:true},
       {text:"バッテリーを大容量化して結果を確かめる",correct:false},
       {text:"暗電流が出る系を遮断する",correct:false},
