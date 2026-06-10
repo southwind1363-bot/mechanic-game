@@ -2960,68 +2960,68 @@ const cases = [
     {question:"複数センサー値が同時に異常。最初は？",choices:[
       {text:"センサー共通の5V電源とグランドを確認する",correct:true},
       {text:"各センサーを順に点検して不良箇所を切り分ける",correct:false},
-      {text:"ECUの故障を先に疑う",correct:false},
-      {text:"各コードを個別に追う",correct:false}],
+      {text:"ECUの故障を先に疑って交換する",correct:false},
+      {text:"各コードを一つずつ個別に追う",correct:false}],
       result_correct:"複数センサーが同時異常＝共通5V/接地の不良が筆頭。",
       result_wrong:"個別交換やECU交換は早計。共通電源/接地の確認が先。"},
-    {question:"どう点検する？",choices:[
+    {question:"共通5V/接地が怪しい。どう点検する？",choices:[
       {text:"5V線の電圧と短絡と電圧降下を点検する",correct:true},
       {text:"配線を全て導通点検する",correct:false},
       {text:"バッテリー電圧を点検する",correct:false},
       {text:"各センサーの抵抗を点検して原因を切り分ける",correct:false}],
       result_correct:"5V基準線の短絡や降下で複数センサーが一斉に狂う。",
       result_wrong:"引き直しや全交換は当て物。5V回路の点検が核心。"},
-    {question:"どう特定する？",choices:[
+    {question:"5V線に短絡か降下を確認。どう特定する？",choices:[
       {text:"短絡したセンサーと配線を外して特定し直す",correct:true},
-      {text:"全センサーを交換する",correct:false},
-      {text:"基準5Vを昇圧して補う",correct:false},
-      {text:"ECUを書き換えて直す",correct:false}],
+      {text:"全センサーをまとめて交換する",correct:false},
+      {text:"基準5Vを昇圧して誤差を補う",correct:false},
+      {text:"ECUを書き換えて強制的に直す",correct:false}],
       result_correct:"5Vを引っ張る短絡センサー/配線を外して特定し修理。",
       result_wrong:"全交換や昇圧、書き換えでは再発。短絡源を特定して直す。"}],
     explanation:"複数センサー同時異常は共通5V/接地→5V線の電圧/短絡→短絡源を特定して修理する。"},
   {id:92,tier:"ウルトラ級",symptom:"V型エンジン車。燃費悪化・軽い息継ぎ。スキャンすると片側バンクだけP0171（燃調希薄）が記録",steps:[
     {question:"V型で片バンクだけ薄い（P0171系）。最初は？",choices:[
       {text:"薄い側バンクの燃圧と吸気と排気を左右比較する",correct:true},
-      {text:"両バンクのO2を比較する",correct:false},
-      {text:"MAFの汚れを確認する",correct:false},
-      {text:"全体の点火時期を確認する",correct:false}],
+      {text:"両バンクのO2出力を比較する",correct:false},
+      {text:"MAFの汚れと出力を確認する",correct:false},
+      {text:"全体の点火時期のずれを確認する",correct:false}],
       result_correct:"片バンクだけ＝そのバンク固有（吸気漏れ/噴射/排気漏れ）を比較で絞る。",
       result_wrong:"両側O2やMAF、全体調整は片バンク固有原因に届かない。"},
-    {question:"どう点検する？",choices:[
+    {question:"薄い側バンクを特定。どう点検する？",choices:[
       {text:"薄い側の二次エア漏れと噴射量を点検する",correct:true},
-      {text:"反対バンクの噴射量を点検して原因を切り分ける",correct:false},
-      {text:"両側の圧縮を点検する",correct:false},
+      {text:"反対バンクの噴射量を点検して切り分ける",correct:false},
+      {text:"両側の圧縮圧力を点検する",correct:false},
       {text:"触媒前後の温度を点検する",correct:false}],
       result_correct:"そのバンクの吸気漏れか噴射不足かを点検で切り分ける。",
       result_wrong:"両側全交換やポンプ（両バンク共通）交換は的外れ。"},
-    {question:"どう対処する？",choices:[
+    {question:"当該バンクの原因が判明。どう対処する？",choices:[
       {text:"当該バンクの原因を直し左右差を解消する",correct:true},
       {text:"両側のインジェクタを交換して作動を確認する",correct:false},
-      {text:"学習を濃いめに直す",correct:false},
-      {text:"薄い側の燃圧を上げる",correct:false}],
+      {text:"学習を濃いめに固定して直す",correct:false},
+      {text:"薄い側の燃圧を上げて補う",correct:false}],
       result_correct:"片バンクの原因を直し、左右の燃料補正差が無くなれば完治。",
       result_wrong:"固定や予防交換、片側増圧では左右差が残る。原因を直す。"}],
     explanation:"片バンクだけ薄いP0171は左右比較→当該バンクの吸気漏れ/噴射を点検→直して左右差を解消する。"},
   {id:93,tier:"ウルトラ級",symptom:"失火するが部品交換で直らない（点火二次の疑い）",steps:[
-    {question:"部品交換で直らぬ失火（点火二次の疑い）。",choices:[
+    {question:"部品交換で直らぬ失火。点火二次を疑う。最初は？",choices:[
       {text:"点火二次の波形と二次抵抗を確認する",correct:true},
       {text:"点火一次の波形を確認して結果を確かめる",correct:false},
       {text:"プラグの状態を確認する",correct:false},
       {text:"圧縮圧力を測定する",correct:false}],
       result_correct:"部品交換で直らぬ失火は二次側（リーク/抵抗）を波形で診る。",
       result_wrong:"同じ部品の再交換や燃料変更は堂々巡り。二次側を診る。"},
-    {question:"どこを点検する？",choices:[
+    {question:"二次側に異常がありそう。どこを点検？",choices:[
       {text:"プラグホールや碍子のリークと湿気を点検する",correct:true},
-      {text:"燃圧の保持を点検する",correct:false},
-      {text:"噴射の漏れを点検する",correct:false},
+      {text:"始動時の燃圧保持を点検する",correct:false},
+      {text:"インジェクタの漏れを点検する",correct:false},
       {text:"吸気の二次エアを点検して不良箇所を切り分ける",correct:false}],
       result_correct:"二次リークはプラグホールの油/水や碍子の沿面放電で起きる。",
       result_wrong:"圧縮単独やリプロでは二次リークを見落とす。"},
-    {question:"どう対処する？",choices:[
+    {question:"二次リークを確認。どう対処する？",choices:[
       {text:"リーク経路を断ち二次の正常放電を確認する",correct:true},
       {text:"コイルをもう一度交換して作動と数値を確認する",correct:false},
-      {text:"プラグの番手を変える",correct:false},
-      {text:"燃料を高い銘柄に替える",correct:false}],
+      {text:"プラグの番手を変えて試す",correct:false},
+      {text:"燃料を高い銘柄に替えて試す",correct:false}],
       result_correct:"油水侵入や碍子割れを処置し、二次が正常放電すれば失火解消。",
       result_wrong:"部品再交換や添加剤では二次リークは止まらない。経路を断つ。"}],
     explanation:"交換で直らぬ失火は点火二次を疑い波形/抵抗→リーク経路（油水/碍子）→経路を断って正常放電を確認。"},
@@ -3033,41 +3033,41 @@ const cases = [
       {text:"点火時期の学習を確認する",correct:false}],
       result_correct:"リセット直後は未学習で不安定なだけのことが多い。完了を確認。",
       result_wrong:"即交換や点火調整は早計。学習状態の確認が先。"},
-    {question:"次に何をする？",choices:[
+    {question:"学習が未完了と判明。次に何をする？",choices:[
       {text:"規定手順でアイドルと全閉学習をやり直す",correct:true},
       {text:"ISCを清掃して再学習して結果を確かめる",correct:false},
-      {text:"スロットルを清掃する",correct:false},
-      {text:"燃圧の保持を点検する",correct:false}],
+      {text:"スロットルを分解清掃する",correct:false},
+      {text:"燃圧の保持状態を点検する",correct:false}],
       result_correct:"メーカー規定の学習手順を踏めばアイドルが安定し始める。",
       result_wrong:"分解や給油、清掃だけでは未学習は解消しない。規定学習が筋。"},
-    {question:"学習後も残る不調は？",choices:[
+    {question:"学習しても不調が残る。次は？",choices:[
       {text:"吸気の汚れと二次エア漏れを点検する",correct:true},
-      {text:"ISCを交換する",correct:false},
+      {text:"ISCを点検せず交換する",correct:false},
       {text:"スロットルボディを交換して作動を確認する",correct:false},
-      {text:"アイドル目標を上げる",correct:false}],
+      {text:"アイドル目標回転を上げる",correct:false}],
       result_correct:"学習で直らねばスロットル汚れ/二次エアが原因。点検で解消。",
       result_wrong:"再リセットや予防交換、目標変更は無意味。残れば吸気系を点検。"}],
     explanation:"リセット後の不安定はまず学習完了を確認→規定手順で学習→残れば吸気汚れ/二次エアを点検する。"},
   {id:95,tier:"ウルトラ級",symptom:"一部のユニットだけ診断機で通信できない",steps:[
     {question:"一部のユニットだけ通信不可。最初は？",choices:[
       {text:"通信可否でユニットを切り分けて確認する",correct:true},
-      {text:"ECUの故障を先に疑う",correct:false},
+      {text:"ECUの故障を先に疑って交換する",correct:false},
       {text:"全ユニットを順に点検して原因を切り分ける",correct:false},
-      {text:"各コードを個別に追う",correct:false}],
+      {text:"各コードを一つずつ個別に追う",correct:false}],
       result_correct:"一部だけ不通＝特定サブバス/ゲートウェイを疑い、切り分ける。",
       result_wrong:"ECUや全交換、消去は遠回り。通信可否の切り分けが先。"},
-    {question:"何を点検する？",choices:[
+    {question:"不通のサブバスを特定。何を点検する？",choices:[
       {text:"該当サブバスの配線と終端と電源を点検する",correct:true},
       {text:"各ユニットを順に点検する",correct:false},
       {text:"関連ヒューズの導通を点検して原因を切り分ける",correct:false},
       {text:"ゲートウェイの電源を点検する",correct:false}],
       result_correct:"不通サブバスはコネクタ接触/終端抵抗/電源の点検で原因が出る。",
       result_wrong:"順次交換や引き直しは非効率。経路の点検が核心。"},
-    {question:"どう対処する？",choices:[
+    {question:"配線/終端に不良を確認。どう対処する？",choices:[
       {text:"経路の不良を修理し全ユニットの応答を確認する",correct:true},
       {text:"ゲートウェイを予防交換して作動と数値を確認する",correct:false},
-      {text:"不通ユニットを交換する",correct:false},
-      {text:"終端抵抗を暫定で足す",correct:false}],
+      {text:"不通ユニットを点検せず交換する",correct:false},
+      {text:"終端抵抗を暫定で足して様子見",correct:false}],
       result_correct:"コネクタ/終端を直せば該当ユニットが応答し全系統が回復。",
       result_wrong:"予防交換や単体交換、暫定処置では再発。経路の不良を直す。"}],
     explanation:"一部ユニット不通はサブバス/ゲートウェイ→配線/終端/電源→経路を修理して全応答を確認。"},
