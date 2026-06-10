@@ -3881,17 +3881,17 @@ const cases = [
       {text:"油量と粘度と始動時の油圧立上りを確認する",correct:true},
       {text:"点火プラグの状態を確認して原因を切り分ける",correct:false},
       {text:"インジェクタの作動音を聞く",correct:false},
-      {text:"バルブ隙間を点検する",correct:false}],
+      {text:"バルブ隙間の異常を点検する",correct:false}],
       result_correct:"始動直後の打音は油圧立上り遅れ（HLA）が定番。油圧から診る。",
       result_wrong:"プラグや噴射、銘柄変更は油圧/HLAに届かない。"},
-    {question:"次にどうする？",choices:[
+    {question:"油圧立上りに注目。次にどうする？",choices:[
       {text:"暖機での音の消え方を記録して比較する",correct:true},
       {text:"冷却水温の推移を記録して条件を絞り込む",correct:false},
       {text:"アイドル回転を監視する",correct:false},
       {text:"油圧計で常用油圧を測る",correct:false}],
       result_correct:"暖機で消える経過は油圧/HLAの判断材料。記録して比較する。",
       result_wrong:"添加剤や回転上げ、全交換は対症療法。経過を記録する。"},
-    {question:"どう対処する？",choices:[
+    {question:"暖機で消える経過を記録。どう対処する？",choices:[
       {text:"油圧不足かHLA固着かを切り分ける",correct:true},
       {text:"ラッシュアジャスタを全数交換して作動を確認する",correct:false},
       {text:"オイルポンプを交換する",correct:false},
@@ -3907,14 +3907,14 @@ const cases = [
       {text:"変速比をデータで見る",correct:false}],
       result_correct:"間欠的な解除は条件記録とATF状態の確認から始める。",
       result_wrong:"即リビルトやマウント、回避は早計。条件/ATFが先。"},
-    {question:"何を確認する？",choices:[
+    {question:"条件とATFを記録。何を確認する？",choices:[
       {text:"ロックアップの締結指令と実挙動を比較する",correct:true},
       {text:"点火系の失火を点検して不良箇所を切り分ける",correct:false},
-      {text:"触媒の詰まりを点検する",correct:false},
-      {text:"ATFの劣化を点検する",correct:false}],
+      {text:"触媒の詰まりと背圧を点検する",correct:false},
+      {text:"ATFの劣化と量を点検する",correct:false}],
       result_correct:"指令と実挙動の差で油圧/ソレノイド/学習のどこかを絞る。",
       result_wrong:"添加剤や点火、指定外油は的外れ。指令vs実挙動を診る。"},
-    {question:"どう対処する？",choices:[
+    {question:"指令と実挙動の差を確認。どう対処する？",choices:[
       {text:"油圧とソレノイドと学習を切り分ける",correct:true},
       {text:"バルブボディを丸ごと交換して作動を確認する",correct:false},
       {text:"トルコンを予防交換する",correct:false},
@@ -3930,14 +3930,14 @@ const cases = [
       {text:"噴射時期を確認する",correct:false}],
       result_correct:"寒冷始動難はグロー不良や燃料のワックス化/水分が定番。確認。",
       result_wrong:"セルや電池だけ、回避では寒冷特有の原因に届かない。"},
-    {question:"何を点検する？",choices:[
+    {question:"グロー/燃料が怪しい。何を点検する？",choices:[
       {text:"グローの予熱時間と各プラグの抵抗を点検する",correct:true},
-      {text:"燃料の銘柄を確認する",correct:false},
-      {text:"オイル粘度を点検する",correct:false},
-      {text:"圧縮圧力を点検する",correct:false}],
+      {text:"燃料の銘柄と性状を確認する",correct:false},
+      {text:"オイルの粘度と量を点検する",correct:false},
+      {text:"各気筒の圧縮圧力を点検する",correct:false}],
       result_correct:"予熱時間と各グロープラグの抵抗で不良気筒を特定する。",
       result_wrong:"給油やオイル、連続クランクは対症療法。グロー系の点検が核心。"},
-    {question:"どう対処する？",choices:[
+    {question:"不良グローを特定。どう対処する？",choices:[
       {text:"不良グローと燃料系を特定して処置する",correct:true},
       {text:"グローを全数予防交換して作動を確認する",correct:false},
       {text:"セルを大容量品に替える",correct:false},
@@ -3949,41 +3949,41 @@ const cases = [
     {question:"HVのDC-DC異常で12V系が弱る。最初は？",choices:[
       {text:"DC-DCの出力電圧をデータで確認する",correct:true},
       {text:"12V補機の比重を確認して結果を確かめる",correct:false},
-      {text:"駆動電池の電圧を確認する",correct:false},
-      {text:"充電器で12Vを補う",correct:false}],
+      {text:"駆動電池の電圧と劣化を確認する",correct:false},
+      {text:"充電器で12Vを補って様子見",correct:false}],
       result_correct:"HVは12V充電をDC-DCが担う。出力低下が弱りの原因。確認。",
       result_wrong:"12Vや駆動電池の交換、補充電は早計。DC-DC出力の確認が先。"},
-    {question:"どう点検する？",choices:[
+    {question:"DC-DC出力の低下を確認。どう点検する？",choices:[
       {text:"高電圧の安全を確保しDC-DC前後を点検する",correct:true},
-      {text:"端子の増し締めを点検する",correct:false},
-      {text:"関連ヒューズを点検する",correct:false},
-      {text:"アース経路を点検する",correct:false}],
+      {text:"端子の腐食と増し締めを点検する",correct:false},
+      {text:"関連ヒューズの導通を点検する",correct:false},
+      {text:"アース経路の抵抗値を点検する",correct:false}],
       result_correct:"感電防止の安全確保の上で、DC-DCの入出力と配線を点検する。",
       result_wrong:"増し締めやヒューズ、増設は対症療法。安全確保と点検が先。"},
-    {question:"どう対処する？",choices:[
+    {question:"DC-DC前後を点検。どう対処する？",choices:[
       {text:"DC-DC不良か配線かを切り分けて処置する",correct:true},
       {text:"DC-DCを予防交換して作動と数値を確認する",correct:false},
-      {text:"12Vを大容量品に替える",correct:false},
-      {text:"補機側を先に交換する",correct:false}],
+      {text:"12V補機を大容量品に替える",correct:false},
+      {text:"補機側を点検せず先に交換する",correct:false}],
       result_correct:"DC-DC本体か配線かを切り分け、有資格者が安全に処置する。",
       result_wrong:"予防交換や12V増強、放置は不適切。切り分けて資格者が処置。"}],
     explanation:"HVの12V弱りはDC-DC出力→高電圧安全確保し前後点検→本体/配線を切り分け資格者が処置。"},
   {id:135,tier:"ウルトラ級",symptom:"OBD通信は可能だが、特定PIDだけ異常値を示す",steps:[
     {question:"OBD通信は可、特定PIDだけ異常値。最初は？",choices:[
       {text:"異常PIDの実値とセンサー出力を照合する",correct:true},
-      {text:"ECUの内部故障を疑う",correct:false},
-      {text:"全センサーの抵抗を測る",correct:false},
+      {text:"ECUの内部故障を疑って点検する",correct:false},
+      {text:"全センサーの抵抗を順に測る",correct:false},
       {text:"異常PIDを再読み込みする",correct:false}],
       result_correct:"通信は正常なので異常PIDの実値とセンサー出力の照合から。",
       result_wrong:"ECUや全交換、非表示化は早計。実値照合が先。"},
-    {question:"どう絞る？",choices:[
+    {question:"異常PIDの実値を照合。どう絞る？",choices:[
       {text:"関連PIDの相関と共通電源と接地を確認する",correct:true},
-      {text:"配線全体を導通点検する",correct:false},
+      {text:"配線全体をまとめて導通点検する",correct:false},
       {text:"バッテリー電圧を確認して原因を切り分けて直す",correct:false},
-      {text:"診断機を再起動して見る",correct:false}],
+      {text:"診断機を再起動して再読みする",correct:false}],
       result_correct:"関連PIDの相関や共通電源で単一センサーか系統かを絞る。",
       result_wrong:"引き直しや交換、再起動は的外れ。相関と電源の確認へ。"},
-    {question:"どう対処する？",choices:[
+    {question:"単一系統に絞れた。どう対処する？",choices:[
       {text:"センサー不良か配線かを特定する",correct:true},
       {text:"関連部品を一括交換して作動を確認する",correct:false},
       {text:"学習をリセットして見る",correct:false},
