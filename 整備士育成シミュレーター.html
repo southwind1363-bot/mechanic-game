@@ -6077,7 +6077,7 @@ const cases = [
       result_wrong:"AT不良はまずATFの状態と故障コードで現状把握が基本。分解は最後の手段。"},
     {question:"ATFの劣化が疑われる。次に何をしますか？",choices:[
       {text:"ストールテストと油圧測定でATの機械的状態を評価する",correct:true},
-      {text:"ATFを全量交換して様子を見る",correct:false},
+      {text:"劣化したATFを全量交換して様子を見る",correct:false},
       {text:"ATコントロールユニットを交換して適応学習をリセットする",correct:false},
       {text:"クラッチパックを交換してATをオーバーホールする",correct:false}],
       result_correct:"ストールテストで規定より低いストール回転数を確認。クラッチ系の滑りと判断。",
@@ -6099,14 +6099,14 @@ const cases = [
       result_correct:"青白煙が始動直後の数秒のみ発生。オイル消費は100km/L程度。冷間時のバルブステムシール劣化が疑われる。",
       result_wrong:"白煙の発生タイミングと色でオイル燃焼かクーラント漏れかを区別する。まず詳細把握から。"},
     {question:"バルブステムシールの劣化が疑われる。どう確認しますか？",choices:[
-      {text:"コンプレッションとリークダウンテストでシリンダー状態を確認する",correct:true},
+      {text:"コンプレッションとリークダウンでシリンダー状態を確認する",correct:true},
       {text:"シリンダーヘッドをすぐ外してステムシールを直接目視する",correct:false},
       {text:"ブリーザーホースの詰まりを点検してオイル上がりを判断する",correct:false},
-      {text:"オイルリングの確認のためピストンを抜く",correct:false}],
+      {text:"オイルリング確認のためピストンを抜いて点検する",correct:false}],
       result_correct:"コンプレッション正常、リークダウン3%以下。シリンダー摩耗なし。ステムシール劣化と確定。",
       result_wrong:"まずコンプレッション・リークダウンでシリンダー全体の健全性を確認してから原因を特定する。"},
     {question:"ステムシール交換後の確認は？",choices:[
-      {text:"冷間始動で白煙が出ないことを確認してオイル消費量も再確認する",correct:true},
+      {text:"冷間始動で白煙が出ないことと消費量を再確認する",correct:true},
       {text:"エンジンを組み付けてすぐ引き渡してよい",correct:false},
       {text:"暖機後の排気が正常なら冷間確認は不要",correct:false},
       {text:"白煙が改善されればオイル消費確認は省略してよい",correct:false}],
@@ -6115,7 +6115,7 @@ const cases = [
     explanation:"冷間始動時の青白煙はバルブステムシール劣化が多い。白煙タイミング把握→コンプレッション/リークダウン確認→ステムシール交換→冷間始動確認。"},
   {id:228,tier:"整備主任",symptom:"ハンドルが重くなった。特に低速・据え切り時に顕著",steps:[
     {question:"最初に何を確認しますか？",choices:[
-      {text:"パワステフルードの量と漏れ、ポンプベルトの状態を点検する",correct:true},
+      {text:"パワステフルードの量・漏れとベルトの状態を点検する",correct:true},
       {text:"タイヤの空気圧が低いと判断して補充する",correct:false},
       {text:"ステアリングギアボックスを分解して点検する",correct:false},
       {text:"パワステポンプをすぐに交換して結果を確認する",correct:false}],
@@ -6129,16 +6129,16 @@ const cases = [
       result_correct:"亀裂ベルトを交換し、ラック入口のシール劣化による漏れを修理。フルードを補充した。",
       result_wrong:"ベルト・漏れ・フルード不足はセットで対処する。一つだけ直しても再発する。"},
     {question:"修理後の確認は？",choices:[
-      {text:"据え切りと低速走行でステアリング操作力が正常か確認する",correct:true},
+      {text:"据え切りと低速でステアリング操作力が正常か確認する",correct:true},
       {text:"フルードを補充すれば問題なく引き渡してよい",correct:false},
-      {text:"直進走行の試運転だけで十分とする",correct:false},
+      {text:"直進走行の試運転だけで十分と判断する",correct:false},
       {text:"お客様に据え切りを試してもらって確認する",correct:false}],
       result_correct:"据え切りと低速走行でステアリングが軽くなったことを確認して完治。",
       result_wrong:"修理後は実際の操作条件（据え切り・低速）で自分が操作力を確認してから引き渡す。"}],
     explanation:"パワステの重さはフルード量・漏れ・ベルト確認から。ベルト交換・漏れ修理・フルード補充をセットで行い、実操作で確認する。"},
   {id:229,tier:"整備主任",symptom:"冷間始動後1〜2分だけエンジンが震える。暖機後は正常",steps:[
     {question:"まず何を確認しますか？",choices:[
-      {text:"プラグコード・プラグキャップの劣化とプラグの状態を点検する",correct:true},
+      {text:"プラグコード・キャップの劣化とプラグの状態を点検する",correct:true},
       {text:"インジェクターを全数清掃して燃料噴射を均一化する",correct:false},
       {text:"コールドスタートインジェクターを点検する",correct:false},
       {text:"OBDで故障コードを読み取って失火気筒を特定する",correct:false}],
@@ -6175,7 +6175,7 @@ const cases = [
       result_correct:"スモークテストでインテークマニホールドガスケットから煙が漏れている箇所を発見。",
       result_wrong:"スプレー法は引火の危険あり。スモークマシンが安全で確実。全数交換では箇所が特定できない。"},
     {question:"ガスケット交換後の確認は？",choices:[
-      {text:"燃調補正が正常範囲に戻ったか確認してコードを消去する",correct:true},
+      {text:"燃調補正が正常範囲に戻ったか確認して消去する",correct:true},
       {text:"警告灯が消えればコードの消去は不要",correct:false},
       {text:"アイドルが安定すれば燃調補正の確認は不要",correct:false},
       {text:"ガスケット交換後は再始動するだけで問題ない",correct:false}],
