@@ -5717,113 +5717,113 @@ const cases = [
       result_wrong:"推測でのセンサー交換や切り分けなしは再発する。"}],
     explanation:"P0016は相関データ→チェーン伸び/歯飛び/センサーずれ→機械かセンサーかを切り分け修理する。"},
   {id:211,tier:"親方級",symptom:"V型エンジン車で燃費悪化・加速不良。スキャンするとP0171とP0174（両バンク燃調希薄）が同時に記録",steps:[
-    {question:"最初は？",choices:[
+    {question:"P0171+P0174が同時。最初は？",choices:[
       {text:"共通の吸気漏れと燃圧不足を確認する",correct:true},
       {text:"片バンクのO2を先に疑う",correct:false},
-      {text:"触媒の劣化を疑う",correct:false},
+      {text:"触媒の劣化を疑って点検する",correct:false},
       {text:"全体の点火時期を確認して結果を確かめる",correct:false}],
       result_correct:"両バンク薄いは共通の吸気漏れや燃圧不足が筆頭。",
       result_wrong:"片側O2や触媒、点火操作は両側共通原因に届かない。"},
-    {question:"何を点検する？",choices:[
+    {question:"両バンク共通の薄さか。何を点検？",choices:[
       {text:"吸気の負圧漏れと燃圧とポンプを点検する",correct:true},
       {text:"両側のインジェクタを点検して原因を切り分ける",correct:false},
-      {text:"MAFの汚れを点検する",correct:false},
-      {text:"両側の圧縮を点検する",correct:false}],
+      {text:"MAFの汚れと出力を点検する",correct:false},
+      {text:"両側の圧縮圧力を点検する",correct:false}],
       result_correct:"共通の二次エアや燃圧低下で両側が薄くなる。点検する。",
       result_wrong:"全交換やMAFのみ、リセットは共通原因を絞れない。"},
-    {question:"どう対処する？",choices:[
+    {question:"共通の漏れ/燃圧不足を確認。どう対処？",choices:[
       {text:"共通の漏れと燃圧を直し左右補正を確認する",correct:true},
-      {text:"両側のO2を交換する",correct:false},
-      {text:"学習を濃いめに直す",correct:false},
-      {text:"片側の燃圧を上げる",correct:false}],
+      {text:"両側のO2を点検せず交換する",correct:false},
+      {text:"学習を濃いめに固定して直す",correct:false},
+      {text:"片側の燃圧を上げて薄さを補う",correct:false}],
       result_correct:"共通の漏れ/燃圧を直せば両バンクの補正が正常化する。",
       result_wrong:"固定や予防交換、消去は再発。共通要因を直す。"}],
     explanation:"P0171+P0174同時は共通の吸気漏れ/燃圧不足→負圧漏れ/燃圧→共通要因を直し左右補正を確認する。"},
   {id:212,tier:"親方級",symptom:"冷間始動時のみ黒煙が出て燃調が濃い",steps:[
-    {question:"最初は？",choices:[
+    {question:"冷間時のみ黒煙で濃い。最初は？",choices:[
       {text:"冷間のみかと水温と吸気温の表示値を確認する",correct:true},
       {text:"O2センサーの応答を確認して原因を切り分ける",correct:false},
-      {text:"燃圧の値を確認する",correct:false},
-      {text:"点火時期のずれを確認する",correct:false}],
+      {text:"燃圧の値と保持状態を確認する",correct:false},
+      {text:"点火時期のずれを点検して確認する",correct:false}],
       result_correct:"冷間のみ濃い黒煙は冷間増量の温度センサー誤りが筆頭。",
       result_wrong:"触媒/O2/点火操作は冷間限定の濃さの主因でない。"},
-    {question:"何を点検する？",choices:[
+    {question:"冷間増量の温度センサーが怪しい。何を点検？",choices:[
       {text:"温度センサー誤差と噴射漏れを点検する",correct:true},
-      {text:"燃料性状を点検する",correct:false},
+      {text:"燃料の性状と量を点検する",correct:false},
       {text:"MAFの汚れを点検して原因を切り分ける",correct:false},
       {text:"EGRの作動を点検する",correct:false}],
       result_correct:"温度センサー低め誤差や噴射漏れで冷間に過剰に濃くなる。",
       result_wrong:"給油やMAF/EGRは冷間限定の濃さの主因でない。"},
-    {question:"どう対処する？",choices:[
+    {question:"温度誤差/噴射漏れを確認。どう対処？",choices:[
       {text:"ずれたセンサーか漏れかを特定し直し確認する",correct:true},
-      {text:"全センサーを交換する",correct:false},
+      {text:"全センサーをまとめて交換する",correct:false},
       {text:"冷間増量マップを書き換える",correct:false},
-      {text:"インジェクタを交換する",correct:false}],
+      {text:"インジェクタを点検せず交換する",correct:false}],
       result_correct:"温度センサー誤差か噴射漏れかを特定し直せば冷間の濃さが解消。",
       result_wrong:"運転回避や予防交換、言い訳は対症療法。原因を直す。"}],
     explanation:"冷間のみ黒煙/濃いは温度センサー誤り/噴射漏れ。値確認→誤差/漏れ点検→特定し直して確認する。"},
   {id:213,tier:"親方級",symptom:"高速巡航で水温がじわじわ上がる",steps:[
-    {question:"最初は？",choices:[
+    {question:"高速巡航で水温じわ上がり。最初は？",choices:[
       {text:"上昇する条件と冷却水量とエア噛みを確認する",correct:true},
-      {text:"サーモの開弁を確認する",correct:false},
+      {text:"サーモの開弁温度を確認する",correct:false},
       {text:"ラジエータの汚れを確認して原因を切り分けて直す",correct:false},
-      {text:"冷却水量を確認する",correct:false}],
+      {text:"冷却水の量と汚れを確認する",correct:false}],
       result_correct:"高負荷でじわ上がりは循環不足(エア噛み/WP/目詰まり)の複合。",
       result_wrong:"即サーモ/ラジエータ交換や入替は複合原因を絞らない。"},
-    {question:"何を点検する？",choices:[
+    {question:"循環不足が疑わしい。何を点検？",choices:[
       {text:"WP能力とラジエータ目詰まりと風量を点検する",correct:true},
-      {text:"電動ファンの作動を点検する",correct:false},
+      {text:"電動ファンの作動と風量を点検する",correct:false},
       {text:"ヒーターコアの流れを点検して不良箇所を切り分ける",correct:false},
-      {text:"水温センサーの値を点検する",correct:false}],
+      {text:"水温センサーの値と配線を点検する",correct:false}],
       result_correct:"WP能力低下や目詰まり、風量不足で高負荷時に上がる。",
       result_wrong:"ファンのみ/コア/補水は複合の主因を絞れない。"},
-    {question:"どう対処する？",choices:[
+    {question:"循環/放熱の弱点を確認。どう対処？",choices:[
       {text:"循環と放熱の弱点を特定し整備して確認する",correct:true},
-      {text:"サーモを交換する",correct:false},
-      {text:"ラジエータを交換する",correct:false},
-      {text:"冷却水を入れ替える",correct:false}],
+      {text:"サーモを点検せず交換する",correct:false},
+      {text:"ラジエータを点検せず交換する",correct:false},
+      {text:"冷却水を全量入れ替えて様子見",correct:false}],
       result_correct:"循環(WP/エア)や放熱(目詰まり)の弱点を直せば安定する。",
       result_wrong:"減速運用や希釈、言い訳は対症療法。弱点を直す。"}],
     explanation:"高速での水温じわ上がりは条件/水量/エア噛み→WP/目詰まり/風量→弱点を特定し整備して確認する。"},
   {id:214,tier:"親方級",symptom:"走行中にランダム失火し、停車すると消える",steps:[
-    {question:"最初は？",choices:[
+    {question:"走行中ランダム失火。最初は？",choices:[
       {text:"フリーズフレームと失火気筒を記録する",correct:true},
-      {text:"全コイルを先に疑う",correct:false},
-      {text:"触媒の詰まりを疑う",correct:false},
+      {text:"全コイルを先に疑って交換する",correct:false},
+      {text:"触媒の詰まりを疑って点検する",correct:false},
       {text:"燃圧の保持を確認して原因を切り分けて直す",correct:false}],
       result_correct:"間欠の走行失火は記録が命。発生時の気筒とデータを押さえる。",
       result_wrong:"全交換や触媒、給油は記録前の当て物。"},
-    {question:"何を点検する？",choices:[
+    {question:"記録を取った。何を点検する？",choices:[
       {text:"点火二次とコネクタ接触を点検する",correct:true},
       {text:"圧縮圧力を測定する",correct:false},
       {text:"O2の応答を点検する",correct:false},
       {text:"点火時期の補正を点検して原因を絞る",correct:false}],
       result_correct:"熱間や振動で点火二次リークやコネクタ接触不良が出る。",
       result_wrong:"圧縮単独/O2/点火操作は間欠失火を捕まえられない。"},
-    {question:"どう対処する？",choices:[
+    {question:"熱間/振動で出る不良を確認。どう対処？",choices:[
       {text:"熱間で出る不良部を特定し修理して確認する",correct:true},
-      {text:"全気筒の部品を交換する",correct:false},
+      {text:"全気筒の部品をまとめて交換する",correct:false},
       {text:"コイルを全数予防交換して作動と数値を確認する",correct:false},
-      {text:"燃料を入れ替える",correct:false}],
+      {text:"燃料を全量入れ替えて様子見",correct:false}],
       result_correct:"熱間/振動で出る不良(コイル/配線)を特定し直せば消える。",
       result_wrong:"全交換や消去、言い訳は再発。出る部位を特定する。"}],
     explanation:"走行中ランダム失火は記録(フリーズ/気筒)→熱間/振動で二次/接触→出る不良部を特定し修理する。"},
   {id:215,tier:"親方級",symptom:"複数の電装が同時に一瞬リセット/再起動する",steps:[
-    {question:"最初は？",choices:[
+    {question:"複数電装が同時に一瞬再起動。最初は？",choices:[
       {text:"メイン電源と接地の瞬断を確認する",correct:true},
       {text:"各機器を順に点検して原因を切り分ける",correct:false},
       {text:"ECUを初期化する",correct:false},
       {text:"各コードを個別に追う",correct:false}],
       result_correct:"多系統同時の再起動はメイン電源/接地の瞬断が筆頭。",
       result_wrong:"個別交換や初期化、消去は共通の瞬断を見ない。"},
-    {question:"何を点検する？",choices:[
+    {question:"電源/接地の瞬断が怪しい。何を点検？",choices:[
       {text:"ヒューズボックスと主接地を点検する",correct:true},
       {text:"室内の配線を点検する",correct:false},
       {text:"各機器の消費電流を測る",correct:false},
       {text:"バッテリー電圧を確認して結果を確かめる",correct:false}],
       result_correct:"ヒューズボックスの接触不良や主接地の不良で瞬断する。",
       result_wrong:"室内灯/スピーカー/燃圧は瞬断の主因でない。"},
-    {question:"どう対処する？",choices:[
+    {question:"瞬断源を発見。どう対処する？",choices:[
       {text:"瞬断源を特定し直す",correct:true},
       {text:"関連を一括交換する",correct:false},
       {text:"各機器を順に交換する",correct:false},
