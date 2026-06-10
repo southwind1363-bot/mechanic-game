@@ -3424,17 +3424,17 @@ const cases = [
       {text:"点火プラグの状態を確認して結果を確かめる",correct:false}],
       result_correct:"間欠故障は記録が命。発生条件とデータを押さえる。",
       result_wrong:"再現前の交換や経過観察は禁物。記録が最優先。"},
-    {question:"どう捕まえる？",choices:[
+    {question:"記録を取った。どう捕まえる？",choices:[
       {text:"熱間時の点火と回転信号の途切れを監視する",correct:true},
       {text:"冷間時のデータを監視する",correct:false},
       {text:"燃料残量の推移を記録する",correct:false},
       {text:"アイドルの安定を確認して原因を切り分けて直す",correct:false}],
       result_correct:"暖機後に再現しやすい。熱間で信号脱落を監視して捕まえる。",
       result_wrong:"当てずっぽうの交換や給油では間欠を捕まえられない。"},
-    {question:"どう確定する？",choices:[
+    {question:"熱間で信号脱落を観測。どう確定する？",choices:[
       {text:"熱間で信号が消える部品を特定して交換する",correct:true},
       {text:"全センサーを予防交換して作動と数値を確認する",correct:false},
-      {text:"関連ヒューズを増設する",correct:false},
+      {text:"関連ヒューズを増設して補う",correct:false},
       {text:"再発を待って再入庫とする",correct:false}],
       result_correct:"熱間でクランク/カム信号が脱落する部品を特定し交換すれば解消。",
       result_wrong:"予防交換や増設、先送りでは確証が無い。脱落部を特定する。"}],
@@ -3447,37 +3447,37 @@ const cases = [
       {text:"各コードを個別に追う",correct:false}],
       result_correct:"通信異常はまず物理層。終端抵抗（約60Ω）とバス波形を確認。",
       result_wrong:"ECU総交換や消去は的外れ。物理層の確認が先。"},
-    {question:"何を点検する？",choices:[
+    {question:"終端と波形を確認。何を点検する？",choices:[
       {text:"ノイズ源と分岐の接触不良を点検する",correct:true},
       {text:"配線全体を導通点検する",correct:false},
       {text:"関連ヒューズを点検する",correct:false},
       {text:"ゲートウェイの電源を点検して原因を絞る",correct:false}],
       result_correct:"分岐コネクタの接触やノイズ混入が多発エラーの原因になる。",
       result_wrong:"引き直しや即交換は過剰。ノイズ/接触の点検が核心。"},
-    {question:"どう対処する？",choices:[
+    {question:"接触不良かノイズと判明。どう対処する？",choices:[
       {text:"終端と配線とノイズ源を切り分けて修理する",correct:true},
       {text:"ゲートウェイを予防交換して作動と数値を確認する",correct:false},
-      {text:"終端抵抗を暫定で足す",correct:false},
-      {text:"代表コードから対処する",correct:false}],
+      {text:"終端抵抗を暫定で足して様子見",correct:false},
+      {text:"代表コードから順に対処する",correct:false}],
       result_correct:"物理層を切り分けて直せば波形が安定し全コードが消える。",
       result_wrong:"予防交換や暫定、部分対処は再発。物理層を切り分け修理する。"}],
     explanation:"CAN多発エラーは終端抵抗/バス波形→ノイズ/接触不良→物理層を切り分けて修理する。"},
   {id:113,tier:"ウルトラ級",symptom:"ハイブリッドの燃費が悪化し、EV走行が極端に短い",steps:[
     {question:"HVの燃費悪化、EV走行が極端に短い。最初は？",choices:[
       {text:"駆動電池のSOHと使えるSOC幅を確認する",correct:true},
-      {text:"12V補機の電圧を確認する",correct:false},
+      {text:"12V補機の電圧を点検して確認する",correct:false},
       {text:"タイヤの転がり抵抗を確認して原因を切り分ける",correct:false},
-      {text:"充電器で満充電にする",correct:false}],
+      {text:"充電器で満充電にして様子を見る",correct:false}],
       result_correct:"EV走行短縮はSOH低下/SOC幅縮小が筆頭。データで確認する。",
       result_wrong:"12Vやタイヤ、放置では駆動電池の劣化は判別できない。"},
-    {question:"どう絞る？",choices:[
+    {question:"SOH低下を確認。どう絞る？",choices:[
       {text:"セルとブロックの電圧バラつきと温度を点検する",correct:true},
       {text:"冷却ファンの作動を点検して不良箇所を切り分ける",correct:false},
-      {text:"走行充電で回復を見る",correct:false},
-      {text:"充電器の出力を点検する",correct:false}],
+      {text:"走行充電で容量が回復するか見る",correct:false},
+      {text:"充電器の出力と電圧を点検する",correct:false}],
       result_correct:"特定セルの劣化や温度異常で使用幅が狭まる。点検で絞る。",
       result_wrong:"自己流放電や全交換、回復頼みは危険・過剰。点検が先。"},
-    {question:"どう対処する？",choices:[
+    {question:"劣化セルを特定。どう対処する？",choices:[
       {text:"有資格者が劣化セルの整備を判断する",correct:true},
       {text:"全モジュールを交換する",correct:false},
       {text:"補機12Vを大容量化して結果を確かめる",correct:false},
@@ -3493,37 +3493,37 @@ const cases = [
       {text:"吸気温の値を確認する",correct:false}],
       result_correct:"P0325はセンサー回路の異常。配線/信号の状態を確認する。",
       result_wrong:"プラグや給油、過度な遅角はセンサー回路の異常に届かない。"},
-    {question:"どう切り分ける？",choices:[
+    {question:"センサー配線を確認。どう切り分ける？",choices:[
       {text:"実ノックの有無と点火補正をデータで見る",correct:true},
-      {text:"ECUの内部故障を疑う",correct:false},
-      {text:"燃圧の保持を確認する",correct:false},
+      {text:"ECUの内部故障を疑って点検する",correct:false},
+      {text:"始動時の燃圧保持を確認する",correct:false},
       {text:"点火時期の補正を確認して原因を切り分ける",correct:false}],
       result_correct:"実ノックか誤検知かをデータで切り分けるのが要。",
       result_wrong:"即ECUや燃料、即交換は迷走。実ノックと補正を診る。"},
-    {question:"どう確定する？",choices:[
+    {question:"誤検知が疑わしい。どう確定する？",choices:[
       {text:"センサーの妥当性を確認し原因を特定する",correct:true},
       {text:"ノックセンサーを交換して作動と数値を確認する",correct:false},
-      {text:"点火を一律で遅らせる",correct:false},
-      {text:"高オクタン燃料に替える",correct:false}],
+      {text:"点火を一律で遅らせて補う",correct:false},
+      {text:"高オクタン燃料に替えて試す",correct:false}],
       result_correct:"配線接触/取付不良か本体故障かを確認し特定する。",
       result_wrong:"全交換や消去、出力制限では再発。妥当性を確認し特定する。"}],
     explanation:"P0325は配線/信号→実ノック/点火補正のデータ→センサー妥当性を確認して原因を特定する。"},
   {id:115,tier:"ウルトラ級",symptom:"コールドスタート時のみ燃調が濃い（水温/吸気温センサー疑い）",steps:[
     {question:"コールド時のみ燃調が濃い。最初は？",choices:[
       {text:"始動時の水温と吸気温の表示値を確認する",correct:true},
-      {text:"O2の応答を確認する",correct:false},
-      {text:"燃圧の値を確認する",correct:false},
+      {text:"O2センサーの応答を確認する",correct:false},
+      {text:"燃圧の値と保持を確認する",correct:false},
       {text:"噴射量の補正を確認して原因を切り分けて直す",correct:false}],
       result_correct:"冷間増量は温度センサー基準。誤った値だと過剰に濃くなる。確認。",
       result_wrong:"O2や噴射全交換、燃圧操作は冷間補正の温度センサーに届かない。"},
-    {question:"どう絞る？",choices:[
+    {question:"温度表示値を確認。どう絞る？",choices:[
       {text:"実温度と表示値を比較してずれを絞る",correct:true},
       {text:"暖機後の値を比較する",correct:false},
       {text:"点火時期のずれを確認して結果を確かめる",correct:false},
       {text:"燃料性状を確認する",correct:false}],
       result_correct:"実温度と表示を比較し、低めに誤表示するセンサーを絞る。",
       result_wrong:"給油や点火調整、暖機後だけの確認では冷間の濃さは絞れない。"},
-    {question:"どう対処する？",choices:[
+    {question:"低め誤表示のセンサーを発見。どう対処する？",choices:[
       {text:"ずれた温度センサーを特定して交換する",correct:true},
       {text:"全センサーを交換する",correct:false},
       {text:"冷間増量マップを書き換える",correct:false},
