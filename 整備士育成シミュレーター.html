@@ -5257,117 +5257,117 @@ const cases = [
       result_wrong:"推測で一部交換や先行交換では原因を残す。"}],
     explanation:"P0401(流量不足)はEGR通路/バルブの詰まり→差圧/温度応答→清掃・交換して流量を確認する。"},
   {id:191,tier:"親方級",symptom:"加速が鈍くアイドルが不安定。スキャンするとP0011（吸気カム進角過多）とP0014（排気カム進角過多）が同時に記録",steps:[
-    {question:"最初は？",choices:[
+    {question:"P0011とP0014が同時。最初は？",choices:[
       {text:"共通の油圧とオイルを確認する",correct:true},
       {text:"吸気カムを先に疑う",correct:false},
       {text:"排気カムを先に疑う",correct:false},
       {text:"点火二次の波形を確認して原因を絞る",correct:false}],
       result_correct:"吸排気が同時異常なら油圧/オイル劣化の共通要因が筆頭。",
       result_wrong:"片側カム交換やプラグは両側同時異常に届かない。"},
-    {question:"何を点検する？",choices:[
+    {question:"油圧/オイルの共通要因か。何を点検？",choices:[
       {text:"油圧と油路、オイル状態を点検する",correct:true},
       {text:"両OCVを同時に点検して原因を絞る",correct:false},
       {text:"タイベルの張力を点検する",correct:false},
       {text:"燃圧の保持を点検する",correct:false}],
       result_correct:"油圧不足や油路スラッジで両OCVが動かない。点検する。",
       result_wrong:"両OCV同時交換やベルト/燃料は共通要因を外す。"},
-    {question:"どう対処する？",choices:[
+    {question:"油圧不足/油路詰まりを確認。どう対処？",choices:[
       {text:"油圧とオイルと油路を正し追従を確認する",correct:true},
-      {text:"両OCVを交換する",correct:false},
-      {text:"硬い油で油圧を稼ぐ",correct:false},
-      {text:"カムを交換する",correct:false}],
+      {text:"両OCVを点検せず交換する",correct:false},
+      {text:"硬い油で油圧を稼いで補う",correct:false},
+      {text:"カムシャフトを点検せず交換する",correct:false}],
       result_correct:"油圧/オイル/油路を正せば両位相が同時に追従する。",
       result_wrong:"OCVのみや粘度操作、消去は再発。共通要因を直す。"}],
     explanation:"P0011とP0014同時は共通の油圧/オイル→油路詰まり/油圧→正して両位相の追従を確認する。"},
   {id:192,tier:"親方級",symptom:"全気筒でランダム失火し、ロングトリムが大きくリーン",steps:[
-    {question:"最初は？",choices:[
+    {question:"全気筒失火＋大リーン。最初は？",choices:[
       {text:"共通の燃圧と燃料供給の不足を確認する",correct:true},
-      {text:"1番コイルを先に疑う",correct:false},
-      {text:"触媒の劣化を疑う",correct:false},
+      {text:"1番コイルを先に疑って交換する",correct:false},
+      {text:"触媒の劣化を疑って点検する",correct:false},
       {text:"全体の点火時期を確認して結果を確かめる",correct:false}],
       result_correct:"全気筒＋リーンは燃料供給の共通不足が筆頭。燃圧を確認。",
       result_wrong:"単気筒コイルや触媒、点火操作は共通原因に届かない。"},
-    {question:"何を点検する？",choices:[
+    {question:"燃料供給の共通不足か。何を点検？",choices:[
       {text:"燃圧低下とフィルタとポンプを点検する",correct:true},
       {text:"インジェクタの噴霧を点検して原因を絞る",correct:false},
       {text:"O2の応答を点検する",correct:false},
       {text:"吸気の二次エアを点検する",correct:false}],
       result_correct:"フィルタ詰まりやポンプ能力不足で全体が薄く失火する。",
       result_wrong:"全交換やO2、リセットは共通原因を絞れない。"},
-    {question:"どう対処する？",choices:[
+    {question:"供給能力の不足を確認。どう対処？",choices:[
       {text:"供給能力を直し失火と補正の回復を確認する",correct:true},
       {text:"インジェクタを全数交換して作動と数値を確認する",correct:false},
-      {text:"学習を濃いめに直す",correct:false},
-      {text:"プラグを予防交換する",correct:false}],
+      {text:"学習を濃いめに固定して直す",correct:false},
+      {text:"プラグを点検せず予防交換する",correct:false}],
       result_correct:"供給不足を直せば失火もリーンも同時に収まる。",
       result_wrong:"固定や予防交換、消去は再発。共通の供給を直す。"}],
     explanation:"全気筒失火＋大リーンは燃料供給の共通不足。燃圧→フィルタ/ポンプ→供給を直し回復を確認する。"},
   {id:193,tier:"親方級",symptom:"充電中だけCAN通信エラーが増える",steps:[
-    {question:"最初は？",choices:[
+    {question:"充電中だけCANエラー増。最初は？",choices:[
       {text:"発電量とCANエラーの相関を確認する",correct:true},
       {text:"全ECUの電源を点検して原因を切り分ける",correct:false},
       {text:"バッテリー電圧を確認する",correct:false},
-      {text:"終端抵抗を確認する",correct:false}],
+      {text:"CANの終端抵抗を確認する",correct:false}],
       result_correct:"充電時のみ＝オルタのノイズや接地が疑わしい。相関を確認。",
       result_wrong:"ECU全交換や電池、消去は相関を見ずに迷走する。"},
-    {question:"何を測定する？",choices:[
+    {question:"オルタのノイズが怪しい。何を測定？",choices:[
       {text:"オルタのリップルと共通接地の電位を測定する",correct:true},
-      {text:"配線全体を導通点検する",correct:false},
-      {text:"関連ヒューズを点検する",correct:false},
+      {text:"配線全体をまとめて導通点検する",correct:false},
+      {text:"関連ヒューズの導通を点検する",correct:false},
       {text:"ゲートウェイの電源を点検して原因を切り分ける",correct:false}],
       result_correct:"整流子劣化(リップル)や接地不良がバスに乗る。測定する。",
       result_wrong:"引き直しや上位化、終端のみでは原因を絞れない。"},
-    {question:"どう対処する？",choices:[
+    {question:"リップル/接地不良を確認。どう対処？",choices:[
       {text:"ノイズ源か接地かを特定し対策して確認する",correct:true},
       {text:"ゲートウェイを予防交換して作動と数値を確認する",correct:false},
-      {text:"終端抵抗を暫定で足す",correct:false},
-      {text:"オルタを予防交換する",correct:false}],
+      {text:"終端抵抗を暫定で足して様子見",correct:false},
+      {text:"オルタを点検せず予防交換する",correct:false}],
       result_correct:"オルタのノイズか接地かを直せば充電時もエラーが消える。",
       result_wrong:"予防交換や消去、発電抑制は再発。原因を直す。"}],
     explanation:"充電時のみのCANエラーは発電とエラーの相関→リップル/接地電位→ノイズ源か接地かを特定し対策する。"},
   {id:194,tier:"親方級",symptom:"寒い朝だけ複数コードが出て、暖機で消える",steps:[
-    {question:"最初は？",choices:[
+    {question:"寒い朝だけ複数コード。最初は？",choices:[
       {text:"冷間で出るコードと発生条件を記録する",correct:true},
-      {text:"各部品を予防交換する",correct:false},
+      {text:"各部品をまとめて予防交換する",correct:false},
       {text:"暖機後の状態を確認して原因を切り分ける",correct:false},
-      {text:"ECUを初期化する",correct:false}],
+      {text:"ECUを初期化して様子を見る",correct:false}],
       result_correct:"冷間のみ＝コネクタ接触/結露が疑わしい。条件を記録。",
       result_wrong:"予防交換や電池、初期化は手掛かりを消す。"},
-    {question:"どう絞る？",choices:[
+    {question:"冷間の接触不良が怪しい。どう絞る？",choices:[
       {text:"冷間でコネクタと接地に加重し変化を見る",correct:true},
       {text:"暖機後のデータを確認して原因を切り分ける",correct:false},
-      {text:"燃圧の保持を測定する",correct:false},
+      {text:"始動時の燃圧保持を測定する",correct:false},
       {text:"点火時期の補正を確認する",correct:false}],
       result_correct:"冷間で接点を揺動/加重し再現すれば接触不良が出る。",
       result_wrong:"暖機後観察や燃圧/点火では冷間接触を捕まえられない。"},
-    {question:"どう対処する？",choices:[
+    {question:"接点に接触不良を確認。どう対処？",choices:[
       {text:"不良のコネクタと接地を整備し確認する",correct:true},
-      {text:"コードを順に消す",correct:false},
+      {text:"コードを順に消して様子見",correct:false},
       {text:"関連を一括交換して作動と数値を確認する",correct:false},
-      {text:"各部を予防交換する",correct:false}],
+      {text:"各部をまとめて予防交換する",correct:false}],
       result_correct:"接触不良の端子/接地を整備すれば冷間でも出なくなる。",
       result_wrong:"消去や一括/推測交換は再発。接触不良を直す。"}],
     explanation:"冷間のみ複数コードはコネクタ接触/結露。条件記録→冷間で接点に加重→接触不良を整備して再発確認する。"},
   {id:195,tier:"親方級",symptom:"アイドルで微振動、各部を点検しても異常が出ない",steps:[
-    {question:"最初は？",choices:[
+    {question:"点検正常だがアイドル微振動。最初は？",choices:[
       {text:"振動が車体側か燃焼側かを切り分ける",correct:true},
       {text:"点火コイルを順に点検する",correct:false},
       {text:"インジェクタの噴霧を点検して原因を絞る",correct:false},
       {text:"触媒の詰まりを点検する",correct:false}],
       result_correct:"各部正常なら、まず車体(マウント)か燃焼(失火)かを切り分ける。",
       result_wrong:"全交換は当て物。振動源の切り分けが先。"},
-    {question:"何を確認する？",choices:[
+    {question:"車体側を疑う。次は何を確認？",choices:[
       {text:"負荷時の揺れの増減でマウントを確認する",correct:true},
-      {text:"燃圧の保持を測定する",correct:false},
+      {text:"始動時の燃圧保持を測定する",correct:false},
       {text:"EGRの作動を確認して原因を切り分けて直す",correct:false},
-      {text:"O2の応答を確認する",correct:false}],
+      {text:"O2センサーの応答を確認する",correct:false}],
       result_correct:"D/Rレンジで揺れが増えればエンジンマウントが濃厚。",
       result_wrong:"燃圧/EGR/O2はマウント由来の微振動と無関係。"},
-    {question:"どう対処する？",choices:[
+    {question:"マウント劣化が濃厚。どう対処？",choices:[
       {text:"劣化マウントを特定し交換して再現を確認する",correct:true},
-      {text:"全マウントを交換する",correct:false},
-      {text:"各部を順に交換する",correct:false},
-      {text:"アイドルを上げて抑える",correct:false}],
+      {text:"全マウントをまとめて交換する",correct:false},
+      {text:"各部を順に当て物で交換する",correct:false},
+      {text:"アイドルを上げて振動を抑える",correct:false}],
       result_correct:"劣化したマウントを特定・交換すれば微振動が消える。",
       result_wrong:"無条件全交換や当て物、回転上げは不適切。特定し直す。"}],
     explanation:"点検正常な微振動は車体/燃焼の切り分け→レンジ負荷でマウント確認→劣化マウントを特定し交換する。"},
