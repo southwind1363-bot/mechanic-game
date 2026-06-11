@@ -4645,14 +4645,14 @@ const cases = [
       result_wrong:"ベルト/AC/燃ポンは始動直後一瞬の音の主因でない。"},
     {question:"何を点検する？",choices:[
       {text:"テンショナーの保持油圧とチェーンの張りを点検する",correct:true},
-      {text:"プラグの状態を点検する",correct:false},
-      {text:"マフラーの遮熱板を点検する",correct:false},
-      {text:"エンジンマウントを点検する",correct:false}],
+      {text:"スパークプラグの焼け色を点検する",correct:false},
+      {text:"マフラーの遮熱板の緩みを点検する",correct:false},
+      {text:"エンジンマウントの劣化を点検する",correct:false}],
       result_correct:"停止中に油が抜け始動時に一瞬緩む=テンショナー保持不良。",
       result_wrong:"プラグ/遮熱板/マウントは始動時の打音の主因でない。"},
     {question:"どう対処する？",choices:[
       {text:"テンショナーとガイドを整備し異音を確認する",correct:true},
-      {text:"オイルを硬い銘柄に替える",correct:false},
+      {text:"オイルを硬い銘柄に替えて補う",correct:false},
       {text:"チェーンカバーを増し締めする",correct:false},
       {text:"始動直後の音は仕様と説明する",correct:false}],
       result_correct:"テンショナー/ガイドを整備すれば始動時の音が消える。",
@@ -4662,8 +4662,8 @@ const cases = [
     {question:"最初は？",choices:[
       {text:"ISCバルブと吸気の二次エア漏れを点検する",correct:true},
       {text:"燃料フィルターの詰まりを点検して原因を切り分ける",correct:false},
-      {text:"点火コイルを順に点検する",correct:false},
-      {text:"O2の応答だけを確認する",correct:false}],
+      {text:"点火コイルを順に点検して交換する",correct:false},
+      {text:"O2センサーの応答だけ確認する",correct:false}],
       result_correct:"アイドル回転の周期変動はISC/二次エアが筆頭。",
       result_wrong:"フィルター/コイル/O2はハンチングの主因になりにくい。"},
     {question:"何を点検する？",choices:[
@@ -4677,7 +4677,7 @@ const cases = [
       {text:"清掃と全閉学習で回転が安定するか確認する",correct:true},
       {text:"アイドルを高めに固定する",correct:false},
       {text:"ISCを予防交換だけする",correct:false},
-      {text:"変動は仕様と説明する",correct:false}],
+      {text:"変動は仕様と説明して返す",correct:false}],
       result_correct:"清掃と全閉学習でハンチングが収まるか確認する。",
       result_wrong:"回転固定や予防交換、言い訳では再発。原因を直す。"}],
     explanation:"アイドルのハンチングはISC/二次エア→全閉学習/固着→清掃と学習で安定を確認する。"},
@@ -5036,9 +5036,9 @@ const cases = [
       result_wrong:"タイヤ/マウント/ATFはエンジンのサージと無関係。"},
     {question:"何を点検する？",choices:[
       {text:"二次エア漏れとEGRとプラグを点検する",correct:true},
-      {text:"燃料を入れ替える",correct:false},
+      {text:"燃料を全量入れ替えて様子見",correct:false},
       {text:"点火時期を大きくずらす",correct:false},
-      {text:"O2をすぐ交換する",correct:false}],
+      {text:"O2センサーをすぐ交換する",correct:false}],
       result_correct:"二次エアやEGR過多、プラグ劣化でカックンと波打つ。",
       result_wrong:"給油や手調整、即O2は原因を絞れない。"},
     {question:"どう対処する？",choices:[
@@ -5052,16 +5052,16 @@ const cases = [
   {id:182,tier:"一人前",symptom:"ブレーキ時にペダルが「ジージー」と振動する",steps:[
     {question:"最初は？",choices:[
       {text:"低速でABSが誤作動していないか確認する",correct:true},
-      {text:"パッドを即交換する",correct:false},
-      {text:"ローターを研磨する",correct:false},
+      {text:"パッドを点検せず即交換する",correct:false},
+      {text:"ブレーキローターを研磨する",correct:false},
       {text:"ブレーキフルードを交換して作動と数値を確認する",correct:false}],
       result_correct:"低速でのジー振動はABS誤作動(車輪速の誤検知)が筆頭。",
       result_wrong:"パッド/ローター/フルードは効きで、誤作動に無関係。"},
     {question:"何を点検する？",choices:[
       {text:"車輪速センサーとトーンリングを点検する",correct:true},
-      {text:"キャリパーを交換する",correct:false},
+      {text:"キャリパーを点検せず交換する",correct:false},
       {text:"マスターシリンダーを交換して作動を確認する",correct:false},
-      {text:"ハブを交換する",correct:false}],
+      {text:"ハブ周りを点検せず交換する",correct:false}],
       result_correct:"トーンリングの欠けやセンサー汚れで誤検知する。",
       result_wrong:"キャリパー/マスター/ハブは誤作動の主因でない。"},
     {question:"どう対処する？",choices:[
@@ -5076,7 +5076,7 @@ const cases = [
     {question:"最初は？",choices:[
       {text:"音が出る回転域と発生源を切り分ける",correct:true},
       {text:"オーディオのスピーカーを点検して原因を絞る",correct:false},
-      {text:"タイヤを点検する",correct:false},
+      {text:"タイヤの状態を点検する",correct:false},
       {text:"エアコンを点検する",correct:false}],
       result_correct:"特定回転の共鳴は排気/遮熱板の共振が筆頭。回転域で切り分け。",
       result_wrong:"スピーカー/タイヤ/エアコンは回転共鳴の主因でない。"},
@@ -5090,8 +5090,8 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"緩み部を増し締めと防振し共鳴を確認する",correct:true},
       {text:"遮熱板を増し締めだけする",correct:false},
-      {text:"遮熱板を外して使う",correct:false},
-      {text:"共鳴は仕様と説明する",correct:false}],
+      {text:"遮熱板を外したまま使う",correct:false},
+      {text:"共鳴は仕様と説明して返す",correct:false}],
       result_correct:"遮熱板/ハンガーを締結・防振すれば共鳴が消える。",
       result_wrong:"部分対応や撤去、言い訳は不適切。緩みを直す。"}],
     explanation:"特定回転の共鳴は回転域/発生源→遮熱板/排気ハンガーの緩み→締結・防振して確認する。"},
