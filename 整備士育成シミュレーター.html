@@ -4118,7 +4118,7 @@ const cases = [
       {text:"前方センサーの視界と光軸を点検する",correct:true},
       {text:"上流を見ずに部品交換して作動を確認する",correct:false},
       {text:"ソフト更新だけで確認する",correct:false},
-      {text:"配線を引き直す",correct:false}],
+      {text:"配線の断線を点検して引き直す",correct:false}],
       result_correct:"カメラ/レーダーの視界と光軸ずれで誤検知や停止が起きる。点検重要。",
       result_wrong:"放置や増設は的外れ。前方センサーの視界と光軸を点検する。"},
     {question:"どう対処しますか？",choices:[
@@ -4155,8 +4155,8 @@ const cases = [
   {id:143,tier:"中級",symptom:"アイドリングストップが作動しない（再始動用バッテリー疑い）",steps:[
     {question:"最初に何を確認しますか？",choices:[
       {text:"バッテリーの充電状態と劣化を確認する",correct:true},
-      {text:"充電器で補充電する",correct:false},
-      {text:"ECUを交換する",correct:false},
+      {text:"充電器で補充電して様子を見る",correct:false},
+      {text:"ECUを点検せず先に交換する",correct:false},
       {text:"アーシングを追加してみる",correct:false}],
       result_correct:"ISは電池状態が悪いと作動を抑制する。まず充電状態と劣化を確認。",
       result_wrong:"セルやECU交換は早計。バッテリーの状態確認が先。"},
@@ -4569,9 +4569,9 @@ const cases = [
   {id:161,tier:"一人前",symptom:"MT発進時にクラッチがジャダー（ガクガク）する",steps:[
     {question:"最初は？",choices:[
       {text:"半クラ時に振動が出る条件を再現し確認する",correct:true},
-      {text:"ATFの状態を点検する",correct:false},
+      {text:"ATFの状態と量を点検する",correct:false},
       {text:"タイヤのバランスを点検して原因を切り分ける",correct:false},
-      {text:"点火時期を点検する",correct:false}],
+      {text:"点火時期のずれを点検する",correct:false}],
       result_correct:"発進ジャダーはクラッチ系。半クラ条件で再現を確認。",
       result_wrong:"MTにATFは無関係。タイヤ/点火も主因でない。"},
     {question:"何を点検する？",choices:[
@@ -4583,9 +4583,9 @@ const cases = [
       result_wrong:"マウント単独や燃圧、ブレーキは主因でない。"},
     {question:"どう対処する？",choices:[
       {text:"ディスクとフライホイールを整備し再現を確認する",correct:true},
-      {text:"クラッチ調整だけで仕上げる",correct:false},
+      {text:"クラッチ調整だけで仕上げて返す",correct:false},
       {text:"エンジンマウントのみ交換して作動と数値を確認する",correct:false},
-      {text:"半クラを使わぬよう案内する",correct:false}],
+      {text:"半クラを使わぬよう客に案内する",correct:false}],
       result_correct:"ディスク/フライホイールを整備すればジャダーが消える。",
       result_wrong:"調整のみやマウント、言い訳では再発。原因部を直す。"}],
     explanation:"発進ジャダーは半クラ再現→クラッチディスク/フライホイール→整備して再現を確認する。"},
@@ -4607,8 +4607,8 @@ const cases = [
     {question:"どう対処する？",choices:[
       {text:"フルード補充とエア抜きとポンプ整備で確認する",correct:true},
       {text:"フルードを継ぎ足すだけにする",correct:false},
-      {text:"ベルトに鳴き止めを吹く",correct:false},
-      {text:"据え切りを避けてもらう",correct:false}],
+      {text:"ベルトに鳴き止めを吹いて補う",correct:false},
+      {text:"据え切りを避けるよう客に案内する",correct:false}],
       result_correct:"補充/エア抜きやポンプ整備で異音が収まる。",
       result_wrong:"継ぎ足しや吹付け、回避は対症療法。原因を直す。"}],
     explanation:"据え切りのうなりはフルード量/状態→エア噛み/ベルト/ポンプ→整備して異音を確認する。"},
@@ -4623,15 +4623,15 @@ const cases = [
     {question:"何を点検する？",choices:[
       {text:"Uジョイントとセンターベアリングを点検する",correct:true},
       {text:"ホイールナットの緩みを点検して原因を切り分ける",correct:false},
-      {text:"サスのブッシュを点検する",correct:false},
-      {text:"デフオイルの量を点検する",correct:false}],
+      {text:"サスのブッシュの劣化を点検する",correct:false},
+      {text:"デフオイルの量と状態を点検する",correct:false}],
       result_correct:"ジョイントのガタやセンターベアリング劣化が定番。",
       result_wrong:"ナット/ブッシュ/オイル量は周期振動の主因でない。"},
     {question:"どう対処する？",choices:[
       {text:"ジョイントとベアリングを整備し振動を確認する",correct:true},
-      {text:"バランスウェイトだけ貼る",correct:false},
-      {text:"タイヤを新品にする",correct:false},
-      {text:"ドラシャを増し締めだけする",correct:false}],
+      {text:"バランスウェイトだけ貼り足す",correct:false},
+      {text:"タイヤを点検せず新品交換する",correct:false},
+      {text:"ドラシャを増し締めだけで済ます",correct:false}],
       result_correct:"ジョイント/ベアリングを整備すれば周期振動が消える。",
       result_wrong:"ウェイトやタイヤ、増し締めだけでは再発する。"}],
     explanation:"速度比例の周期振動はドラシャ系。速度域/連動→ジョイント/センターベアリング→整備して確認する。"},
