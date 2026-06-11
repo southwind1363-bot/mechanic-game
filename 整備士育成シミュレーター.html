@@ -6473,22 +6473,22 @@ const cases = [
 
   // ===== 親方級 追加5件（246-250）=====
   {id:246,tier:"親方級",symptom:"高回転域（3500rpm以上）でだけ間欠的に失火する。スキャンにはP0300が稀に記録されるのみ",steps:[
-    {question:"最初は？",choices:[
-      {text:"高回転でのみ失火するデータを記録し、再現条件を特定する",correct:true},
+    {question:"高回転だけ間欠失火(P0300)。最初は？",choices:[
+      {text:"高回転失火のデータを記録し再現条件を特定する",correct:true},
       {text:"全気筒のプラグとコイルを交換する",correct:false},
       {text:"低回転でのデータを採取して原因を推測する",correct:false},
       {text:"ECUをリセットして様子を見る",correct:false}],
       result_correct:"間欠・高回転限定の失火は再現条件の記録が最優先。発生パターンを押さえる。",
       result_wrong:"低回転データや全交換・リセットでは高回転限定の失火を捕まえられない。"},
     {question:"高回転で特定気筒の失火カウントが増える。その気筒のコイル・プラグを正常気筒と入れ替えたが失火が移動しない。次は？",choices:[
-      {text:"カムロブの摩耗によるバルブリフト不足を疑い、カムシャフトを点検する",correct:true},
+      {text:"カムロブ摩耗でリフト不足を疑いカムを点検する",correct:true},
       {text:"インジェクターを全数交換する",correct:false},
-      {text:"燃圧を上げる設定にする",correct:false},
-      {text:"圧縮を冷間時だけ測定する",correct:false}],
+      {text:"燃圧を上げる設定にして様子見",correct:false},
+      {text:"圧縮を冷間時だけ測定して判断する",correct:false}],
       result_correct:"コイル・プラグで移動しない失火は燃料/圧縮/バルブ側。高回転でリフト不足になるカムロブ摩耗が典型。",
       result_wrong:"既に点火側は否定済み。燃料系調整やコールドコンプレッションだけでは高回転失火を特定できない。"},
     {question:"カムロブの摩耗を確認した。どう対処する？",choices:[
-      {text:"カムシャフトを交換し、高回転での失火消失をデータで確認してから返車する",correct:true},
+      {text:"カムを交換し高回転で失火消失をデータ確認する",correct:true},
       {text:"添加剤でカム面を保護して様子を見る",correct:false},
       {text:"オイルを粘度の高いものに換えて様子を見る",correct:false},
       {text:"カムロブだけを研磨して再使用する",correct:false}],
@@ -6497,71 +6497,71 @@ const cases = [
     explanation:"高回転限定失火は再現データ取得→点火側否定→カムロブ摩耗確認→カムシャフト交換→高回転で失火消失確認。"},
 
   {id:247,tier:"親方級",symptom:"ターボ車。加速中に過給圧が突然抜けてパワーが一瞬消え、直後に戻る症状が断続的に出る",steps:[
-    {question:"最初は？",choices:[
-      {text:"過給圧の実測値と指令値のずれを記録しながら再現を試みる",correct:true},
-      {text:"ターボ本体をすぐ交換する",correct:false},
-      {text:"インタークーラーだけ点検する",correct:false},
+    {question:"加速中に過給圧が突然抜ける。最初は？",choices:[
+      {text:"過給圧の実測値と指令値のずれを記録し再現を試みる",correct:true},
+      {text:"ターボ本体を点検せずすぐ交換する",correct:false},
+      {text:"インタークーラーだけ点検して終える",correct:false},
       {text:"アクセルポジションセンサーを確認する",correct:false}],
       result_correct:"断続的な過給圧抜けは記録が命。実測値と指令値のギャップを記録してから原因を絞る。",
       result_wrong:"ターボ本体交換や部分点検は高額・誤診につながる。まず圧力データを取る。"},
     {question:"過給圧指令は正常なのに実圧が断続的に低下する。次の確認は？",choices:[
-      {text:"ウェストゲートアクチュエーターの作動と配管の亀裂・抜けを点検する",correct:true},
-      {text:"ターボのシャフト遊びを測る",correct:false},
-      {text:"ECUを交換する",correct:false},
-      {text:"インジェクターを清掃する",correct:false}],
+      {text:"WGアクチュエーターと配管の亀裂を点検する",correct:true},
+      {text:"ターボのシャフト遊びを分解して測る",correct:false},
+      {text:"ECUの故障を疑い先に交換する",correct:false},
+      {text:"インジェクターの噴射を点検し清掃する",correct:false}],
       result_correct:"指令は正常で実圧だけ落ちる→制御バルブ（アクチュエーター）か圧力配管の問題。配管亀裂はよくある原因。",
       result_wrong:"シャフト遊び・ECU・インジェクターは別の系統。指令正常で実圧低下は制御系・配管を診る。"},
     {question:"インタークーラー前の細い圧力配管に亀裂があった。どうする？",choices:[
-      {text:"配管を交換し、過給圧が安定して指令通りに出るかデータで確認する",correct:true},
+      {text:"配管を交換し過給圧が指令通り出るかデータ確認する",correct:true},
       {text:"配管に耐熱テープを巻いて応急処置する",correct:false},
-      {text:"配管の亀裂をシリコンで塞ぐ",correct:false},
-      {text:"そのままで様子を見る",correct:false}],
+      {text:"配管の亀裂をシリコンで塞いで補修する",correct:false},
+      {text:"修理せずそのまま返して様子を見る",correct:false}],
       result_correct:"圧力配管は正規交換。修理後に指令通りの過給圧が安定して出るかデータで確認して完了。",
       result_wrong:"テープやシリコン補修は剥がれるリスクが高く不適切。正規の配管交換が正しい対応。"}],
     explanation:"ターボ断続抜けは過給圧実測記録→配管・アクチュエーター確認→配管交換→指令通りの圧力安定をデータ確認。"},
 
   {id:248,tier:"親方級",symptom:"エンジンが暖機した後にのみ、O2センサーが長時間オープンループに留まり燃調が安定しない",steps:[
     {question:"暖機後にO2がオープンループのまま。最初は？",choices:[
-      {text:"O2センサーヒーターの抵抗と通電をデータで確認する",correct:true},
+      {text:"O2ヒーターの抵抗と通電をデータで確認する",correct:true},
       {text:"O2センサーをすぐ交換する",correct:false},
       {text:"インジェクターの噴射量を確認する",correct:false},
-      {text:"触媒の劣化を確認する",correct:false}],
+      {text:"触媒の劣化を点検して確認する",correct:false}],
       result_correct:"暖機後でもオープンループならO2がフィードバック条件を満たしていない。まずヒーター回路の通電を確認。",
       result_wrong:"即交換や別系統確認より、なぜクローズドループに入れないかのデータ確認が先。"},
     {question:"ヒーター回路の通電は正常。O2の応答波形を見ると、全域で出力が0.1V付近に張り付いている。次は？",choices:[
-      {text:"上流排気系のエア漏れを点検し、O2が誤検知していないか確認する",correct:true},
-      {text:"O2センサーを交換する",correct:false},
-      {text:"燃圧を上げる",correct:false},
+      {text:"上流排気系のエア漏れとO2誤検知を点検する",correct:true},
+      {text:"O2センサーを点検せず交換する",correct:false},
+      {text:"燃圧を上げて燃調を濃く補う",correct:false},
       {text:"ECUの学習をリセットする",correct:false}],
       result_correct:"出力が低位固定はO2の誤検知（排気漏れで外気が混入し常に薄く見える）が典型。排気系を点検する。",
       result_wrong:"ヒーターが正常でも出力が張り付く場合、排気漏れによる誤検知が見落とされやすい。"},
     {question:"排気マニホールドのガスケットが抜けており外気が混入していた。どう対処する？",choices:[
-      {text:"ガスケットを交換し、O2がクローズドループで安定して動作するか確認する",correct:true},
+      {text:"ガスケットを交換しO2が正常に動作するか確認する",correct:true},
       {text:"O2センサーも念のため同時に交換する",correct:false},
       {text:"ガスケットは後回しにしてO2だけ交換する",correct:false},
-      {text:"排気漏れ部分を溶接で塞ぐ",correct:false}],
+      {text:"排気漏れ部分を溶接で塞いで補修する",correct:false}],
       result_correct:"原因はガスケット抜け。交換後にO2がクローズドループに入るかデータで確認して完了。",
       result_wrong:"O2自体は正常なので交換不要。ガスケットを直せば自然にクローズドループに入る。"}],
     explanation:"暖機後オープンループはO2ヒーター確認→排気漏れ誤検知を疑い→ガスケット修理→クローズドループ安定確認。"},
 
   {id:249,tier:"親方級",symptom:"アイドルは安定しているが、中間加速でエンジンがもたつく。スキャンするとP0011が断続的に記録",steps:[
     {question:"P0011（吸気カム進角過多）が断続的に出てもたつく。最初は？",choices:[
-      {text:"アイドル時と加速時のカム位相実データを比較し、指令への追従性を確認する",correct:true},
-      {text:"カムシャフトをすぐ交換する",correct:false},
-      {text:"OCVをすぐ交換する",correct:false},
-      {text:"オイルを交換して様子を見る",correct:false}],
+      {text:"アイドルと加速でカム位相と追従性を比較する",correct:true},
+      {text:"カムシャフトを点検せずすぐ交換する",correct:false},
+      {text:"OCVを点検せずすぐ交換する",correct:false},
+      {text:"オイルを交換して様子を見るだけにする",correct:false}],
       result_correct:"断続的なP0011はOCVの部分詰まりによる追従遅れが典型。アイドル・加速でのデータを比較して切り分ける。",
       result_wrong:"即交換は高額・誤診リスク。まず追従データで詰まりか機械的不良かを判断する。"},
     {question:"加速中だけカム位相の追従が遅れることを確認。次は？",choices:[
-      {text:"OCVを取り外してスラッジの堆積と通路の詰まりを点検する",correct:true},
+      {text:"OCVを外してスラッジ堆積と通路詰まりを点検する",correct:true},
       {text:"タイミングチェーンの伸びを確認する",correct:false},
-      {text:"ECUを交換する",correct:false},
+      {text:"ECUの故障を疑って先に交換する",correct:false},
       {text:"オイルを高粘度に替えて油圧を稼ぐ",correct:false}],
       result_correct:"加速時だけの追従遅れはOCV油路詰まりが高負荷時だけ露呈する典型。取り外して点検する。",
       result_wrong:"チェーン伸び・ECU・粘度変更は別の原因。OCV詰まりの確認が正しい次のステップ。"},
     {question:"OCV内部にスラッジ堆積があった。どうする？",choices:[
-      {text:"OCVを交換し、加速でカム位相が指令通りに追従するかデータで確認する",correct:true},
-      {text:"OCVを清掃して再使用する",correct:false},
+      {text:"OCVを交換し加速で位相が追従するか確認する",correct:true},
+      {text:"OCVを清掃して再使用するだけにする",correct:false},
       {text:"エンジンフラッシングだけして様子を見る",correct:false},
       {text:"スラッジを除去してOCVを元に戻す",correct:false}],
       result_correct:"詰まりが確認されたOCVは交換。加速時の追従データで正常化を確認して完了。",
@@ -6570,21 +6570,21 @@ const cases = [
 
   {id:250,tier:"親方級",symptom:"複数のセンサーが同時に誤った値を示し、ECUが燃調・点火を誤制御する。明確な単一コードなし",steps:[
     {question:"複数センサー同時異常・コード散発。最初は？",choices:[
-      {text:"共通の電源電圧とグラウンド電位を実測し、センサー基準電圧の安定を確認する",correct:true},
-      {text:"各センサーを順番に交換する",correct:false},
-      {text:"ECUを交換する",correct:false},
-      {text:"バッテリーをすぐ交換する",correct:false}],
+      {text:"共通の電源電圧とグラウンド電位を実測し確認する",correct:true},
+      {text:"各センサーを順番に当て物で交換する",correct:false},
+      {text:"ECUを点検せずに先に交換する",correct:false},
+      {text:"バッテリーを点検せずすぐ交換する",correct:false}],
       result_correct:"複数センサー同時異常は単一センサー不良では説明できない。共通要因の電源・グラウンドを実測するのが鉄則。",
       result_wrong:"個別センサー交換・ECU交換では共通原因のグラウンド不良を解決できない。"},
     {question:"センサーの基準5V供給は正常だが、グラウンド電位が0.4V以上浮いている。次は？",choices:[
-      {text:"エンジン・ボディグラウンドのポイントを全て点検し、腐食・接触不良を探す",correct:true},
+      {text:"エンジンとボディの各グラウンドの腐食を点検する",correct:true},
       {text:"グラウンドをバッテリーマイナスに直結する",correct:false},
       {text:"ECU本体のグラウンドだけ増し締めする",correct:false},
-      {text:"配線を全引き直しする",correct:false}],
+      {text:"配線を全て引き直して様子を見る",correct:false}],
       result_correct:"グラウンド浮きは腐食・緩みが原因。エンジンとボディの各グラウンドポイントを順に点検して不良箇所を特定。",
       result_wrong:"直結や一箇所のみ増し締めでは根本の腐食ポイントが残る。全ポイントを点検して不良を特定する。"},
     {question:"エンジンブロックのアースポイントに腐食があった。どう対処する？",choices:[
-      {text:"腐食を除去して接続を確実にし、全センサーの値が正常化するか確認する",correct:true},
+      {text:"腐食を除去し接続を確実にして正常化を確認する",correct:true},
       {text:"腐食の上から防錆スプレーを吹いてボルトを締める",correct:false},
       {text:"アースポイントを別の場所に移設する",correct:false},
       {text:"腐食部分は無視してECUを交換する",correct:false}],
