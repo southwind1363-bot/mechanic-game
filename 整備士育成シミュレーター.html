@@ -1818,7 +1818,7 @@ const cases = [
       {text:"ノックセンサーの作動と点火時期を点検する",correct:true},
       {text:"インジェクターを全数交換して作動を確認する",correct:false},
       {text:"ヘッドを開けて内部を確認する",correct:false},
-      {text:"O2センサーを交換する",correct:false}],
+      {text:"O2センサーを点検せず交換する",correct:false}],
       result_correct:"ノックセンサー正常で点火制御も適正。カーボンが主因と絞り込み。",
       result_wrong:"まずノックセンサー作動と点火時期を点検。分解や当て交換は後。"},
     {question:"カーボン堆積が主因。どう対処しますか？",choices:[
@@ -1841,7 +1841,7 @@ const cases = [
       {text:"MAFを清掃して数値が正常化するか確認する",correct:true},
       {text:"MAFをいきなり新品交換して作動と数値を確認する",correct:false},
       {text:"インジェクターを全数交換する",correct:false},
-      {text:"燃料ポンプを交換する",correct:false}],
+      {text:"燃料ポンプを点検せず交換する",correct:false}],
       result_correct:"MAF清掃で数値が正常化。汚れによる誤検知が原因と判明。",
       result_wrong:"MAFはまず清掃で直ることが多い。即交換や当て交換は割高。"},
     {question:"清掃後の確認は？",choices:[
@@ -1893,7 +1893,7 @@ const cases = [
     {question:"研磨・交換後に行うことは？",choices:[
       {text:"パッドとセットで当たりを出し制動を確認する",correct:true},
       {text:"当たり出しをせず強い制動から始める",correct:false},
-      {text:"試運転をせずに仕上げる",correct:false},
+      {text:"試運転をせずそのまま仕上げる",correct:false},
       {text:"ローターのみ替えパッドは点検しない",correct:false}],
       result_correct:"当たり出し後にジャダー消失を確認。パッドもセットで点検。",
       result_wrong:"研磨/交換後は当たり出しと試運転まで。パッドもセットで確認する。"}],
@@ -1903,7 +1903,7 @@ const cases = [
       {text:"ホイールバランスとタイヤの偏摩耗を点検する",correct:true},
       {text:"ブレーキローターの歪みを点検して原因を切り分ける",correct:false},
       {text:"アライメントを測定して調整する",correct:false},
-      {text:"ハブベアリングを交換する",correct:false}],
+      {text:"ハブベアリングを点検せず交換する",correct:false}],
       result_correct:"前輪のバランスウェイト脱落を確認。高速での震えの原因。",
       result_wrong:"特定速度域の震えはホイールバランスが定番。制動時の振れとは別。"},
     {question:"バランスを取り直してもまだ震える。次は？",choices:[
@@ -1961,9 +1961,9 @@ const cases = [
       result_wrong:"燃圧測定＋スパーク確認で燃料/点火を切り分けるのが定石。"},
     {question:"点火が来ていない。次に疑うのは？",choices:[
       {text:"クランク角センサーや点火信号系を点検する",correct:true},
-      {text:"燃料ポンプを交換する",correct:false},
+      {text:"燃料ポンプを点検せず交換する",correct:false},
       {text:"インジェクターを交換して作動と数値を確認する",correct:false},
-      {text:"触媒を交換する",correct:false}],
+      {text:"触媒を点検せず先に交換する",correct:false}],
       result_correct:"クランク角信号が出ていなかった。点火・噴射の基準信号欠落。",
       result_wrong:"火花が無い時はクランク角センサー等の基準信号系を点検する。"}],
     explanation:"セルが回るのに不始動は燃料/点火の切り分け（燃圧＋スパーク）。火花無しはクランク角信号系を疑う。"},
@@ -1971,7 +1971,7 @@ const cases = [
     {question:"最初に何を点検しますか？",choices:[
       {text:"空気圧と引きずりとエアクリの汚れを点検する",correct:true},
       {text:"O2センサーをいきなり新品交換して作動を確認する",correct:false},
-      {text:"点火プラグを全数交換する",correct:false},
+      {text:"点火プラグを点検せず全数交換する",correct:false},
       {text:"燃料補正値のデータだけを確認する",correct:false}],
       result_correct:"空気圧低下とエアクリ詰まりを確認。燃費悪化の基本要因。",
       result_wrong:"急な燃費悪化はまず空気圧・引きずり・エアクリ等の基本から。"},
@@ -2002,7 +2002,7 @@ const cases = [
       {text:"規定量と指定ATFに調整し変速を再確認する",correct:true},
       {text:"一般のエンジンオイルを足す",correct:false},
       {text:"フラッシュで一気に全量洗浄して作動を確認する",correct:false},
-      {text:"量は見ずに添加剤を入れる",correct:false}],
+      {text:"量は見ずに添加剤だけを入れる",correct:false}],
       result_correct:"規定量・指定ATFに調整後、変速のもたつきが改善。",
       result_wrong:"健全範囲なら量・規定油への調整が先。激しい劣化の全量洗浄は別判断。"},
     {question:"調整後も改善が薄い場合は？",choices:[
