@@ -479,8 +479,15 @@
     .rules{padding:11px;margin:10px 0;font-size:.82rem;}
     .rules li{margin:4px 0 4px 16px;}
     .pop-title{font-size:2rem!important;}
-    .brand-mark{margin-bottom:8px;}
-    .brand-mark svg{width:52px;height:52px;}
+    .brand-mark{margin-bottom:6px;}
+    .brand-mark svg{width:48px;height:48px;}
+    .pop-tag{margin:1px 0 6px;}
+    #careerBox{padding:6px 10px!important;margin-top:6px!important;}
+    .collapse-toggle{padding:6px 11px;margin-top:4px;}
+    .tier-badges{margin:7px 0;}
+    .tier-pick-label{margin:7px 0 3px;}
+    #startBtn,#resumeBtn{margin-top:9px!important;}
+    #resetHiBtn{margin-top:4px;}
   }
   /* ===== 背の低い端末（横向き等）でさらに圧縮 ===== */
   @media (max-height:620px){
@@ -498,6 +505,13 @@
     .choice{padding:7px 10px 7px 15px!important;font-size:.85rem;}
     .result{padding:8px 10px;margin-top:6px;}
     .next-btn{padding:10px;margin-top:6px;}
+    /* スタート画面：低背端末でロゴ・余白をさらに圧縮 */
+    .brand-mark{margin-bottom:4px;}
+    .brand-mark svg{width:42px;height:42px;}
+    .pop-title{font-size:1.6rem!important;}
+    .pop-tag{margin:1px 0 5px;font-size:.82rem;}
+    #careerBox{padding:5px 9px!important;margin-top:5px!important;}
+    .center-screen{padding:6px 4px;}
   }
   /* ===== ゲーム性UI（工賃/ヒート/道具/イベント/ショップ） ===== */
   .sb-wage{margin-left:auto;font-weight:800;color:#ffd60a;font-size:.9rem;display:inline-flex;align-items:center;gap:2px;}
@@ -615,7 +629,7 @@
     <div class="pop-tag"><span class="em">整備診断バトル</span> ─ 頂点を目指せ</div>
 
     <!-- 整備士キャリア（永続ランク） -->
-    <div id="careerBox" style="margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);text-align:left;"></div>
+    <div id="careerBox" style="margin-top:8px;padding:7px 11px;border:1px solid var(--line);border-radius:11px;background:var(--panel);text-align:left;"></div>
 
     <!-- ルール（折りたたみ） -->
     <button class="collapse-toggle" id="rulesToggle">📋 ルール <span class="arr">▼</span></button>
@@ -6841,9 +6855,9 @@ function renderCareer(){
   const box=$("careerBox"); if(!box) return;
   const exp=getCareerExp(), c=careerInfo(exp);
   box.innerHTML =
-    '<div style="font-size:.8rem;margin-bottom:6px;">🔧 整備士ランク：<b style="color:#35e6ff;font-size:.98rem;">'+c.name+'</b></div>'+
-    '<div style="height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;"><div style="height:100%;width:'+c.pct+'%;background:linear-gradient(90deg,#35e6ff,#8b6bff);"></div></div>'+
-    '<div style="font-size:.68rem;color:var(--steel);margin-top:4px;">'+
+    '<div style="font-size:.78rem;margin-bottom:4px;">🔧 整備士ランク：<b style="color:#35e6ff;font-size:.96rem;">'+c.name+'</b></div>'+
+    '<div style="height:7px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;"><div style="height:100%;width:'+c.pct+'%;background:linear-gradient(90deg,#35e6ff,#8b6bff);"></div></div>'+
+    '<div style="font-size:.66rem;color:var(--steel);margin-top:3px;">'+
       (c.isMax ? ('累計EXP '+exp.toLocaleString()+'　最高位に到達！') : ('累計EXP '+exp.toLocaleString()+'　次の「'+c.next+'」まで あと '+c.toNext.toLocaleString()+' EXP'))+
     '</div>';
 }
