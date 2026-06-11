@@ -614,6 +614,9 @@
     <div class="pop-title">GARAGE<span class="accent"> CRISIS</span></div>
     <div class="pop-tag"><span class="em">整備診断バトル</span> ─ 頂点を目指せ</div>
 
+    <!-- 整備士キャリア（永続ランク） -->
+    <div id="careerBox" style="margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);text-align:left;"></div>
+
     <!-- ルール（折りたたみ） -->
     <button class="collapse-toggle" id="rulesToggle">📋 ルール <span class="arr">▼</span></button>
     <div class="collapse-body" id="rulesBody">
@@ -845,6 +848,7 @@
     <p id="overDetail"></p>
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="overScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="overScoreHi">0</b></div>
     <div class="hi-row">到達 <b id="overReach">-</b> ・ 合格 <b id="overPassed">0</b> 症例</div>
+    <div class="hi-row" id="careerGainOver" style="font-size:.92rem;"></div>
     <div id="overRank" class="rank-list"></div>
     <div id="globalSubmitBoxOver" class="name-submit-box" style="display:none"></div>
     <div id="globalRankOver" class="rank-list"></div>
@@ -866,6 +870,7 @@
     <p id="rankDesc"></p>
     <div class="hi-row" style="font-size:1rem">⭐ スコア <b id="finalScoreVal" style="color:var(--orange)">0</b> ・ 最高 <b id="finalScoreHi">0</b> ・ 最大コンボ <b id="finalCombo">0</b></div>
     <div class="hi-row">合格症例 <b id="finalScore">0</b> / <b id="finalTotal">40</b> ・ 🏆 ハイスコア <b id="finalHi">0</b></div>
+    <div class="hi-row" id="careerGainEnd" style="font-size:.92rem;"></div>
     <div id="finalRank" class="rank-list"></div>
     <div id="globalSubmitBox" class="name-submit-box" style="display:none"></div>
     <div id="globalRankFinal" class="rank-list"></div>
@@ -6810,6 +6815,50 @@ let soundOn = (localStorage.getItem("seibishi_sound_off") !== "1");
 const SCORE_KEY = "seibishi_bestscore_v1";
 function getScoreHi(){ return parseInt(localStorage.getItem(SCORE_KEY)||"0",10)||0; }
 function setScoreHi(v){ try{ localStorage.setItem(SCORE_KEY,String(v)); }catch(e){} }
+
+// ===== 整備士キャリア（プレイをまたぐ永続ランク・EXP）=====
+const CAREER_KEY = "seibishi_career_v1";
+const CAREER_RANKS = [
+  {name:"下働き",         exp:0},
+  {name:"見習い職人",      exp:300},
+  {name:"一匹狼の整備屋",  exp:900},
+  {name:"工房の主",       exp:2000},
+  {name:"名の知れた職人",  exp:4000},
+  {name:"整備界の重鎮",   exp:7000},
+  {name:"伝説の親方",     exp:12000}
+];
+function getCareerExp(){ return parseInt(localStorage.getItem(CAREER_KEY)||"0",10)||0; }
+function setCareerExp(v){ try{ localStorage.setItem(CAREER_KEY,String(v)); }catch(e){} }
+function careerInfo(exp){
+  let idx=0; for(let i=0;i<CAREER_RANKS.length;i++){ if(exp>=CAREER_RANKS[i].exp) idx=i; }
+  const isMax = idx>=CAREER_RANKS.length-1;
+  const base=CAREER_RANKS[idx].exp;
+  const next = isMax?null:CAREER_RANKS[idx+1];
+  const pct = isMax?100:Math.max(0,Math.min(100,Math.round((exp-base)/(next.exp-base)*100)));
+  return {idx, name:CAREER_RANKS[idx].name, isMax, next:next?next.name:null, toNext:isMax?0:(next.exp-exp), pct};
+}
+function renderCareer(){
+  const box=$("careerBox"); if(!box) return;
+  const exp=getCareerExp(), c=careerInfo(exp);
+  box.innerHTML =
+    '<div style="font-size:.8rem;margin-bottom:6px;">🔧 整備士ランク：<b style="color:#35e6ff;font-size:.98rem;">'+c.name+'</b></div>'+
+    '<div style="height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;"><div style="height:100%;width:'+c.pct+'%;background:linear-gradient(90deg,#35e6ff,#8b6bff);"></div></div>'+
+    '<div style="font-size:.68rem;color:var(--steel);margin-top:4px;">'+
+      (c.isMax ? ('累計EXP '+exp.toLocaleString()+'　最高位に到達！') : ('累計EXP '+exp.toLocaleString()+'　次の「'+c.next+'」まで あと '+c.toNext.toLocaleString()+' EXP'))+
+    '</div>';
+}
+function awardCareer(elId, fullClear){
+  const gain = totalPassed*15 + Math.floor(score/100) + (fullClear?200:0);
+  const before=getCareerExp(), bi=careerInfo(before);
+  setCareerExp(before+gain);
+  const ai=careerInfo(before+gain);
+  renderCareer();
+  const el=$(elId); if(!el) return;
+  const up = ai.idx>bi.idx;
+  el.innerHTML = '🔧 整備士EXP <b style="color:#35e6ff">+'+gain.toLocaleString()+'</b>'+
+    (up ? ('　🎉 昇格！ '+bi.name+' → <b style="color:#35e6ff">'+ai.name+'</b>') : ('　（ランク：'+ai.name+'）'));
+  if(up){ try{ sndLevel(); }catch(e){} }
+}
 function comboMult(){ return 1 + Math.min(Math.max(combo-1,0),9)*0.2; }   // x1.0〜x2.8
 // ハイスコアランキング（ローカル上位5）
 const RANK_KEY = "seibishi_ranking_v1";
@@ -7332,6 +7381,7 @@ function gameOver(){
   overScreen.classList.remove("hidden");
   try{ sndOver(); }catch(e){}
   try{ recordScore(); }catch(e){}
+  try{ awardCareer("careerGainOver", false); }catch(e){}
   try{ renderRanking("overRank"); renderRanking("startRank"); }catch(e){}
   try{ initGlobalSubmit(score,"globalSubmitBoxOver"); fetchGlobalRanking(); }catch(e){}
   try{ renderWeakness("weaknessOver"); }catch(e){}
@@ -7362,6 +7412,7 @@ function endGame(){
   $("hiScoreVal").textContent = sHi.toLocaleString();
   try{ stopMusic(); sndClear(); }catch(e){}
   try{ recordScore(); }catch(e){}
+  try{ awardCareer("careerGainEnd", true); }catch(e){}
   try{ renderRanking("finalRank"); renderRanking("startRank"); }catch(e){}
   // グローバルランキング自動登録
   try{ initGlobalSubmit(score,"globalSubmitBox"); fetchGlobalRanking(); }catch(e){}
@@ -8013,6 +8064,7 @@ renderRanking("startRank");
 // submitRankBtn は動的生成になったため個別リスナー不要
 fetchGlobalRanking();
 renderTierPick();
+renderCareer();
 refreshResumeBtn();
 initGlobalRegBox();   // スタート画面の全国登録ボックス
 
