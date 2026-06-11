@@ -2766,7 +2766,7 @@ const cases = [
       result_wrong:"各輪を回して異音・ガタを比べ、不良輪を特定するのが順序。"},
     {question:"どう対処しますか？",choices:[
       {text:"該当輪のハブベアリングを交換し規定締結する",correct:true},
-      {text:"タイヤを交換する",correct:false},
+      {text:"タイヤを点検せず先に交換する",correct:false},
       {text:"足回りを目視だけで点検して不良箇所を切り分ける",correct:false},
       {text:"アライメントを目分量で合わせる",correct:false}],
       result_correct:"ハブベアリングを交換し規定トルクで締結。唸り消失。",
@@ -2797,10 +2797,10 @@ const cases = [
     explanation:"制動時の流れ＋片側過熱はキャリパー固着。ピストン/スライドピンを点検し、OHか交換。"},
   {id:84,tier:"中級",symptom:"段差や低速でハンドルにガクガクとガタを感じる",steps:[
     {question:"最初に何を点検しますか？",choices:[
-      {text:"タイロッドエンドとボールジョイントのガタを点検する",correct:true},
-      {text:"ハンドルを新品に交換する",correct:false},
-      {text:"タイヤをすぐ新品に交換する",correct:false},
-      {text:"エンジンマウントを点検する",correct:false}],
+      {text:"タイロッドとボールジョイントのガタを点検する",correct:true},
+      {text:"ステアリングを点検せず新品交換する",correct:false},
+      {text:"タイヤをすぐ新品に点検せず交換する",correct:false},
+      {text:"エンジンマウントの劣化とガタを点検する",correct:false}],
       result_correct:"タイロッドエンドにガタあり。操舵に遊びとガクつきが出ていた。",
       result_wrong:"操舵のガタはタイロッド/ボールジョイントが定番。まずガタを点検。"},
     {question:"どう特定しますか？",choices:[
@@ -2829,8 +2829,8 @@ const cases = [
     {question:"どう切り分けますか？",choices:[
       {text:"センダーの抵抗が油面で変化するか点検する",correct:true},
       {text:"メーターを新品交換して作動と数値を確認する",correct:false},
-      {text:"配線を全部引き直す",correct:false},
-      {text:"燃料ポンプを交換する",correct:false}],
+      {text:"配線を全部引き直して様子を見る",correct:false},
+      {text:"燃料ポンプを点検せず交換する",correct:false}],
       result_correct:"油面を変えても抵抗が変化せず。センダーの固着・断線と判明。",
       result_wrong:"センダーは抵抗が油面で変化するかで判定。メーター交換は後。"},
     {question:"どう対処しますか？",choices:[
@@ -3282,7 +3282,7 @@ const cases = [
     {question:"最初に何を点検しますか？",choices:[
       {text:"ロービームの球とヒューズを点検する",correct:true},
       {text:"ハイビーム側を交換して作動を確認する",correct:false},
-      {text:"ライトを増設する",correct:false},
+      {text:"ライトを増設して明るくする",correct:false},
       {text:"配線を全部引き直す",correct:false}],
       result_correct:"片方だけ不点灯は球切れ/ヒューズが定番。まずここを点検。",
       result_wrong:"反対側の交換や引き直しは見当違い。球とヒューズが先。"},
@@ -3297,7 +3297,7 @@ const cases = [
       {text:"球とヒューズとリレーと配線を切り分ける",correct:true},
       {text:"端子に防錆剤を塗布する",correct:false},
       {text:"セルモーターを交換して作動と数値を確認する",correct:false},
-      {text:"光軸だけ調整する",correct:false}],
+      {text:"光軸だけ調整して仕上げる",correct:false}],
       result_correct:"順に切り分けて不良箇所を特定。該当部の修理で解決した。",
       result_wrong:"切り分けずまとめ交換は無駄。整備不良で車検も通らない。"}],
     explanation:"ロービーム片側不点灯は球・ヒューズ→コネクタ/リレー→配線の順に切り分けて原因を特定する。"},
@@ -3665,7 +3665,7 @@ const cases = [
       {text:"オイル上がりと下がりの別を切り分ける",correct:true},
       {text:"アイドル回転を上げて確認する",correct:false},
       {text:"EGRバルブを取り外して点検して原因を絞る",correct:false},
-      {text:"外装だけ清掃する",correct:false}],
+      {text:"外装だけ清掃して仕上げる",correct:false}],
       result_correct:"ステムシール劣化(下がり)と特定。整備でオイル消費が収まった。",
       result_wrong:"継ぎ足しや放置は根治でない。上がり/下がりを切り分けて修理。"}],
     explanation:"漏れ跡なきオイル減はオイル消費を疑い、白煙/プラグ油汚れ→上がり/下がりを切り分けて修理する。"},
@@ -3679,9 +3679,9 @@ const cases = [
       result_wrong:"いきなりラジエーター交換は過剰。ファンと信号の確認が先。"},
     {question:"次に何を点検しますか？",choices:[
       {text:"モーターとリレーとヒューズを点検する",correct:true},
-      {text:"サーモだけ交換する",correct:false},
+      {text:"サーモだけ点検せず交換する",correct:false},
       {text:"エアフロセンサーを清掃して作動を確認する",correct:false},
-      {text:"電圧を上げて回す",correct:false}],
+      {text:"電圧を上げてファンを回す",correct:false}],
       result_correct:"ファン回路はモーター/リレー/ヒューズの順に点検するのが定石。",
       result_wrong:"サーモ交換や放置は的外れ。ファン回路を点検する。"},
     {question:"どう対処しますか？",choices:[
