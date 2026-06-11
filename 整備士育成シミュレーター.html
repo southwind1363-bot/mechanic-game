@@ -1326,9 +1326,9 @@ const cases = [
   {id:20,tier:"中級",symptom:"段差でフロントから「ゴトゴト」と異音がする",steps:[
     {question:"最初に何を点検しますか？",choices:[
       {text:"スタビライザーリンクのガタを手で点検する",correct:true},
-      {text:"ローターを研磨してみる",correct:false},
+      {text:"ブレーキローターを研磨してみる",correct:false},
       {text:"タイヤのバランスを取り直す",correct:false},
-      {text:"試走せずに組み上げる",correct:false}],
+      {text:"試走せずにそのまま組み上げる",correct:false}],
       result_correct:"スタビリンクを手で揺すると遊びあり。段差のゴトゴト音の定番原因。",
       result_wrong:"段差のゴトゴトはスタビリンクのガタが最多。まず手で遊びを確認。"},
     {question:"スタビリンクにガタあり。他に確認すべきは？",choices:[
@@ -1357,8 +1357,8 @@ const cases = [
     {question:"マウントが疑わしい。どう確認しますか？",choices:[
       {text:"DとRレンジ等の負荷時に揺れが増えるか確認する",correct:true},
       {text:"アイドル回転数を大きく上げて確認して結果を確かめる",correct:false},
-      {text:"全マウントを無条件で交換する",correct:false},
-      {text:"プラグを外して確認する",correct:false}],
+      {text:"全マウントを無条件で一括交換する",correct:false},
+      {text:"プラグを外して燃焼状態を確認する",correct:false}],
       result_correct:"DレンジやAC ON時に揺れが増大。マウント劣化を裏付け。",
       result_wrong:"負荷時に揺れが増えるかでマウントを確認。いきなり全交換は無駄が出る。"},
     {question:"マウント劣化が確定。どう対処しますか？",choices:[
@@ -1394,7 +1394,7 @@ const cases = [
     explanation:"雨・湿気で悪化する失火は点火リーク。水をかけて再現確認し、劣化したコード/コイルを交換。"},
   {id:23,tier:"中級",symptom:"MT車。加速時に回転だけ上がり速度が乗らない",steps:[
     {question:"最初に何を点検しますか？",choices:[
-      {text:"クラッチの滑りを点検する",correct:true},
+      {text:"クラッチの滑りと摩耗を点検する",correct:true},
       {text:"クラッチワイヤー・レリーズの遊びを点検する",correct:false},
       {text:"ミッションオイルの量と状態を点検する",correct:false},
       {text:"ドライブシャフトのガタを点検する",correct:false}],
@@ -1426,8 +1426,8 @@ const cases = [
     {question:"電動パワステ（EPS）だった。何を疑いますか？",choices:[
       {text:"警告灯と故障コードと電源電圧を確認する",correct:true},
       {text:"パワステフルードの量を点検して原因を絞る",correct:false},
-      {text:"ベルトの張りを点検する",correct:false},
-      {text:"ポンプを交換する",correct:false}],
+      {text:"駆動ベルトの張りを点検する",correct:false},
+      {text:"パワステポンプを点検せず交換する",correct:false}],
       result_correct:"EPS警告灯が点灯し低電圧の記録。12V系の電圧低下が一因と判明。",
       result_wrong:"EPSはフルードもベルトも無い。警告灯・コードと電源電圧を確認する。"},
     {question:"原因に応じた正しい対処は？",choices:[
