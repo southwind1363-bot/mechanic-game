@@ -112,7 +112,9 @@
   .symptom-box .txt{font-size:1.05rem;font-weight:700;margin-top:4px;}
 
   /* ===== 入庫シーン（症状に応じたイラスト） ===== */
-  .scene{position:relative;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#15171a;border:1px solid var(--line);flex:0 0 auto;}
+  .scene{position:relative;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#15171a;border:1px solid var(--line);flex:0 0 auto;max-height:60vh;transition:max-height .3s ease,margin .3s ease,opacity .22s ease;}
+  /* 回答後はシーンを畳んで結果＋次へを画面内に収める */
+  #gameScreen.answered .scene{max-height:0;margin-bottom:0;opacity:0;border-width:0;}
   .scene svg{display:block;width:100%;height:auto;max-height:26vh;}
   #sceneImg{display:none;width:100%;height:clamp(120px,26vh,230px);object-fit:cover;vertical-align:bottom;background:#15171a;}
   .scene-cap{position:absolute;top:8px;left:10px;font-size:.7rem;font-weight:800;color:var(--orange);letter-spacing:.12em;text-shadow:0 1px 3px #000;}
@@ -7204,6 +7206,7 @@ function renderTimer(){
 
 function renderStep(){
   answered = false;
+  { const _gs=$("gameScreen"); if(_gs) _gs.classList.remove("answered"); }   // シーンを再表示
   stepStart = Date.now();
   hideOyakata();
   const c = curCase();
@@ -7273,6 +7276,7 @@ function chooseAnswer(i){
     scoreWrong();
   }
 
+  { const _gs=$("gameScreen"); if(_gs) _gs.classList.add("answered"); }   // シーンを畳んで結果を画面内に
   showNextButton();
 }
 
@@ -7297,6 +7301,7 @@ function onTimeOut(){
     '<span class="lead">'+escapeHtml(step.result_correct)+'</span>';
   doFlash(false); scoreWrong();
 
+  { const _gs=$("gameScreen"); if(_gs) _gs.classList.add("answered"); }   // 時間切れもシーンを畳む
   showNextButton();
 }
 
@@ -7760,7 +7765,8 @@ const TRIVIA = [
   {tag:"❓ え、そうなの？",text:"エアバッグはふんわりしたクッションではない。火薬で0.03秒のうちに爆発的に膨らみ、すぐにしぼむ。人はしぼむ瞬間に顔を受け止められて衝撃を逃がす。膨らみ切った所へ突っ込むとむしろ危ない。"},
   {tag:"❓ え、そうなの？",text:"ABS付きの車はポンピングブレーキ不要、むしろ逆効果。昔の教習所の常識は今は通じず、緊急時はペダルをベタ踏みのまま保つのが正解。あとはABSが自動で効かせてくれる。"},
   {tag:"❓ え、そうなの？",text:"シートベルトはゆっくり引けば伸び、急に引くとロックする。衝突という急な動きだけに反応する振り子式のため。チャイルドシート固定で全部引き出すと、固定モードに切り替わる車もある。"},
-  {tag:"❓ え、そうなの？",text:"フロントガラスの縁に並ぶ黒い点々はデザインではない。接着剤を紫外線から守り、ガラスの急な温度差による割れを防ぐために計算して配置されたもの。"}
+  {tag:"❓ え、そうなの？",text:"フロントガラスの縁に並ぶ黒い点々はデザインではない。接着剤を紫外線から守り、ガラスの急な温度差による割れを防ぐために計算して配置されたもの。"},
+  {tag:"🏆 プロを見分ける",text:"お客様が薄々気づいている不調を、言われる前に点検で見つけられる店がまとも。言われて初めて気づく・見落とす店は実力不足。気づいていながら黙って見送る店は、もはや論外を通り越して論じるに値しない。"}
 ];
 let triviaUsed = new Set();
 let triviaOpen = false;   // 豆知識表示中は次へボタンでの再進行を禁止
