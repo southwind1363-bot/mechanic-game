@@ -6961,13 +6961,18 @@ const SEEN_CAP = 80;   // 直近この件数は記憶し、再出題を避ける
 function getSeen(){ try{ return JSON.parse(localStorage.getItem(SEEN_KEY)||"[]")||[]; }catch(e){ return []; } }
 function setSeen(a){ try{ localStorage.setItem(SEEN_KEY, JSON.stringify(a)); }catch(e){} }
 // 級のプールから、最近出していない症例を優先してCASES_PER_TIER件を抽選
+let runUsedIds = new Set();   // 今プレイ中に出題済みのID（同一プレイ内の重複を防ぐ）
 function drawTier(name){
   const pool = TIER_POOL[name];
   const seen = new Set(getSeen());
-  const fresh = shuffle(pool.filter(id=>!seen.has(id)));   // 最近出ていない＝優先
-  const used  = shuffle(pool.filter(id=> seen.has(id)));   // 足りない分の補充用
+  // 今プレイで未使用のものを最優先（プール件数≧40なので、合計40症例の1プレイ内では重複しない）
+  const avail = pool.filter(id=>!runUsedIds.has(id));
+  const base  = avail.length >= CASES_PER_TIER ? avail : pool;   // 万一プールを使い切った時のみ全体へ
+  const fresh = shuffle(base.filter(id=>!seen.has(id)));   // 直近未出題を優先
+  const used  = shuffle(base.filter(id=> seen.has(id)));   // 足りない分の補充用
   const pick  = fresh.concat(used).slice(0, CASES_PER_TIER);
-  setSeen(pick.concat(getSeen()).slice(0, SEEN_CAP));      // 直近に出したIDを記録
+  pick.forEach(id=>runUsedIds.add(id));                    // 今プレイの使用済みに記録
+  setSeen(pick.concat(getSeen()).slice(0, SEEN_CAP));      // 全プレイ横断の直近記録
   return pick.map(id=>idIndex[id]);
 }
 
@@ -6994,6 +6999,7 @@ function resumeGame(){
   items=Object.assign({tester:0,hint:0,time:0}, d.items||{tester:1,hint:1,time:1});
   curList=(d.listIds||[]).map(id=>idIndex[id]).filter(x=>x!=null);
   if(!curList.length){ curList = drawTier(TIER_NAMES[tierIdx]); posInTier=0; }
+  runUsedIds = new Set(curList.map(ix=>cases[ix].id));   // 再開：現在の級の出題分を記録
   endFever(); updateScoreHud(); renderWage(); renderHeat();
   // AudioContext はサスペンドを解除してから BGM を開始（非同期対応）
   if(soundOn){ const _a=ensureAudio(); if(_a&&_a.state==="suspended"){ _a.resume().then(()=>{ startMusic(); }).catch(()=>{}); } else { startMusic(); } }
@@ -7041,6 +7047,7 @@ function renderTierPick(){
 function startGame(){
   clearSave();   // 新規開始：中断データがあれば破棄（「つづきから」をリセット）
   roundIdx = 0; tierIdx = startTierIdx; totalPassed = 0; results = [];
+  runUsedIds = new Set();   // 新規プレイ：出題済みをリセット
   score = 0; combo = 0; bestCombo = 0;
   wage = 0; heat = 0; extraLivesNextTier = 0; items = { tester:1, hint:1, time:1 };
   endFever(); updateScoreHud(); renderWage(); renderHeat();
