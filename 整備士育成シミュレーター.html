@@ -637,7 +637,8 @@
     <button class="collapse-toggle" id="rulesToggle">📋 ルール <span class="arr">▼</span></button>
     <div class="collapse-body" id="rulesBody">
       <ul class="rules">
-        <li><b>見習い→一人前→整備主任→親方級</b>の順に昇格。各級<b>10症例</b></li>
+        <li><b>見習い→一人前→整備主任→親方級</b>へ昇格。<b>どの級から始めても合計40症例</b>（上級開始は最上級を繰り返す）</li>
+        <li>級が上がるほど<b>配点アップ</b>（×1 → ×1.5 → ×2 → ×3）</li>
         <li>各症例は<b>3ステップ</b>の4択診断（1症例60秒）</li>
         <li>各級<b>ライフ3</b>。診断ミス・時間切れで1つ減る</li>
         <li>ライフが尽きると<b>ゲームオーバー</b></li>
@@ -6804,7 +6805,11 @@ const TOTAL_CASES = CASES_PER_TIER * TIER_NAMES.length; // 1プレイの総数(3
 const idIndex = {}; cases.forEach((c,i)=>{ idIndex[c.id]=i; });
 
 // State
-let tierIdx = 0;       // 現在の級 0..2
+let tierIdx = 0;       // 現在の級 0..3
+let roundIdx = 0;      // 現在のラウンド 0..TIER_NAMES.length-1（合計は常に全級ぶん=40症例）
+function tierForRound(r){ return Math.min(startTierIdx + r, TIER_NAMES.length - 1); }  // 上級開始時は最上級を繰り返す
+const TIER_SCORE_MULT = [1, 1.5, 2, 3];   // 級ごとの配点倍率（見習い/一人前/整備主任/親方級）
+function tierMult(){ return TIER_SCORE_MULT[tierIdx] || 1; }
 let posInTier = 0;     // 級内の症例位置 0..9
 let curList = [];      // 現在の級の症例index配列
 let lives = MAX_LIVES; // 現在のライフ（級ごとにリセット）
@@ -6973,7 +6978,7 @@ function hasSave(){ try{ const d=JSON.parse(localStorage.getItem(SAVE_KEY)||"nul
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} refreshResumeBtn(); }
 function saveGame(){
   if(gameScreen.classList.contains("hidden")) return;   // プレイ中のみ保存
-  const data = { v:2, tierIdx, startTierIdx, posInTier, lives, totalPassed, passedAtTierStart,
+  const data = { v:2, tierIdx, roundIdx, startTierIdx, posInTier, lives, totalPassed, passedAtTierStart,
     score, bestCombo, results, listIds: curList.map(ix=>cases[ix].id),
     wage, heat, items, extraLivesNextTier };
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){}
@@ -6982,6 +6987,7 @@ function resumeGame(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); }catch(e){}
   if(!d){ refreshResumeBtn(); return; }
   tierIdx=d.tierIdx||0; startTierIdx=d.startTierIdx||0; posInTier=d.posInTier||0; lives=(d.lives==null?MAX_LIVES:d.lives);
+  roundIdx=(d.roundIdx==null ? Math.max(0,(d.tierIdx||0)-(d.startTierIdx||0)) : d.roundIdx);   // 旧セーブ互換
   totalPassed=d.totalPassed||0; passedAtTierStart=d.passedAtTierStart||0;
   score=d.score||0; combo=0; bestCombo=d.bestCombo||0; results=d.results||[];
   wage=d.wage||0; heat=d.heat||0; feverLeft=0; extraLivesNextTier=d.extraLivesNextTier||0;
@@ -7019,7 +7025,7 @@ function toast(msg){
 
 // 開始する級（級セレクターで選択。0=見習い）。runTotalは「開始級〜親方級」の症例数。
 let startTierIdx = 0;
-function runTotal(){ return (TIER_NAMES.length - startTierIdx) * CASES_PER_TIER; }
+function runTotal(){ return TIER_NAMES.length * CASES_PER_TIER; }   // 開始級に関わらず常に全級ぶん(=40)
 function renderTierPick(){
   const box = $("tierBadges"); if(!box) return;
   box.innerHTML = "";
@@ -7034,7 +7040,7 @@ function renderTierPick(){
 
 function startGame(){
   clearSave();   // 新規開始：中断データがあれば破棄（「つづきから」をリセット）
-  tierIdx = startTierIdx; totalPassed = 0; results = [];
+  roundIdx = 0; tierIdx = startTierIdx; totalPassed = 0; results = [];
   score = 0; combo = 0; bestCombo = 0;
   wage = 0; heat = 0; extraLivesNextTier = 0; items = { tester:1, hint:1, time:1 };
   endFever(); updateScoreHud(); renderWage(); renderHeat();
@@ -7083,7 +7089,7 @@ function loadCase(){
 function updateHud(){
   $("hudCase").textContent = TIER_NAMES[tierIdx] + " " + (posInTier+1) + "/" + CASES_PER_TIER;
   renderLives();
-  const done = (tierIdx-startTierIdx)*CASES_PER_TIER + posInTier;
+  const done = roundIdx*CASES_PER_TIER + posInTier;
   $("progBar").style.width = (done/runTotal()*100) + "%";
 }
 
@@ -7336,7 +7342,7 @@ function finishCase(){
   if(passed){
     totalPassed++;
     const fev = feverLeft>0 ? 2 : 1;
-    const perfect = Math.round(300*caseScoreMult*fev);
+    const perfect = Math.round(300*caseScoreMult*fev*tierMult());
     score+=perfect; updateScoreHud(); floatText("PERFECT!  +"+perfect,"perfect"); sndPerfect();
   }
   // 工賃を獲得（クリアで多め・ボスや難症例・急患で割増）
@@ -7353,21 +7359,26 @@ function finishCase(){
 // 級クリア：最終級なら全クリア、それ以外は昇級画面へ
 function tierCleared(){
   pauseTimer();
-  if(tierIdx >= TIER_NAMES.length-1){ endGame(); return; }
+  if(roundIdx >= TIER_NAMES.length-1){ endGame(); return; }   // 全ラウンド終了で全クリア
   sndLevel();
   hideAllScreens();
   const cleared = TIER_NAMES[tierIdx];
-  const next = TIER_NAMES[tierIdx+1];
-  $("promoteBadge").textContent = "★".repeat(tierIdx+1);
+  const nextTier = tierForRound(roundIdx+1);
+  const next = TIER_NAMES[nextTier];
+  const sameTier = (nextTier === tierIdx);   // 最上級を繰り返すラウンド
+  $("promoteBadge").textContent = "★".repeat(Math.min(roundIdx+1, 5));
   $("promoteTitle").textContent = cleared + "クリア！";
-  $("promoteDesc").innerHTML = "<b>"+next+"</b>に昇級します。ライフは3に回復。<br>難易度が上がります、気を引き締めて。";
+  $("promoteDesc").innerHTML = sameTier
+    ? ("続けて<b>"+next+"</b>に挑戦！（配点×"+(TIER_SCORE_MULT[nextTier]||1)+"）ライフは3に回復。<br>最高難度が続く、気を抜くな。")
+    : ("<b>"+next+"</b>に昇級！（配点×"+(TIER_SCORE_MULT[nextTier]||1)+"）ライフは3に回復。<br>難易度が上がります、気を引き締めて。");
   $("promoteStat").innerHTML = "ここまでの合格 <b>"+totalPassed+"</b> / "+runTotal()+" 症例";
   renderShop();   // ピットショップ：工賃でライフ/道具を購入
   tierScreen.classList.remove("hidden");
 }
 
 function continueNextTier(){
-  tierIdx++;
+  roundIdx++;
+  tierIdx = tierForRound(roundIdx);
   hideAllScreens();
   gameScreen.classList.remove("hidden");
   startTier();
@@ -7941,9 +7952,9 @@ function scoreCorrect(){
   combo++; bestCombo=Math.max(bestCombo,combo);
   heat=Math.min(HEAT_MAX,heat+1);
   const fev = feverLeft>0 ? 2 : 1;                   // フィーバー中はスコア2倍
-  const gained=Math.round((100+speed)*comboMult()*fev*caseScoreMult);
+  const gained=Math.round((100+speed)*comboMult()*fev*caseScoreMult*tierMult());
   score+=gained; updateScoreHud();
-  floatText("+"+gained+(fev>1?" 🔥":"")+(combo>=2?"  x"+comboMult().toFixed(1):""),"pop");
+  floatText("+"+gained+(fev>1?" 🔥":"")+(tierMult()>1?"  級x"+tierMult():"")+(combo>=2?"  x"+comboMult().toFixed(1):""),"pop");
   sndCorrect(); if(combo>=3) sndCombo(combo);
   if(heat>=HEAT_MAX && feverLeft<=0) startFever(); else renderHeat();
   if(combo%5===0 && lives<MAX_LIVES){ lives++; renderLives(); floatText("❤ +1","lifeup"); sndLifeUp(); }
