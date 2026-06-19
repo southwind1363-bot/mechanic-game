@@ -112,9 +112,11 @@
   .symptom-box .txt{font-size:1.05rem;font-weight:700;margin-top:4px;}
 
   /* ===== 入庫シーン（症状に応じたイラスト） ===== */
-  .scene{position:relative;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#15171a;border:1px solid var(--line);flex:0 0 auto;max-height:60vh;transition:max-height .3s ease,margin .3s ease,opacity .22s ease;}
-  /* 回答後はシーンを畳んで結果＋次へを画面内に収める */
+  .scene{position:relative;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#15171a;border:1px solid var(--line);flex:0 0 auto;max-height:60vh;transition:max-height .12s ease,margin .12s ease,opacity .12s ease;}
+  /* 回答後はシーンを畳んで結果＋次へを画面内に収める（高速化＝「次へ」ボタンが動く時間を最小化しタップ取りこぼしを防ぐ） */
   #gameScreen.answered .scene{max-height:0;margin-bottom:0;opacity:0;border-width:0;}
+  /* 回答中は畳んで見えないシーンのSVGアニメを停止（低スペック端末のCPU解放＝「次へ」の引っかかり防止） */
+  #gameScreen.answered .scene *{animation-play-state:paused!important;}
   .scene svg{display:block;width:100%;height:auto;max-height:26vh;}
   #sceneImg{display:none;width:100%;height:clamp(120px,26vh,230px);object-fit:cover;vertical-align:bottom;background:#15171a;}
   .scene-cap{position:absolute;top:8px;left:10px;font-size:.7rem;font-weight:800;color:var(--orange);letter-spacing:.12em;text-shadow:0 1px 3px #000;}
